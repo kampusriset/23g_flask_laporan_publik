@@ -13,4 +13,3 @@
 - dashboard admin laporan dan kelola laporan
 - profil dan tentang aplikasi
 
-#### Copyright &copy; LaporIn Teams | All right reserved
