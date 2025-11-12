@@ -9,8 +9,8 @@
 ## Aplikasi laporin ini adalah aplikasi untuk Pelaporan Fasilitas Publik
 ### Feature Comming Soon
 
--- login, register dan forgot password
--- dashboard admin laporan dan kelola laporan
--- profil dan tentang aplikasi
+- login, register dan forgot password
+- dashboard admin laporan dan kelola laporan
+- profil dan tentang aplikasi
 
 #### Copyright &copy; LaporIn Teams | All right reserved
