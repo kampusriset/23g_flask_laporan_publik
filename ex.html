@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            width: 100%;
+            height: 90px;
+            display: flex;
+        }
+        .merah {
+            background-color: red;
+            width: 50%;
+            height: 90px;
+        }
+        .biru{
+            background-color: blue;
+             width: 50%;
+            height: 90px;
+        }
+        .polygon{
+            clip-path: polygon(0% 1%, 1% 1%, 80% 80%, 0 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="biru polygon"></div>
+        <div class="merah"></div>
+    </div> 
+</body>
+</html>

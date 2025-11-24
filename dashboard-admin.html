@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="./src/output.css">
+</head>
+<body>
+    <div class="bg-[#41CEF5] h-screen w-screen flex">
+        
+        <!-- SIDEBAR -->
+        <div class="w-60 bg-[#005AD9]">
+        </div>
+<div class="relative h-10 bg-[#005AD9]">
+    <!-- Ubah w-[300px] untuk memanjang ke kanan -->
+    <svg class="absolute left-0 top-0 h-full w-100" viewBox="0 0 100 30" preserveAspectRatio="none">
+        <!-- Ini bentuk segitiganya -->
+        <polygon points="0,0 100,0 88,30 0,30" fill="#005AD9" />
+    </svg>
+    
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white w-100 font-semibold flex items-center">
+       <svg xmlns="http://www.w3.org/2000/svg" 
+    class="w-7 h-7 text-white" 
+    viewBox="0 0 61 61" fill="none">
+  <path 
+    d="M30.5 0C24.4677 0 18.5708 1.78879 13.5551 5.14018C8.53942 8.49156 4.63016 13.255 2.32169 18.8281C0.0132152 24.4013 -0.590786 30.5338 0.586063 36.4502C1.76291 42.3667 4.66775 47.8012 8.93326 52.0667C13.1988 56.3322 18.6333 59.2371 24.5498 60.4139C30.4662 61.5908 36.5987 60.9868 42.1719 58.6783C47.745 56.3698 52.5084 52.4606 55.8598 47.4449C59.2112 42.4292 61 36.5323 61 30.5C60.991 22.4137 57.7747 14.6611 52.0568 8.94317C46.3389 3.22526 38.5863 0.00899316 30.5 0ZM30.5 54.9C25.6741 54.9 20.9567 53.4689 16.9441 50.7878C12.9315 48.1067 9.80413 44.296 7.95735 39.8375C6.11057 35.3789 5.62737 30.4729 6.56885 25.7398C7.51033 21.0067 9.8342 16.659 13.2466 13.2466C16.659 9.83419 21.0067 7.51032 25.7398 6.56884C30.4729 5.62736 35.379 6.11056 39.8375 7.95734C44.296 9.80412 48.1068 12.9315 50.7879 16.9441C53.469 20.9566 54.9 25.6741 54.9 30.5C54.8926 36.969 52.3195 43.1709 47.7452 47.7452C43.171 52.3195 36.969 54.8926 30.5 54.9ZM30.5 28.975C29.6911 28.975 28.9153 29.2963 28.3433 29.8683C27.7713 30.4403 27.45 31.2161 27.45 32.025V41.175C27.45 41.9839 27.7713 42.7597 28.3433 43.3317C28.9153 43.9037 29.6911 44.225 30.5 44.225C31.3089 44.225 32.0847 43.9037 32.6567 43.3317C33.2287 42.7597 33.55 41.9839 33.55 41.175V32.025C33.55 31.2161 33.2287 30.4403 32.6567 29.8683C32.0847 29.2963 31.3089 28.975 30.5 28.975ZM30.5 16.775C29.746 16.775 29.0089 16.9986 28.3819 17.4175C27.7549 17.8364 27.2663 18.4319 26.9777 19.1285C26.6892 19.8252 26.6137 20.5917 26.7608 21.3313C26.9079 22.0708 27.271 22.7502 27.8042 23.2833C28.3374 23.8165 29.0167 24.1796 29.7562 24.3267C30.4958 24.4738 31.2623 24.3983 31.959 24.1098C32.6556 23.8212 33.2511 23.3326 33.67 22.7056C34.0889 22.0786 34.3125 21.3415 34.3125 20.5875C34.3125 19.5764 33.9108 18.6066 33.1959 17.8917C32.4809 17.1767 31.5111 16.775 30.5 16.775Z" 
+    fill="currentColor"
+  />
+</svg>
+ <span class="ml-2">Pelaporan Kerusakan Fasilitas Publik</span>
+    </div>
+</div>
+
+<div class="absolute right-0 mr-10 top-1">
+<!-- PROFILE DROPDOWN -->
+<div class="absolute z-999 w-70 right-7">
+    <div id="profileBtn" class="flex items-center gap-2 cursor-pointer">
+        <img src="https://ui-avatars.com/api/?name=User" 
+             class="w-8 h-8 rounded-full border border-white shadow" />
+
+        <span id="id_user" class="text-white font-semibold">Rizki Anas Mustakimmmmmmm</span>
+    </div>
+
+    <!-- Dropdown -->
+    <div id="profileDropdown" 
+         class="hidden absolute right- mt-2 w-40 bg-white rounded-lg shadow-lg p-2">
+        
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+            🔧 Pengaturan
+        </a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+            👤 Profil
+        </a>
+        <hr class="my-1">
+        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100 rounded">
+            🚪 Logout
+        </a>
+    </div>
+</div>
+<svg xmlns="http://www.w3.org/2000/svg" class="absolute w-6 h-6 top-1 right-79" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+</svg>
+</div>
+        <!-- CONTENT (tengah) -->
+        <div class="absolute left-10 top-10 flex items-center justify-center">
+            <div class="bg-[#BEE6FF]/82 w-[75rem] h-[35rem] rounded-3xl flex items-center justify-center">
+                
+            </div>
+        </div>
+
+    </div>
+</body>
+<script>
+    const btn = document.getElementById("profileBtn");
+    const menu = document.getElementById("profileDropdown");
+
+    btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+    });
+
+    // Klik di luar → tutup dropdown
+    document.addEventListener("click", (e) => {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add("hidden");
+        }
+    });
+       let name = "Nama User Yang Sangat Panjang Lebih Dari 25 Karakter";
+
+    function limitText(text, limit) {
+        return text.length > limit ? text.substring(0, limit) + "..." : text;
+    }
+
+    document.getElementById("id_user").textContent = limitText(name, 25);
+</script>
+
+</html>
