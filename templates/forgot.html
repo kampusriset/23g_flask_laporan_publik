@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Lupa Password{% endblock %}
 {% block content %}
-<div class="forgot-container">
-    <div class="forgot-card">
+<div class="auth-bg d-flex align-items-center justify-content-center min-vh-100 px-2 py-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-lg">
         <div class="card-header text-center text-white">
             <h2 class="login-title mb-0">
                 <i class="bi bi-lock-fill me-2"></i> Lupa Password
             </h2>
         </div>
         <div class="card-body">
-            <!-- Pesan sukses muncul di sini -->
             <div id="notifSuccess"></div>
 
             <form id="forgotForm" method="POST">
@@ -42,7 +42,6 @@
                 <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mb-2" id="submitBtn">
                     <i class="bi bi-envelope-arrow-up"></i> Kirim Reset Link
                 </button>
-                <!-- Pilihan pengiriman, awalnya disembunyikan -->
                 <div id="deliveryChoice" style="display:none; margin-top:8px;">
                     <label class="fw-semibold mb-2">Kirim link melalui:</label>
                     <div class="d-flex justify-content-center gap-3 mt-2">
@@ -56,7 +55,6 @@
                     <div id="timerSMS" class="mt-2 fw-semibold text-warning"></div>
                 </div>
 
-                <!-- Hasil link reset tampil di sini -->
                 <div id="resetLinkResult" class="mt-4"></div>
             </form>
         </div>
@@ -65,8 +63,11 @@
                 Ingat Password? <a href="{{ url_for('login') }}" class="text-success fw-semibold">Login di sini</a>
             </p>
         </div>
-    </div>
-</div>
+        </div>
+        <div class="card-footer text-center text-muted small border-0 bg-transparent pt-4 pb-2">
+            &copy; 2025 LaporIN - Dibuat untuk Kemudahan Masyarakat
+        </div>
+    </div>    
 
 <script>
 let smsTimeout = null;
@@ -96,14 +97,13 @@ function handleChoice(method) {
     var resetLinkResult = document.getElementById('resetLinkResult');
     var emailBtn = document.getElementById('emailBtn');
     var smsBtn = document.getElementById('smsBtn');
-    var submitBtn = document.getElementById('submitBtn'); // Ambil tombol submit di sini
+    var submitBtn = document.getElementById('submitBtn'); 
     var notifSuccess = document.getElementById('notifSuccess');
 
     emailBtn.disabled = true;
     smsBtn.disabled = true;
-    submitBtn.disabled = true; // Disable tombol submit setelah Email/SMS dipilih
+    submitBtn.disabled = true; 
 
-    // AJAX POST ke /forgot_generate_link
     fetch("/forgot_generate_link", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -138,4 +138,7 @@ function handleChoice(method) {
     });
 }
 </script>
+
+ 
+        
 {% endblock %}

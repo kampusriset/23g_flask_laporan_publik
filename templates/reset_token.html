@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Reset Password{% endblock %}
 {% block content %}
-<div class="forgot-container">
-    <div class="forgot-card">
+<div class="auth-bg d-flex align-items-center justify-content-center min-vh-100 px-2 py-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-lg">
         <div class="card-header text-center text-white">
             <h2 class="login-title mb-0">
                 <i class="bi bi-lock-fill me-2"></i> Reset Password
@@ -57,5 +58,10 @@ function togglePassword(inputId, iconId) {
             <div id="resetLinkResult" class="mt-4 fw-semibold text-primary"></div>
         </div>
     </div>
+     <div class="card-footer text-center text-muted small border-0 bg-transparent pt-4 pb-2">
+            &copy; 2025 LaporIN - Dibuat untuk Kemudahan Masyarakat
+        </div>
 </div>
+
+
 {% endblock %}

@@ -2,22 +2,15 @@
 {% block title %}Register - LaporIN{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <!-- Header -->
+<div class="auth-bg d-flex align-items-center justify-content-center min-vh-100 px-2 py-4">
+  <div class="w-100" style="max-width:430px;">
+    <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-primary text-white text-center py-4">
                     <h4 class="mb-0 fw-bold">
                         <i class="bi bi-person-plus-fill"></i> Daftar Akun Baru
                     </h4>
                     <small class="d-block mt-1">LaporIN - Sistem Pelaporan Fasilitas Publik</small>
-                </div>
-
-                <!-- Body -->
-                <div class="card-body p-4">
-
-                    <!-- Flash Messages -->
+  
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
@@ -31,7 +24,6 @@
 
                     <!-- Form Register -->
                     <form method="POST" novalidate>
-                        <!-- Nama Lengkap -->
                         <div class="mb-3">
                             <label for="nama_lengkap" class="form-label fw-semibold">
                                 <i class="bi bi-person"></i> Nama Lengkap <span class="text-danger">*</span>
@@ -42,6 +34,7 @@
                                 name="nama_lengkap"
                                 class="form-control form-control-lg"
                                 placeholder="Masukkan nama lengkap"
+                                style="font-size: 1.07rem;"
                                 required
                                 autofocus
                             >
@@ -50,7 +43,7 @@
                             </div>
                         </div>
 
-                        <!-- Username -->
+                       
                         <div class="mb-3">
                             <label for="username" class="form-label fw-semibold">
                                 <i class="bi bi-person-badge"></i> Username <span class="text-danger">*</span>
@@ -61,6 +54,7 @@
                                 name="username"
                                 class="form-control form-control-lg"
                                 placeholder="Pilih username unik"
+                                style="font-size: 1.07rem;"
                                 minlength="3"
                                 required
                             >
@@ -70,7 +64,6 @@
                             </div>
                         </div>
 
-                        <!-- No. Telepon (WAJIB) -->
                         <div class="mb-3">
                             <label for="no_telp" class="form-label fw-semibold">
                                 <i class="bi bi-telephone"></i> No. Telepon <span class="text-danger">*</span>
@@ -81,6 +74,7 @@
                                 name="no_telp"
                                 class="form-control form-control-lg"
                                 placeholder="08123456789"
+                                style="font-size: 1.07rem;"
                                 pattern="[0-9]{10,13}"
                                 minlength="10"
                                 maxlength="13"
@@ -92,7 +86,7 @@
                             </div>
                         </div>
 
-                        <!-- Email -->
+                       
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">
                                 <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
@@ -103,13 +97,14 @@
                                 name="email"
                                 class="form-control form-control-lg"
                                 placeholder="nama@contoh.com"
+                                style="font-size: 1.07rem;"
                                 required
                             >
                             <div class="invalid-feedback">
                                 Email tidak valid atau sudah terdaftar!
                             </div>
                         </div>
-<!-- Password -->
+
 <div class="mb-3">
     <label for="password" class="form-label fw-semibold">
         <i class="bi bi-lock"></i> Password <span class="text-danger">*</span>
@@ -121,6 +116,7 @@
             name="password"
             class="form-control form-control-lg"
             placeholder="Minimal 6 karakter"
+            style="font-size: 1.07rem;"
             minlength="6"
             required
         >
@@ -136,7 +132,7 @@
     <div class="form-text">Kombinasi huruf & angka lebih aman.</div>
 </div>
 
-<!-- Konfirmasi Password -->
+
 <div class="mb-3">
     <label for="confirm_password" class="form-label fw-semibold">
         <i class="bi bi-lock-fill"></i> Konfirmasi Password <span class="text-danger">*</span>
@@ -148,6 +144,7 @@
             name="confirm_password"
             class="form-control form-control-lg"
             placeholder="Ketik ulang password"
+            style="font-size: 1.07rem;"
             required
         >
         <button
@@ -166,7 +163,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Toggle password utama
+
     document.getElementById('togglePasswordBtn').addEventListener('click', function () {
         const passwordInput = document.getElementById('password');
         const icon = document.getElementById('togglePasswordIcon');
@@ -181,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Toggle konfirmasi password
     document.getElementById('toggleConfirmPasswordBtn').addEventListener('click', function () {
         const confirmPasswordInput = document.getElementById('confirm_password');
         const icon = document.getElementById('toggleConfirmPasswordIcon');
@@ -198,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-                        <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
                             <i class="bi bi-check-circle"></i> Daftar Sekarang
                         </button>
@@ -214,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="text-center mt-4 text-muted small">
                 © 2025 LaporIN - Dibuat untuk Kemudahan Masyarakat
             </div>

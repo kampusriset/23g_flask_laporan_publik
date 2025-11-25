@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>403 Forbidden</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+      body { text-align: center; padding: 60px;}
+      .error-icon { font-size: 5rem; color: #ff9800; }
+      .btn-home { margin-top: 24px;}
+    </style>
+</head>
+<body>
+    <div>
+        <div class="error-icon">🚫</div>
+        <h1>403 - Dilarang mengakses!</h1>
+        <p>Maaf, Anda tidak memiliki hak akses ke halaman ini.<br>
+        Jika Anda seharusnya bisa masuk, silakan hubungi admin.</p>
+        <a href="{{ url_for('landing') }}" class="btn btn-primary btn-home">Kembali ke Beranda</a>
+    </div>
+</body>
+</html>

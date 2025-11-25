@@ -1,0 +1,35 @@
+{% extends "base_admin.html" %}
+{% block title %}Kelola User - Admin{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Kelola User</h2>
+    {% if users %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-success">
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.nama_lengkap }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.role }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info">Belum ada user terdaftar.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+  body {background: #f2f4f8;}
+        .navbar-admin {
+            background: #23272a !important;
+            border-bottom: 2px solid #ffcc33 !important;
+        }
+        #sidebar-admin {background: #23272a; min-height: 100vh;}
+        #sidebar-admin .sidebar-header {border-bottom: 1px solid #444; padding: 22px 18px;}
+        #sidebar-admin .sidebar-title {color: #ffcc33;}
+        .sidebar-item {color:#fff; border:none;}
+        .sidebar-item.active, .sidebar-item.active i {background: #ffcc33 !important; color: #23272a !important;}
+        .sidebar-item:hover:not(.active) {background: #343a40;}
+
+        body.theme-dark {
+    background: #15191e !important;
+    color: #f5f6f7 !important;
+}
+.theme-dark .card, .theme-dark .modal-content {
+    background: #23272a !important;
+    color: #f5f6f7 !important;
+}
+.theme-dark .sidebar-header,
+.theme-dark #sidebar-admin {
+    background: #181c23 !important;
+}
+.theme-dark .navbar-admin {
+    background: #1b1e22 !important;
+}
+.theme-dark .table, .theme-dark .list-group-item {
+    background: #222e36 !important;
+    color: #f5f6f7 !important;
+}
+.theme-dark .table th, .theme-dark .table td {
+    color: #f5f6f7;
+}
+.theme-dark .alert {
+    background: #23272a !important;
+    color: #ffcc33 !important;
+    border-color: #ffcc33 !important;
+}
+.theme-dark .btn-warning, .theme-dark .table-warning {
+    background: #ffe066 !important;
+    color: #333 !important;
+}
+.theme-dark .btn-success, .theme-dark .table-success {
+    background: #43e97b !important;
+    color: #222 !important;
+}
+.theme-dark .btn-info, .theme-dark .table-info {
+    background: #1e88e5 !important;
+    color: #fff !important;
+}
+.theme-dark .btn-outline-danger {
+    border-color: #ff6384;
+    color: #ff6384;
+}
+.theme-dark .btn-outline-danger:hover {
+    background: #ff6384;
+    color: #fff;
+}
+.theme-dark .form-control {
+    background: #23272a !important;
+    color: #f5f6f7 !important;
+    border-color: #444 !important;
+}
+
+body.theme-dark .table {
+    background-color: #23272a !important;
+    color: #f5f6f7 !important;
+    border-color: #444 !important;
+}
+body.theme-dark .table th,
+body.theme-dark .table thead th {
+    background-color: #16181d !important;
+    color: #ffecb3 !important;
+}
+
+body.theme-dark .table td {
+    color: #f5f6f7 !important;
+}
+
+body.theme-dark .table-hover tbody tr:hover {
+    background-color: #212529 !important;
+}
+
+body.theme-dark .list-group-item,
+body.theme-dark .alert,
+body.theme-dark .form-control {
+    background: #23272a !important;
+    color: #f5f6f7 !important;
+}
+
+/* Hilangkan background default header table */
+body.theme-dark .table thead {
+    background-color: #24292f !important;
+}
+
+body.theme-dark .table {
+    background-color: #23272a !important;
+    color: #f5f6f7 !important;
+    border-color: #444 !important;
+}
+body.theme-dark .table th,
+body.theme-dark .table thead th {
+    background-color: #181c23 !important;
+    color: #ffd600 !important;
+}
+body.theme-dark .table td {
+    color: #f5f6f7 !important;
+    background-color: #23272a !important;
+}
+body.theme-dark .table-hover tbody tr:hover {
+    background-color: #292c30 !important;
+}
+body.theme-dark .list-group-item,
+body.theme-dark .alert,
+body.theme-dark .form-control {
+    background: #23272a !important;
+    color: #f5f6f7 !important;
+}
+body.theme-dark .table thead {
+    background-color: #23272a !important;
+}
+body.theme-dark .sidebar-header,
+body.theme-dark #sidebar-admin {
+    background: #181c23 !important;
+}
+body.theme-dark .navbar-admin {
+    background: #1b1e22 !important;
+}
+
+
