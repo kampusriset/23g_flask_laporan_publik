@@ -37,6 +37,7 @@ def nocache(view):
 
 # ===============================================================
 # INISIALISASI APP & EKSTENSI
+# jika pakai password dibelakang root misal root:1234 
 # ===============================================================
 app = Flask(__name__)
 app.config.update(
