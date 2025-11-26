@@ -1,7 +1,9 @@
-flask 
-flask_sqlalchemy 
-flask_login 
-itsdangerous 
-sqlalchemy
-Werkzeug
-flask_bcrypt
+Flask>=2.2
+Flask-SQLAlchemy>=2.5
+Flask-Login>=0.6
+itsdangerous>=2.1
+SQLAlchemy>=1.4
+Werkzeug>=2.2
+flask-bcrypt>=1.0
+mysql-connector-python>=8.0
+python-dotenv>=0.21  # opsional jika ingin support .env file

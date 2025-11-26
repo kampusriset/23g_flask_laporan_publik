@@ -36,20 +36,23 @@
       <span class="text-muted small d-none d-md-inline-block me-1">{{ current_user.email }}</span>
 
       <div class="dropdown">
+    <span class="d-inline-flex align-items-center" data-bs-toggle="dropdown" style="cursor:pointer;">
         <img src="{{ url_for('static', filename='img/profil.png') }}"
              class="rounded-circle border border-primary"
-             style="width:38px; height:38px; cursor:pointer;"
-             data-bs-toggle="dropdown">
+             style="width:38px; height:38px;">
+        <i class="bi bi-chevron-down ms-2 text-primary fs-5"></i>
+    </span>
 
-        <ul class="dropdown-menu dropdown-menu-end shadow">
-          <li><h6 class="dropdown-header">{{ current_user.nama_lengkap }}</h6></li>
-          <li><a class="dropdown-item" href="{{ url_for('profil') }}"><i class="bi bi-person-circle me-2"></i> Profil</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger fw-bold" data-bs-toggle="modal" data-bs-target="#logoutModal">
+    <ul class="dropdown-menu dropdown-menu-end shadow">
+        <li><h6 class="dropdown-header">{{ current_user.nama_lengkap }}</h6></li>
+        <li><a class="dropdown-item" href="{{ url_for('profil') }}"><i class="bi bi-person-circle me-2"></i> Profil</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger fw-bold" data-bs-toggle="modal" data-bs-target="#logoutModal">
             <i class="bi bi-box-arrow-right me-2"></i> Keluar
-          </a></li>
-        </ul>
-      </div>
+        </a></li>
+    </ul>
+</div>
+
       {% endif %}
     </div>
   </div>

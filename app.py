@@ -28,11 +28,11 @@ from models.laporan_model import Kategori
 def nocache(view):
     @wraps(view)
     def no_cache_view(*args, **kwargs):
-        resp = make_response(view(*args, **kwargs))
-        resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
-        resp.headers['Pragma'] = 'no-cache'
-        resp.headers['Expires'] = '0'
-        return resp
+        response = make_response(view(*args, **kwargs))
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     return no_cache_view
 
 # ===============================================================
@@ -345,16 +345,15 @@ def profil():
     return render_template('profil.html')
 
 @app.route("/privacy")
-@login_required
 @nocache
 def privacy():
     return render_template("privacy.html")
 
 @app.route("/terms")
-@login_required
 @nocache
 def terms():
     return render_template("terms.html")
+
 
 @app.route('/index')
 @login_required
