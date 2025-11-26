@@ -68,7 +68,9 @@ cd 23g_flask_laporan_publik
 ###  -Buka phpMyAdmin > Pilih database > Import > Browse schema.sql > Go
 ###  -atau via terminal:
 
-  ```mysql -u root -p pelaporan_fasilitas < schema.sql
+  ```
+  mysql -u root -p pelaporan_fasilitas < schema.sql
+  
   ```
 ### 3) Cek/atur setting koneksi database di app.py bagian
 ```
