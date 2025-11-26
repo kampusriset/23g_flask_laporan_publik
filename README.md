@@ -62,8 +62,21 @@ git clone https://github.com/kampusriset/23g_flask_laporan_publik.git
 cd 23g_flask_laporan_publik
 ```
 ### 3. Import Database
-import database ke mysql masing masing dan config database ada di DATABASE_URI file app.py dan file db ada di folder instance
-### 3. Install Dependensi
+### 1) Buat database di MySQL (pelaporan_fasilitas)
+### 2) Import struktur database dengan file schema.sql yang ada di repo:
+```
+  -Buka phpMyAdmin > Pilih database > Import > Browse schema.sql > Go
+
+  -atau via terminal:
+  ```
+   mysql -u root -p pelaporan_fasilitas < schema.sql
+
+### 3) Cek/atur setting koneksi database di app.py bagian
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/pelaporan_fasilitas'
+
+    Ubah user/password/host/database sesuai MySQL
+
+### 4. Install Dependensi
 ### - windows
 ```
 pip install -r requirements.txt
@@ -73,7 +86,7 @@ pip install -r requirements.txt
 pip3 install -r requirements.txt
 ```
 jika menggunakan pip3 di linux jika tidak maka sama seperti windows
-### 4. Jalankan Aplikasi
+### 5. Jalankan Aplikasi
 ### - windows
 ```
 python app.py
