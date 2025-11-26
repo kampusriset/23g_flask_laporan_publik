@@ -65,16 +65,16 @@ cd 23g_flask_laporan_publik
 ### 1) Buat database di MySQL (pelaporan_fasilitas)
 ### 2) Import struktur database dengan file schema.sql yang ada di repo:
 
-###  -Buka phpMyAdmin > Pilih database > Import > Browse schema.sql > Go
-###  -atau via terminal:
+###  Buka phpMyAdmin > Pilih database > Import > Browse schema.sql > Go
+###  atau via terminal:
 
   ```
-  mysql -u root -p pelaporan_fasilitas < schema.sql
-  
+mysql -u root -p pelaporan_fasilitas < schema.sql
+
   ```
 ### 3) Cek/atur setting koneksi database di app.py bagian
 ```
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/pelaporan_fasilitas'
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/pelaporan_fasilitas'
 ```
 ### Ubah user/password/host/database sesuai MySQL
 
