@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "use-npm": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch",
+    "use-pnpm": "pnpm dlx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch",
+    "use-bun": "bunx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch",
+    "build": "pnpm dlx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --minify"
   },
   "keywords": [],
   "author": "",
