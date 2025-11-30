@@ -74,7 +74,7 @@ mysql -u root -p pelaporan_fasilitas < schema.sql
   ```
 ### 3) Cek/atur setting koneksi database di app.py bagian
 ```
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/pelaporan_fasilitas'
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:(jika ada password disini jika tidak kosong)@localhost/pelaporan_fasilitas'
 ```
 ### Ubah user/password/host/database sesuai MySQL
 
