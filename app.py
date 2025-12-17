@@ -6,6 +6,8 @@ from flask import (
     Flask, render_template, request, redirect, url_for, flash,
     abort, jsonify, make_response, session
 )
+from dotenv import load_dotenv
+import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, login_user, login_required,
@@ -21,6 +23,7 @@ from flask import session, flash, redirect, url_for
 from flask_login import UserMixin
 from models.laporan_model import Kategori
 
+load_dotenv()
 
 # ===============================================================
 # DEKORATOR NO-CACHE
@@ -41,13 +44,13 @@ def nocache(view):
 # ===============================================================
 app = Flask(__name__)
 app.config.update(
-    SECRET_KEY='rahasia_laporin_2025_super_aman_123!',
-    SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:@localhost/pelaporan_fasilitas',
+    SECRET_KEY=os.getenv("SECRET_KEY"),
+    SQLALCHEMY_DATABASE_URI=f"mysql+mysqlconnector://{os.getenv("DB_USER")}:{os.getenv("DB_PASS")}@{os.getenv("DB_URI")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}",
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SQLALCHEMY_ENGINE_OPTIONS={'pool_pre_ping': True, 'pool_recycle': 300}
 )
 
-serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
 login_manager = LoginManager()
 
 db.init_app(app)
@@ -298,7 +301,7 @@ def forgot_generate_link():
     user = User.query.filter_by(email=email, no_telp=no_telp).first()
     if not user:
         return jsonify({'success': False, 'message': 'Email atau nomor telepon tidak ditemukan.'})
-    reset_link = f"http://127.0.0.1:5000/reset_password/{user.id}-demoToken123"
+    reset_link = f"http://{os.getenv("URI_APP")}:{os.getenv("PORT_APP")}/reset_password/{user.id}-demoToken123"
     return jsonify({'success': True, 'reset_link': reset_link})
 
 # ===============================================================
@@ -493,4 +496,4 @@ def tesforbidden():
 if __name__ == '__main__':
     print("LaporIN siap dijalankan!")
     print("Login admin: username=admin, password=admin123")
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host=os.getenv("URI_APP"), port=os.getenv("PORT_APP"), debug=os.getenv("DEBUG"))

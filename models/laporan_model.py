@@ -13,8 +13,8 @@ class User(UserMixin, db.Model):
     no_telp = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(50), default='user', nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    role = db.Column(db.Enum('admin', 'user'), default='user', nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
 
     laporans = db.relationship('Laporan', backref='user', lazy=True, foreign_keys='Laporan.username', primaryjoin='User.username == Laporan.username')
 
