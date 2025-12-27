@@ -1,4 +1,5 @@
-﻿# LaporIN — Aplikasi Pelaporan Fasilitas Publik
+﻿
+# LaporIN — Aplikasi Pelaporan Fasilitas Publik
 
 LaporIN adalah aplikasi berbasis web yang digunakan untuk melaporkan kerusakan fasilitas publik secara cepat, terstruktur, dan transparan.  
 Aplikasi ini dibuat untuk mempermudah masyarakat dalam menyampaikan laporan serta memudahkan petugas dalam memantau, memverifikasi, dan menindaklanjuti laporan.
@@ -61,24 +62,20 @@ git clone https://github.com/kampusriset/23g_flask_laporan_publik.git
 ```
 cd 23g_flask_laporan_publik
 ```
-### 3. Import Database
-### 1) Buat database di MySQL (pelaporan_fasilitas)
-### 2) Import struktur database dengan file schema.sql yang ada di repo:
-
-###  Buka phpMyAdmin > Pilih database > Import > Browse schema.sql > Go
-###  atau via terminal:
-
-  ```
-mysql -u root -p pelaporan_fasilitas < schema.sql
-
-  ```
-### 3) Cek/atur setting koneksi database di app.py bagian
+### 3. Persiapan Lingkungan env
 ```
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:(jika ada password disini jika tidak kosong)@localhost/pelaporan_fasilitas'
+python -m venv env :: (nama bebas)
 ```
-### Ubah user/password/host/database sesuai MySQL
-
-### 4. Install Dependensi
+### 4, Aktivasi env
+### - windows
+```
+env\Scripts\activate
+```
+### - linux
+```
+source env/bin/activate
+```
+### 5. Install Dependensi
 ### - windows
 ```
 pip install -r requirements.txt
@@ -88,12 +85,31 @@ pip install -r requirements.txt
 pip3 install -r requirements.txt
 ```
 jika menggunakan pip3 di linux jika tidak maka sama seperti windows
-### 5. Jalankan Aplikasi
-### - windows
+### 6. copy env configuration dan generate secret
+### - windows 
 ```
-python app.py
+copy .env.example .env
+python gen-secret.py
 ```
 ### - linux
 ```
-python3 app.py
+copy .env.example
+python3 gen-secret.py
+```
+### 5. Set flask app agar simple
+### - windows 
+```
+set FLASK_APP=run.py
+```
+### - linux
+```
+export FLASK_APP=run.py
+```
+### 6. seeder admin ke db
+```
+flask seed-user
+```
+### 5. Jalankan Aplikasi
+```
+flask run
 ```
