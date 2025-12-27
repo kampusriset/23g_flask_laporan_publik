@@ -1,5 +1,6 @@
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'laporin-super-secret-key-2025-change-this!'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
@@ -14,7 +15,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL')
-        or 'mysql+pymysql://root:@localhost/pelaporan_fasilitas'
+        or f'mysql+pymysql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}@{os.environ.get('DB_URI')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}'
     )
 
 

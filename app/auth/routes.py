@@ -55,6 +55,8 @@ def register():
             nama_lengkap=form.nama_lengkap.data,
             username=form.username.data,
             email=form.email.data,
+            role='pengunjung',
+            phone='-'
         )
         user.set_password(form.password.data)
         db.session.add(user)
