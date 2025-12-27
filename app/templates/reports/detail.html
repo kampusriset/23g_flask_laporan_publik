@@ -1,0 +1,54 @@
+{% extends "base_dashboard.html" %}
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto px-4 py-10 space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Detail Laporan {{ laporan.kode_pelaporan }}</h1>
+    <span class="text-sm text-gray-500">
+      {{ laporan.created_at.strftime('%d %b %Y %H:%M') }}
+    </span>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4">
+    <div>
+      <h2 class="text-xl font-semibold mb-1">{{ laporan.judul }}</h2>
+      <p class="text-sm text-gray-500">
+        {{ laporan.lokasi }}{% if laporan.wilayah %} • {{ laporan.wilayah }}{% endif %}
+      </p>
+    </div>
+
+    <p class="text-gray-700 dark:text-gray-200">{{ laporan.deskripsi }}</p>
+
+    <div class="flex gap-3 text-sm">
+      <span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700">
+        Prioritas: {{ laporan.prioritas|capitalize }}
+      </span>
+      <span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700">
+        Status: {{ laporan.status|capitalize }}
+      </span>
+    </div>
+  </div>
+
+  {% if laporan.latitude and laporan.longitude %}
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-3">
+    <h3 class="text-lg font-semibold mb-2">Lokasi di Peta</h3>
+    <div id="map" class="w-full h-64 rounded-xl overflow-hidden border dark:border-gray-700"></div>
+  </div>
+  {% endif %}
+</div>
+
+{% if laporan.latitude and laporan.longitude %}
+<script>
+  var lat = {{ laporan.latitude }};
+  var lng = {{ laporan.longitude }};
+  var title = "{{ laporan.judul|e }}";
+
+  var map = L.map('map').setView([lat, lng], 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+  L.marker([lat, lng]).addTo(map).bindPopup(title);
+</script>
+{% endif %}
+
+
+{% endblock %}

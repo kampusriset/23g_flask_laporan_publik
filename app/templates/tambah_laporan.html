@@ -1,0 +1,158 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Buat Laporan{% endblock %}
+{% block dashboard_content %}
+<div class="min-h-screen px-6 py-6">
+  <div class="w-full max-w-4xl">
+
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <div>
+
+             <!-- Sidebar -->
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+          {{ current_user.username[0]|upper }}
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {{ current_user.username }}
+          </p>
+          <a href="{{ url_for('main.index') }}"
+             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            Ubah profil
+          </a>
+        </div>
+      </div>
+
+      <nav class="space-y-2 text-sm">
+  <a href="{{ url_for('main.dashboard') }}"
+     class="block px-3 py-2 rounded-lg bg-blue-600 text-white">
+    Dashboard
+  </a>
+
+  <a href="{{ url_for('reports.my_reports') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+    Laporan Saya
+  </a>
+
+  <a href="{{ url_for('reports.track') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+    Lacak Laporan
+  </a>
+
+  <a href="{{ url_for('main.about') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+    Tentang
+  </a>
+
+  <a href="{{ url_for('reports.create') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+    + Buat Laporan Baru
+  </a>
+</nav>
+
+    </aside>
+            <h5 class="mb-0 fw-bold">Buat Laporan Baru</h5>
+            <small>LaporIN – Sistem Pelaporan Fasilitas Publik</small>
+          </div>
+          <!-- Kode Pelaporan preview (dibuat di backend) -->
+          <div class="text-end">
+            <div class="small mb-1">Kode Pelaporan</div>
+            <span class="badge bg-light text-success fs-6">
+              {{ kode_pelaporan or "AUTO-GENERATED" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <form action="{{ url_for('tambah_laporan') }}" method="POST" enctype="multipart/form-data">
+            <!-- Hidden kode pelaporan biar ikut terkirim -->
+            <input type="hidden" name="kode_pelaporan" value="{{ kode_pelaporan }}">
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Judul Laporan <span class="text-danger">*</span></label>
+              <input type="text" name="judul" class="form-control" placeholder="Contoh: Lampu jalan padam di Jalan Merdeka" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Kategori Fasilitas <span class="text-danger">*</span></label>
+              <select name="kategori_id" class="form-select" required>
+                <option value="" disabled selected>Pilih kategori</option>
+                {% for kategori in daftar_kategori %}
+                  <option value="{{ kategori.id }}">{{ kategori.nama }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Lokasi / Alamat <span class="text-danger">*</span></label>
+                <input type="text" name="lokasi" class="form-control" placeholder="Nama jalan, patokan, dsb." required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Kecamatan / Kota</label>
+                <input type="text" name="wilayah" class="form-control" placeholder="Opsional, misal: Sukmajaya, Depok">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Deskripsi Kerusakan <span class="text-danger">*</span></label>
+              <textarea name="deskripsi" rows="4" class="form-control"
+                        placeholder="Jelaskan kondisi kerusakan, sejak kapan, dan dampaknya." required></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Foto Kerusakan (jpg/png)</label>
+                <input type="file" name="foto" class="form-control" accept="image/*">
+                <small class="text-muted">Opsional, max 2–3 MB</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Prioritas</label>
+                <select name="prioritas" class="form-select">
+                  <option value="normal" selected>Normal</option>
+                  <option value="tinggi">Tinggi (darurat)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="alert alert-info small mt-2">
+              Simpan baik-baik <strong>kode pelaporan</strong> di atas.  
+              Kode ini dapat digunakan untuk melacak status laporan seperti nomor resi pengiriman paket.
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+              </a>
+              <button type="submit" class="btn btn-success fw-bold">
+                <i class="bi bi-send"></i> Kirim Laporan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Kartu kecil riwayat/ tracking cepat -->
+      <div class="card border-0 shadow-sm mt-3">
+        <div class="card-body d-flex flex-wrap align-items-center justify-content-between">
+          <div>
+            <h6 class="fw-bold mb-1">Lacak Laporan</h6>
+            <small class="text-muted">Masukkan kode pelaporan untuk cek status laporan Anda.</small>
+          </div>
+          <form class="d-flex mt-2 mt-sm-0" action="{{ url_for('index') }}" method="GET">
+            <input type="text" name="kode" class="form-control form-control-sm me-2"
+                   placeholder="Contoh: LP-20241217-0012" required>
+            <button class="btn btn-outline-primary btn-sm" type="submit">
+              <i class="bi bi-search"></i> Lacak
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <style>
+    .nav-active {
+      background-color: #f3f4f6;
+      color: #3B82F6;
+    }
+  </style>
+
+  <script>
+    if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LaporIN{% endblock %}</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { primary: '#3B82F6' } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  {% block main_navbar %}
+  <!-- Navbar landing -->
+  <nav class="bg-white/70 backdrop-blur border-b border-gray-100 dark:bg-gray-900/70 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2">
+            <span class="text-2xl font-bold text-primary">📢 LaporIN</span>
+          </a>
+        </div>
+
+        <div class="flex items-center md:space-x-4">
+          <button class="md:hidden" id="nav-toggle">☰</button>
+          <div id="main-nav" class="hidden md:flex items-center space-x-4">
+            <a href="{{ url_for('main.index', _anchor='beranda') }}"
+               class="nav-link px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+              Beranda
+            </a>
+            <a href="{{ url_for('main.index', _anchor='fitur') }}"
+               class="nav-link px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+              Fitur
+            </a>
+            <a href="{{ url_for('main.index', _anchor='tutorial') }}"
+               class="nav-link px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+              Tutorial
+            </a>
+            <a href="{{ url_for('main.index', _anchor='tentang') }}"
+               class="nav-link px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+              Tentang Aplikasi
+            </a>
+            <a href="{{ url_for('main.index', _anchor='kontak') }}"
+               class="nav-link px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+              Kontak
+            </a>
+
+            {% if current_user.is_authenticated %}
+              <a href="{{ url_for('auth.logout') }}"
+                 class="px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50">
+                Logout
+              </a>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}"
+                 class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 hover:bg-gray-200
+                        dark:bg-gray-800 dark:hover:bg-gray-700">
+                Masuk
+              </a>
+              <a href="{{ url_for('auth.register') }}"
+                 class="px-3 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                Daftar
+              </a>
+            {% endif %}
+
+            <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+              <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+              </svg>
+              <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                      clip-rule="evenodd"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  {% endblock %}
+
+ <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-2">
+      {% for category, message in messages %}
+        {% set base = 'bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200' %}
+        {% if category == 'danger' %}
+          {% set base = 'bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200' %}
+        {% elif category == 'warning' %}
+          {% set base = 'bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 dark:border-yellow-700 text-yellow-700 dark:text-yellow-200' %}
+        {% elif category == 'info' %}
+          {% set base = 'bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-200' %}
+        {% endif %}
+
+        <div class="{{ base }} px-4 py-3 rounded-lg text-sm flex items-start justify-between gap-3">
+          <span>{{ message }}</span>
+          <button type="button"
+                  class="text-xs font-bold text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
+                  onclick="this.closest('div').classList.add('hidden')">
+            ×
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+  {% block content %}{% endblock %}
+
+  {% block main_footer %}
+  <footer class="mt-20 border-t border-gray-200 dark:border-gray-700
+                 bg-gray-50 dark:bg-gray-950 py-8 text-center text-sm sm:text-base
+                 text-gray-700 dark:text-gray-200">
+    © 2025 Tim LaporIN — All Rights Reserved | Kebijakan Privasi
+  </footer>
+  {% endblock %}
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const toggles = document.querySelectorAll('#theme-toggle');
+  toggles.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.theme = isDark ? 'dark' : 'light';
+    });
+  });
+});
+
+    document.getElementById('nav-toggle')?.addEventListener('click', () => {
+      document.getElementById('main-nav')?.classList.toggle('hidden');
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('#main-nav .nav-link');
+
+      function setActiveFromHash() {
+        const hash = window.location.hash || '#beranda';
+        links.forEach(a => {
+          const href = a.getAttribute('href') || '';
+          const hrefHash = href.includes('#') ? href.split('#')[1] : '';
+          if ('#' + hrefHash === hash) {
+            a.classList.add('nav-active');
+          } else {
+            a.classList.remove('nav-active');
+          }
+        });
+      }
+
+      links.forEach(a => {
+        a.addEventListener('click', () => {
+          links.forEach(l => l.classList.remove('nav-active'));
+          a.classList.add('nav-active');
+        });
+      });
+
+      window.addEventListener('hashchange', setActiveFromHash);
+      setActiveFromHash();
+    });
+  </script>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const userToggle = document.getElementById('user-menu-toggle');
+  const userMenu   = document.getElementById('user-menu');
+
+  if (userToggle && userMenu) {
+    userToggle.addEventListener('click', (e) => {
+      e.stopPropagation();              
+      userMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      if (!userMenu.classList.contains('hidden')) {
+        userMenu.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>
+
+<script>
+  function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+
+    btn.classList.toggle('text-gray-500', !isPassword);
+    btn.classList.toggle('text-blue-500', isPassword);
+  }
+</script>
+
+<script>
+  function setMsg(id, msg) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  const nama = document.getElementById('nama_lengkap');
+  const username = document.getElementById('username');
+  const email = document.getElementById('email');
+  const pass1 = document.getElementById('password');
+  const pass2 = document.getElementById('password2');
+
+  nama.addEventListener('input', () => {
+    const ok = /^[A-Za-zÀ-ÿ\s]+$/.test(nama.value.trim());
+    setMsg('nama_lengkap_live', ok || nama.value === '' ?
+      '' : 'Nama hanya boleh huruf dan spasi');
+  });
+
+  username.addEventListener('input', () => {
+    const ok = /^[a-zA-Z0-9_.-]{3,20}$/.test(username.value);
+    setMsg('username_live', ok || username.value === '' ?
+      '' : 'Username 3–20 karakter, huruf/angka/titik/garis');
+  });
+
+  email.addEventListener('input', () => {
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+    setMsg('email_live', ok || email.value === '' ?
+      '' : 'Format email belum valid');
+  });
+
+  pass1.addEventListener('input', () => {
+    const v = pass1.value;
+    const ok = v.length >= 8 &&
+               /[A-Z]/.test(v) &&
+               /\d/.test(v) &&
+               /[^A-Za-z0-9]/.test(v);
+    setMsg('password_live', ok || v === '' ?
+      '' : 'Min 8, ada huruf besar, angka, dan simbol');
+  });
+
+  function cekSamaPassword() {
+    if (pass2.value === '' || pass1.value === '') {
+      setMsg('password2_live', '');
+    } else {
+      setMsg('password2_live',
+        pass1.value === pass2.value ? '' : 'Password tidak sama');
+    }
+  }
+  pass1.addEventListener('input', cekSamaPassword);
+  pass2.addEventListener('input', cekSamaPassword);
+
+  function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+  }
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
