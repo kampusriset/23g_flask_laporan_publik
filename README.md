@@ -93,7 +93,7 @@ python gen-secret.py
 ```
 ### - linux
 ```
-copy .env.example
+cp .env.example
 python3 gen-secret.py
 ```
 ### 7. Set flask app agar simple
