@@ -1,0 +1,167 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Profil Akun - LaporIN{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- Header + avatar -->
+  <div class="bg-white/95 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+    <div class="relative">
+      <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-3xl font-semibold text-white">
+        {{ current_user.email[0]|upper }}
+      </div>
+      <button class="absolute -bottom-1 -right-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-xs px-2 py-1 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">
+        Ganti avatar
+      </button>
+    </div>
+
+    <div class="flex-1 space-y-2 text-center sm:text-left">
+      <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+        Profil Akun
+      </h1>
+      <p class="text-sm text-gray-600 dark:text-gray-300">
+        Kelola informasi akun dan preferensi tampilan untuk pengalaman LaporIN yang lebih personal.
+      </p>
+
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-gray-600 dark:text-gray-300"
+        title="{% if current_user.last_seen_wib() %}
+                 Last seen: {{ current_user.last_seen_wib().strftime('%d-%m-%Y %H:%M') }} WIB
+               {% else %}
+                 Belum ada aktivitas
+               {% endif %}"
+      >
+        <span
+          class="w-2 h-2 rounded-full
+                 {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
+        </span>
+        <span>
+          {% if current_user.is_online() %}Online{% else %}Offline{% endif %} sebagai
+        </span>
+        <span class="font-medium text-gray-900 dark:text-white">{{ current_user.email }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid: info + preferensi -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Info akun -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="bg-white/95 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Informasi Akun</h2>
+          <span class="text-[11px] px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+            Hanya kamu yang bisa melihat ini
+          </span>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.profile') }}" class="space-y-4">
+          {{ form.hidden_tag() }}
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nama lengkap</label>
+              {{ form.nama_lengkap(
+                  class="w-full rounded-lg bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-700 text-sm px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              ) }}
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+              <input type="email" value="{{ current_user.email }}" disabled
+                     class="w-full rounded-lg bg-gray-100 dark:bg-gray-950/70 border border-gray-300 dark:border-gray-800 text-sm px-3 py-2 text-gray-500 dark:text-gray-400 cursor-not-allowed">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">No. Telepon</label>
+              {{ form.phone(
+                  class="w-full rounded-lg bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-700 text-sm px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              ) }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Peran</label>
+              <input type="text" value="{{ current_user.role|capitalize if current_user.role else 'Pengguna' }}" disabled
+                     class="w-full rounded-lg bg-gray-100 dark:bg-gray-950/70 border border-gray-300 dark:border-gray-800 text-sm px-3 py-2 text-gray-500 dark:text-gray-400 cursor-not-allowed">
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button type="button"
+                    class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+              Batalkan
+            </button>
+            <button type="submit"
+                    class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs sm:text-sm font-medium text-white">
+              Simpan perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Keamanan -->
+      <div class="bg-white/95 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Keamanan</h2>
+          <span class="text-[11px] text-amber-500 dark:text-amber-300">Direkomendasikan</span>
+        </div>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">
+          Lindungi akunmu dengan kata sandi yang kuat dan rutin diperbarui.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button class="flex-1 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs sm:text-sm text-gray-900 dark:text-gray-100 text-left">
+            Ganti kata sandi
+            <div class="text-[11px] text-gray-500 dark:text-gray-400">Ubah password akun LaporIN‑mu</div>
+          </button>
+          <button class="px-4 py-2 rounded-lg border border-red-500/40 text-xs sm:text-sm text-red-600 dark:text-red-300 hover:bg-red-500/5 dark:hover:bg-red-500/10">
+            Keluar dari semua perangkat
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kartu aktivitas & tema -->
+    <div class="space-y-4">
+      <div class="bg-white/95 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 space-y-3">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Ringkasan Aktivitas</h2>
+        <p class="text-xs text-gray-600 dark:text-gray-400">Gambaran singkat penggunaan akunmu.</p>
+        <ul class="space-y-2 text-xs text-gray-700 dark:text-gray-300">
+          <li class="flex justify-between">
+            <span>Total laporan diajukan</span>
+            <span class="font-semibold text-gray-900 dark:text-gray-100">{{ stats.total_reports or 0 }}</span>
+          </li>
+          <li class="flex justify-between">
+            <span>Laporan selesai</span>
+            <span class="font-semibold text-emerald-500 dark:text-emerald-400">{{ stats.completed_reports or 0 }}</span>
+          </li>
+          <li class="flex justify-between">
+            <span>Terakhir login</span>
+            <span class="text-gray-500 dark:text-gray-400">
+              {% if current_user.last_login_wib() %}
+                {{ current_user.last_login_wib().strftime('%d-%m-%Y %H:%M') }} WIB
+              {% else %}
+                -
+              {% endif %}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-white/95 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 space-y-3">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Tampilan</h2>
+        <p class="text-xs text-gray-600 dark:text-gray-400">Atur preferensi tema aplikasi.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-700 dark:text-gray-300">Mode gelap</span>
+          <button id="theme-toggle"
+                  class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">
+            Toggle
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

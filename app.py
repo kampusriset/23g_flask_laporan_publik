@@ -1,6 +1,9 @@
 from functools import wraps
 from datetime import datetime
 import re
+import datetime, random, string
+import datetime, random, string
+from flask import request, redirect, url_for, flash
 
 from flask import (
     Flask, render_template, request, redirect, url_for, flash,
@@ -94,20 +97,26 @@ def get_landing_stats():
 
     laporan_stats = (
         db.session.query(
-            func.extract('year', Laporan.tanggal).label('tahun'),
-            func.extract('month', Laporan.tanggal).label('bulan'),
+            func.extract('year', Laporan.created_at).label('tahun'),
+            func.extract('month', Laporan.created_at).label('bulan'),
             func.count().label('jumlah')
         )
-        .group_by(func.extract('year', Laporan.tanggal), func.extract('month', Laporan.tanggal))
-        .order_by(func.extract('year', Laporan.tanggal), func.extract('month', Laporan.tanggal))
+        .group_by(
+            func.extract('year', Laporan.created_at),
+            func.extract('month', Laporan.created_at)
+        )
+        .order_by(
+            func.extract('year', Laporan.created_at),
+            func.extract('month', Laporan.created_at)
+        )
         .all()
     )
 
-    # laporan_stats menghasilkan (tahun, bulan, jumlah)
     labels = [f"{int(bulan)}/{int(tahun)}" for tahun, bulan, jumlah in laporan_stats]
     data = [int(jumlah) for tahun, bulan, jumlah in laporan_stats]
 
     return total_users, labels, data
+
 
 # ===============================================================
 # ROUTES
@@ -361,19 +370,22 @@ def terms():
 def index():
     user = current_user
 
-    
     if user.role == 'admin':
         laporan_semua = Laporan.query.order_by(Laporan.id.desc()).all()
-        laporan_terbaru = laporan_semua[:10]
     else:
-        laporan_semua = Laporan.query.filter_by(username=user.username).order_by(Laporan.id.desc()).all()
-        laporan_terbaru = laporan_semua[:10]
-    
-   
+        laporan_semua = (
+            Laporan.query
+            .filter_by(user_id=user.id)
+            .order_by(Laporan.id.desc())
+            .all()
+        )
+
+    laporan_terbaru = laporan_semua[:10]
+
     total_laporan = len(laporan_semua)
-    total_menunggu = len([lapor for lapor in laporan_semua if lapor.status == 'Menunggu'])
-    total_diproses = len([lapor for lapor in laporan_semua if lapor.status == 'Diproses'])
-    
+    total_menunggu = len([lapor for lapor in laporan_semua if lapor.status == 'diajukan'])
+    total_diproses = len([lapor for lapor in laporan_semua if lapor.status == 'diproses'])
+
     return render_template(
         'index.html',
         user=user,
@@ -383,10 +395,44 @@ def index():
         total_diproses=total_diproses
     )
 
-@app.route('/tambah-laporan')
+def generate_kode_pelaporan():
+    today = datetime.datetime.now().strftime("%Y%m%d")
+    rand = ''.join(random.choices(string.digits, k=4))
+    return f"LP-{today}-{rand}"
+
+@app.route('/tambah-laporan', methods=['GET', 'POST'])
 @login_required
 def tambah_laporan():
-    return render_template('tambah_laporan.html')
+    if request.method == 'POST':
+        kode = request.form['kode_pelaporan']
+        judul = request.form['judul']
+        kategori_id = request.form['kategori_id']
+        lokasi = request.form['lokasi']
+        wilayah = request.form.get('wilayah')
+        deskripsi = request.form['deskripsi']
+        prioritas = request.form.get('prioritas', 'normal')
+
+        laporan = Laporan(
+            kode_pelaporan=kode,
+            judul=judul,
+            kategori_id=kategori_id,
+            lokasi=lokasi,
+            wilayah=wilayah,
+            deskripsi=deskripsi,
+            prioritas=prioritas,
+            user_id=current_user.id,
+            status='diajukan'
+        )
+        db.session.add(laporan)
+        db.session.commit()
+        flash(f'Laporan berhasil dibuat. Kode pelaporan: {kode}', 'success')
+        return redirect(url_for('dashboard_user'))
+
+    kode = generate_kode_pelaporan()
+    daftar_kategori = Kategori.query.order_by(Kategori.nama).all()
+    return render_template('tambah_laporan.html',
+                           kode_pelaporan=kode,
+                           daftar_kategori=daftar_kategori)
 
 @app.route('/laporan-saya')
 @login_required

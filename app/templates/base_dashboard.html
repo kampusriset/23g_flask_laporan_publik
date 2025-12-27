@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block main_navbar %}
+<header class="bg-gray-900 border-b border-gray-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+    
+    <div class="flex items-center gap-3">
+      <!-- Burger: kecil, sejajar logo, hanya mobile -->
+      <button
+        class="inline-flex items-center justify-center
+                w-9 h-9 rounded-lg bg-gray-800 text-gray-100
+                hover:bg-gray-700 focus:outline-none focus:ring-2
+                focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+        onclick="toggleSidebar()">
+        <span class="text-xl leading-none">☰</span>
+        </button>
+
+
+      <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-2">
+        <span class="text-xl font-bold text-primary">📢 LaporIN</span>
+        <span class="text-sm text-gray-300 hidden sm:inline">Dashboard</span>
+      </a>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <a href="{{ url_for('main.notifications') }}"
+         class="p-2 rounded-full hover:bg-gray-800 text-gray-300">
+        🔔
+      </a>
+
+      <button id="theme-toggle"
+              class="p-2 rounded-full hover:bg-gray-800 text-gray-300">
+        <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clip-rule="evenodd"></path>
+        </svg>
+      </button>
+
+      <div class="relative">
+        <button id="user-menu-toggle"
+                class="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-800 hover:bg-gray-700">
+          <span class="text-sm text-gray-200 hidden sm:inline">
+            {{ current_user.email }}
+          </span>
+          <span class="text-gray-300 text-xs">▼</span>
+        </button>
+        <div id="user-menu"
+             class="hidden absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-1 z-20">
+          <a href="{{ url_for('main.profile') }}"
+             class="block px-3 py-2 text-sm text-gray-200 hover:bg-gray-700">
+            Profil
+          </a>
+          <a href="{{ url_for('auth.logout') }}"
+             class="block px-3 py-2 text-sm text-red-400 hover:bg-gray-700">
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<main class="bg-gray-100 dark:bg-gray-950">
+  <div class="px-4 sm:px-6 lg:px-8 py-4">
+    {% block dashboard_content %}{% endblock %}
+  </div>
+</main>
+{% endblock %}
+
+{% block main_footer %}
+<footer class="border-t border-gray-200 dark:border-gray-800
+               bg-gray-100 dark:bg-gray-950 py-3 text-center text-xs sm:text-sm
+               text-gray-600 dark:text-gray-500">
+  © 2025 Tim LaporIN — All Rights Reserved | Kebijakan Privasi
+</footer>
+{% endblock %}

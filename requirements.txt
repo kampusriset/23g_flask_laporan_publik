@@ -1,9 +1,15 @@
 Flask>=2.2
 Flask-SQLAlchemy>=2.5
 Flask-Login>=0.6
-itsdangerous>=2.1
+Flask-Migrate>=4.0
+Flask-WTF==1.2.1
+flask-bcrypt>=1.0
+
 SQLAlchemy>=1.4
 Werkzeug>=2.2
-flask-bcrypt>=1.0
+itsdangerous>=2.1
+
 mysql-connector-python>=8.0
-python-dotenv>=0.21  # opsional jika ingin support .env file
+python-dotenv>=0.21
+
+email-validator>=2.0       

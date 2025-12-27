@@ -1,0 +1,275 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Buat Laporan Baru{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto px-4 py-10">
+
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Sidebar -->
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
+                   {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {{ current_user.username }}
+          </p>
+          <a href="{{ url_for('main.profile') }}"
+             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            Ubah profil
+          </a>
+        </div>
+      </div>
+
+      <nav class="space-y-2 text-sm">
+        <a href="{{ url_for('main.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Dashboard
+        </a>
+
+        <a href="{{ url_for('reports.create') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
+                  dark:bg-blue-900/40 dark:text-blue-300">
+          + Buat Laporan Baru
+        </a>
+
+        <a href="{{ url_for('reports.my_reports') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Laporan Saya
+        </a>
+        <a href="{{ url_for('reports.track') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Lacak Laporan
+        </a>
+        <a href="{{ url_for('main.notifications') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pemberitahuan
+        </a>
+        <a href="{{ url_for('main.settings') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pengaturan
+        </a>
+        <a href="{{ url_for('main.about') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Tentang
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Konten utama -->
+    <main class="flex-1">
+      <h1 class="text-3xl font-bold mb-2">
+        {{ 'Edit Laporan' if edit_mode else 'Buat Laporan Baru' }}
+      </h1>
+      {% if edit_mode %}
+        <p class="mb-4 text-xs sm:text-sm text-amber-600 dark:text-amber-300">
+          Anda sedang mengedit laporan dengan kode <span class="font-mono font-semibold">{{ laporan.kode_pelaporan }}</span>.
+        </p>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {{ csrf_token() if csrf_token is defined }}
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Judul Laporan</label>
+          <input name="judul"
+                 value="{{ laporan.judul if laporan else '' }}"
+                 class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                 required>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Kategori</label>
+            <select name="kategori_id"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    required>
+              {% for kategori in kategoris %}
+                <option value="{{ kategori.id }}"
+                        {% if laporan and laporan.kategori_id == kategori.id %}selected{% endif %}>
+                  {{ kategori.nama }}{% if kategori.deskripsi %} ({{ kategori.deskripsi }}){% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Prioritas</label>
+            <select name="prioritas"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <option value="normal"
+                      {% if laporan and laporan.prioritas == 'normal' %}selected{% endif %}>Normal</option>
+              <option value="tinggi"
+                      {% if laporan and laporan.prioritas == 'tinggi' %}selected{% endif %}>Tinggi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Lokasi (alamat singkat)</label>
+            <input name="lokasi"
+                   value="{{ laporan.lokasi if laporan else '' }}"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                   required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Wilayah/Kota</label>
+            <input name="wilayah"
+                   value="{{ laporan.wilayah if laporan else '' }}"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Tandai Lokasi di Peta</label>
+          <div id="map" class="w-full h-64 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700"></div>
+          <input type="hidden" name="lat" id="lat" value="{{ laporan.latitude if laporan else '' }}">
+          <input type="hidden" name="lng" id="lng" value="{{ laporan.longitude if laporan else '' }}">
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Klik pada peta untuk memilih titik lokasi fasilitas publik.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Deskripsi</label>
+          <textarea name="deskripsi" rows="4"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    required>{{ laporan.deskripsi if laporan else '' }}</textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Foto Bukti (opsional)</label>
+          <input type="file" name="foto" accept="image/*"
+                 class="block w-full text-sm text-gray-700 dark:text-gray-200">
+          {% if laporan and laporan.foto_path %}
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Foto saat ini sudah tersimpan. Kosongkan field ini jika tidak ingin mengubah foto.
+            </p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
+          <input
+            type="text"
+            name="kode_pelaporan"
+            id="kode_pelaporan"
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+            value="{% if laporan %}{{ laporan.kode_pelaporan }}{% else %}{{ preview_kode or 'Akan dibuat otomatis saat laporan dikirim' }}{% endif %}"
+            readonly>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {% if laporan %}
+              Kode pelaporan tidak dapat diubah.
+            {% else %}
+              Kode akan dibuat otomatis setelah laporan berhasil dikirim.
+            {% endif %}
+          </p>
+        </div>
+
+        <button type="submit"
+                class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
+          {{ 'Perbarui Laporan' if edit_mode else 'Kirim Laporan' }}
+        </button>
+      </form>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet CSS & JS (pastikan juga sudah dimuat di base_dashboard.html atau di sini) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    if (!sb) return;
+    sb.classList.toggle('hidden');
+  }
+
+  let map, marker;
+
+  function initLeafletMap(lat, lng) {
+    map = L.map('map', {
+      center: [lat, lng],
+      zoom: 18,
+      scrollWheelZoom: true,
+      dragging: true,
+    });
+
+    // basemap satelit mirip gmaps
+    const satellite = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 19 }
+    ).addTo(map);
+
+    // overlay nama jalan (OSM)
+    const streets = L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  { maxZoom: 19, opacity: 0.7 }
+).addTo(map);
+
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+
+    // jika sudah ada koordinat (mode edit)
+    if (latInput.value && lngInput.value) {
+      const pos = [
+        parseFloat(latInput.value),
+        parseFloat(lngInput.value),
+      ];
+      marker = L.marker(pos, { draggable: true }).addTo(map);
+      map.setView(pos, 18);
+    } else {
+      marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+      latInput.value = lat;
+      lngInput.value = lng;
+    }
+
+    marker.on('dragend', () => {
+      const pos = marker.getLatLng();
+      latInput.value = pos.lat;
+      lngInput.value = pos.lng;
+    });
+
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+      if (marker) map.removeLayer(marker);
+      marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+      latInput.value = lat;
+      lngInput.value = lng;
+
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng();
+        latInput.value = pos.lat;
+        lngInput.value = pos.lng;
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // pakai koordinat laporan kalau ada, kalau tidak default Jogja
+    const defaultLat =
+      {{ laporan.latitude if laporan and laporan.latitude is not none else -7.8014 }};
+    const defaultLng =
+      {{ laporan.longitude if laporan and laporan.longitude is not none else 110.3647 }};
+    initLeafletMap(defaultLat, defaultLng);
+  });
+</script>
+{% endblock %}
+
+
+
