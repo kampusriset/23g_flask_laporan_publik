@@ -48,8 +48,11 @@
         class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
                 dark:bg-blue-900/40 dark:text-blue-300">
         Lacak Laporan
-      </a>
-
+        </a>
+          <a href="{{ url_for('reports.riwayat_laporan') }}"
+          class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Riwayat Laporan
+        </a>
          <a href="{{ url_for('main.notifications') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
           Pemberitahuan

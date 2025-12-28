@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% set hari = {
+ 'Monday':'Senin','Tuesday':'Selasa','Wednesday':'Rabu',
+ 'Thursday':'Kamis','Friday':'Jumat','Saturday':'Sabtu','Sunday':'Minggu'
+} %}
+
+{% block title %}Riwayat Laporan | LaporIN{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+        Riwayat Laporan
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        Semua laporan yang pernah Anda buat
+      </p>
+    </div>
+
+    <a href="{{ url_for('reports.create') }}"
+       class="inline-flex items-center justify-center
+              px-4 py-2 rounded-lg text-sm font-medium
+              bg-primary text-white hover:bg-blue-600 transition">
+      ➕ Buat Laporan
+    </a>
+  </div>
+
+  <!-- Table Wrapper -->
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow border border-gray-200 dark:border-gray-800 overflow-hidden">
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">#</th>
+            <th class="px-4 py-3 text-left font-medium">Kode</th>
+            <th class="px-4 py-3 text-left font-medium">Judul</th>
+            <th class="px-4 py-3 text-left font-medium">Tanggal</th>
+            <th class="px-4 py-3 text-left font-medium">Status</th>
+            <th class="px-4 py-3 text-left font-medium">Prioritas</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+          {% for lp in laporan %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+              {{ loop.index }}
+            </td>
+
+            <td class="px-4 py-3 font-medium text-gray-800 dark:text-gray-100">
+              {{ lp.kode_pelaporan }}
+            </td>
+
+            <td class="px-4 py-3 text-gray-700 dark:text-gray-200">
+              {{ lp.judul }}
+            </td>
+
+            <td class="px-4 py-3">
+              <div class="text-gray-700 dark:text-gray-200">
+                {{ lp.created_at.strftime('%d-%m-%Y') }}
+              </div>
+              <div class="text-xs text-gray-500 dark:text-gray-400">
+                {{ hari[lp.created_at.strftime('%A')] }}
+                {{ lp.created_at.strftime('%H:%M') }} WIB
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td class="px-4 py-3">
+              {% if lp.status == 'diajukan' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-gray-200 text-gray-700
+                             dark:bg-gray-700 dark:text-gray-200">
+                  Diajukan
+                </span>
+              {% elif lp.status == 'diproses' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-yellow-200 text-yellow-800
+                             dark:bg-yellow-600 dark:text-yellow-100">
+                  Diproses
+                </span>
+              {% elif lp.status == 'selesai' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-green-200 text-green-800
+                             dark:bg-green-600 dark:text-green-100">
+                  Selesai
+                </span>
+              {% elif lp.status == 'ditolak' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-red-200 text-red-800
+                             dark:bg-red-600 dark:text-red-100">
+                  Ditolak
+                </span>
+              {% endif %}
+            </td>
+
+            <!-- Prioritas -->
+            <td class="px-4 py-3">
+              {% if lp.prioritas == 'tinggi' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-red-500 text-white">
+                  Tinggi
+                </span>
+              {% else %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium
+                             bg-blue-200 text-blue-800
+                             dark:bg-blue-600 dark:text-blue-100">
+                  Normal
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6"
+                class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+              Belum ada riwayat laporan
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

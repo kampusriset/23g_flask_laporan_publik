@@ -37,6 +37,18 @@ def my_reports():
 
     return render_template('reports/my_reports.html', laporan=laporan, search=search)
 
+@bp.route('/riwayat')
+@login_required
+def riwayat_laporan():
+    laporan = Laporan.query \
+        .filter_by(user_id=current_user.id) \
+        .order_by(Laporan.created_at.desc()) \
+        .all()
+
+    return render_template(
+        'reports/riwayat_laporan.html',
+        laporan=laporan
+    )
 
 @bp.route('/track')
 @login_required
