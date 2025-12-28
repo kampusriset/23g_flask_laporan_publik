@@ -12,7 +12,7 @@ class Config:
     RATELIMIT_ENABLED = True
 
 class DevelopmentConfig(Config):
-    DEBUG = True
+    DEBUG = os.environ.get('DEBUG', 'true').lower() in ['true', '1', 't']
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL')
         or f'mysql+pymysql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}@{os.environ.get('DB_URI')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}'
