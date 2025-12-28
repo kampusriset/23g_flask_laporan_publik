@@ -3,9 +3,6 @@
 .absolute {
   position: absolute;
 }
-.fixed {
-  position: fixed;
-}
 .relative {
   position: relative;
 }
@@ -14,9 +11,6 @@
 }
 .z-20 {
   z-index: 20;
-}
-.z-50 {
-  z-index: 50;
 }
 .mx-auto {
   margin-inline: auto;
@@ -42,12 +36,6 @@
 .table {
   display: table;
 }
-.min-h-\[calc\(100vh-5rem\)\] {
-  min-height: calc(100vh - 5rem);
-}
-.min-h-\[calc\(100vh-6rem\)\] {
-  min-height: calc(100vh - 6rem);
-}
 .min-h-screen {
   min-height: 100vh;
 }
@@ -69,6 +57,9 @@
 .cursor-not-allowed {
   cursor: not-allowed;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -77,6 +68,9 @@
 }
 .flex-col {
   flex-direction: column;
+}
+.flex-row {
+  flex-direction: row;
 }
 .flex-wrap {
   flex-wrap: wrap;
@@ -107,6 +101,9 @@
 }
 .overflow-hidden {
   overflow: hidden;
+}
+.overflow-x-auto {
+  overflow-x: auto;
 }
 .rounded-full {
   border-radius: calc(infinity * 1px);

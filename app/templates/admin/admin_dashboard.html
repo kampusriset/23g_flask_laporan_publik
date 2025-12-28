@@ -1,0 +1,151 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Sidebar -->
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
+                   bg-emerald-400">
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            Admin {{ current_user.username }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Panel pengelolaan sistem
+          </p>
+        </div>
+      </div>
+
+      <nav class="space-y-2 text-sm">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
+                  dark:bg-blue-900/40 dark:text-blue-300">
+          Dashboard Admin
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Kelola Pengguna
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Kelola Laporan
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Kategori & Wilayah
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pengaturan Sistem
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Konten utama -->
+    <main class="flex-1">
+      <h1 class="text-3xl font-bold mb-2">Dashboard Admin</h1>
+      <p class="mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+        Ringkasan aktivitas sistem dan shortcut untuk mengelola pengguna serta laporan.
+      </p>
+
+      <!-- Kartu statistik -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</span>
+          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {{ total_users }}
+          </span>
+        </div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Laporan</span>
+          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {{ total_reports }}
+          </span>
+        </div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Diproses</span>
+          <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            {{ reports_in_progress }}
+          </span>
+        </div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Selesai</span>
+          <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {{ reports_done }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tabel laporan terbaru -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            Laporan Terbaru
+          </h2>
+          <a href="{{ url_for('admin.dashboard') }}"
+             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            Lihat semua
+          </a>
+        </div>
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
+            <tr>
+              <th class="px-4 py-3 text-left">Kode</th>
+              <th class="px-4 py-3 text-left">Pelapor</th>
+              <th class="px-4 py-3 text-left">Judul</th>
+              <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3 text-left">Dibuat</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for lp in latest_reports %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60">
+              <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
+                {{ lp.kode_pelaporan }}
+              </td>
+              <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
+                {{ lp.user.username }}
+              </td>
+              <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
+                {{ lp.judul }}
+              </td>
+              <td class="px-4 py-3">
+                {{ lp.status|capitalize }}
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                Belum ada laporan yang masuk.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -114,19 +114,34 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">Lokasi (alamat singkat)</label>
-            <input name="lokasi"
-                   value="{{ laporan.lokasi if laporan else '' }}"
-                   class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-                   required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">Wilayah/Kota</label>
-            <input name="wilayah"
-                   value="{{ laporan.wilayah if laporan else '' }}"
-                   class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
-          </div>
+         <div>
+        <label class="block text-sm font-medium mb-2">Lokasi</label>
+        <input id="lokasi_input" name="lokasi"
+              value="{{ laporan.lokasi if laporan else '' }}"
+              class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+              required>
+
+        <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+          Harap koreksi lokasi kembali, pastikan sudah sesuai.
+        </p>
+      </div>
+
+         <div>
+  <label class="block text-sm font-medium mb-2">Wilayah/Kota</label>
+
+  <div class="grid md:grid-cols-4 gap-2">
+    <select id="provinsi_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
+    <select id="kabupaten_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
+    <select id="kecamatan_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
+    <select id="kelurahan_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
+  </div>
+
+  <input id="wilayah_input" name="wilayah"
+         value="{{ laporan.wilayah if laporan else '' }}"
+         class="mt-2 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800"
+         readonly>
+</div>
+
         </div>
 
         <div>
@@ -147,33 +162,69 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-2">Foto Bukti (opsional)</label>
-          <input type="file" name="foto" accept="image/*"
-                 class="block w-full text-sm text-gray-700 dark:text-gray-200">
-          {% if laporan and laporan.foto_path %}
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Foto saat ini sudah tersimpan. Kosongkan field ini jika tidak ingin mengubah foto.
-            </p>
-          {% endif %}
-        </div>
+  <label class="block text-sm font-medium mb-2">
+    Foto/Video Bukti <span class="text-red-500">*</span>
+  </label>
 
-        <div>
-          <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
-          <input
-            type="text"
-            name="kode_pelaporan"
-            id="kode_pelaporan"
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value="{% if laporan %}{{ laporan.kode_pelaporan }}{% else %}{{ preview_kode or 'Akan dibuat otomatis saat laporan dikirim' }}{% endif %}"
-            readonly>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {% if laporan %}
-              Kode pelaporan tidak dapat diubah.
-            {% else %}
-              Kode akan dibuat otomatis setelah laporan berhasil dikirim.
-            {% endif %}
-          </p>
-        </div>
+  <!-- Dari file -->
+  <label for="bukti_file" class="flex items-center gap-2 text-xs text-gray-300 mb-1 cursor-pointer">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v12"/>
+    </svg>
+    <span>Upload dari file (galeri/penyimpanan)</span>
+  </label>
+  <input
+    id="bukti_file"
+    type="file"
+    name="bukti_file"
+    accept="image/*,video/*"
+    multiple
+    class="block w-full text-sm text-gray-700 dark:text-gray-200 mb-2"
+  >
+
+  <!-- Dari kamera -->
+<label for="btnOpenCamera" class="flex items-center gap-2 text-xs text-gray-300 mb-1 cursor-pointer">
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+          d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
+  </svg>
+  <span>Ambil langsung dari kamera</span>
+</label>
+
+<button type="button" id="btnOpenCamera"
+        class="mb-2 px-3 py-1 text-xs rounded bg-blue-600 text-white">
+  Buka Kamera
+</button>
+
+<div id="cameraArea" class="hidden mt-2 space-y-2">
+  <video id="camPreview" autoplay playsinline class="w-full rounded border border-gray-600"></video>
+  <button type="button" id="btnCapture"
+          class="px-3 py-1 text-xs rounded bg-emerald-600 text-white">
+    Ambil Foto
+  </button>
+</div>
+
+<input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
+
+
+
+       <div>
+  <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
+  <input
+    type="text"
+    name="kode_pelaporan"
+    id="kode_pelaporan"
+    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700
+           bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300
+           cursor-not-allowed"
+    value="{% if laporan %}{{ laporan.kode_pelaporan }}{% else %}{{ preview_kode or '' }}{% endif %}"
+    readonly>
+  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+    Kode akan dibuat otomatis setelah laporan berhasil dikirim.
+  </p>
+</div>
+
 
         <button type="submit"
                 class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
@@ -201,6 +252,52 @@
   }
 
   let map, marker;
+function setAddressFromPosition(lat, lng) {
+  const lokasiInput = document.getElementById("lokasi_input");
+  if (!lokasiInput) return;
+
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&zoom=18`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data || !data.address) return;
+
+      const a = data.address;
+
+      const poiName =
+        data.name ||
+        a.shop ||
+        a.building ||
+        a.amenity ||
+        a.office ||
+        a.tourism ||
+        "";
+
+      const kecamatan =
+        a.city_district ||
+        a.district ||
+        a.municipality ||
+        a.county ||
+        "";
+
+      const partsLokasi = [
+        poiName,
+        a.road || a.residential || a.path || "",
+        a.hamlet || a.suburb || a.neighbourhood || a.village || "",
+        a.village || a.suburb || "",
+        kecamatan,
+        a.postcode || "",
+        a.county || a.city || a.town || "",
+        a.state || "",
+        "Indonesia"
+      ].filter(Boolean);
+
+      lokasiInput.value = partsLokasi.join(", ");
+     
+    })
+    .catch(err => console.error("Reverse geocode error:", err));
+}
+
+
 
   function initLeafletMap(lat, lng) {
     map = L.map('map', {
@@ -210,39 +307,38 @@
       dragging: true,
     });
 
-    // basemap satelit mirip gmaps
     const satellite = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       { maxZoom: 19 }
     ).addTo(map);
 
-    // overlay nama jalan (OSM)
-    const streets = L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { maxZoom: 19, opacity: 0.7 }
+   const googleHybrid = L.tileLayer(
+  'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+  }
 ).addTo(map);
+
 
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');
 
-    // jika sudah ada koordinat (mode edit)
     if (latInput.value && lngInput.value) {
-      const pos = [
-        parseFloat(latInput.value),
-        parseFloat(lngInput.value),
-      ];
+      const pos = [parseFloat(latInput.value), parseFloat(lngInput.value)];
       marker = L.marker(pos, { draggable: true }).addTo(map);
       map.setView(pos, 18);
     } else {
       marker = L.marker([lat, lng], { draggable: true }).addTo(map);
       latInput.value = lat;
       lngInput.value = lng;
+      setAddressFromPosition(lat, lng);
     }
 
     marker.on('dragend', () => {
       const pos = marker.getLatLng();
       latInput.value = pos.lat;
       lngInput.value = pos.lng;
+      setAddressFromPosition(pos.lat, pos.lng);
     });
 
     map.on('click', (e) => {
@@ -251,24 +347,223 @@
       marker = L.marker([lat, lng], { draggable: true }).addTo(map);
       latInput.value = lat;
       lngInput.value = lng;
+      setAddressFromPosition(lat, lng);
 
       marker.on('dragend', () => {
         const pos = marker.getLatLng();
         latInput.value = pos.lat;
         lngInput.value = pos.lng;
+        setAddressFromPosition(pos.lat, pos.lng);
       });
     });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // pakai koordinat laporan kalau ada, kalau tidak default Jogja
     const defaultLat =
       {{ laporan.latitude if laporan and laporan.latitude is not none else -7.8014 }};
     const defaultLng =
       {{ laporan.longitude if laporan and laporan.longitude is not none else 110.3647 }};
     initLeafletMap(defaultLat, defaultLng);
+
+    if (navigator.geolocation) {
+      if (confirm("Izinkan sistem untuk mengakses lokasi Anda?")) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            if (map && marker) {
+              map.setView([lat, lng], 18);
+              marker.setLatLng([lat, lng]);
+            }
+            const latInput = document.getElementById('lat');
+            const lngInput = document.getElementById('lng');
+            latInput.value = lat;
+            lngInput.value = lng;
+            setAddressFromPosition(lat, lng);
+          },
+          (err) => {
+            console.log("Gagal ambil lokasi:", err);
+          }
+        );
+      }
+    }
   });
 </script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+const urlProvinsi  = "https://ibnux.github.io/data-indonesia/provinsi.json";
+const urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
+const urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
+const urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
+
+function clearOptions(id) {
+  $('#' + id).empty().trigger('change');
+}
+
+$(function () {
+  const wilayahInput = document.getElementById('wilayah_input');
+if (wilayahInput) wilayahInput.value = "";
+
+
+  // PROVINSI
+  $.getJSON(urlProvinsi, function (res) {
+    res = res.sort((a,b) => a.nama.localeCompare(b.nama));   // A-Z
+    res = $.map(res, o => ({ id: o.id, text: o.nama }));
+    const data = [{ id: "", text: "- Pilih Provinsi -" }].concat(res);
+    $('#provinsi_select').select2({ width:'100%', data });
+  });
+
+  // KABUPATEN
+  $('#provinsi_select').on('change', function () {
+    const provId = $(this).val();
+    clearOptions('kabupaten_select');
+    clearOptions('kecamatan_select');
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!provId) return;
+
+    $.getJSON(urlKabupaten + provId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kabupaten -" }].concat(res);
+      $('#kabupaten_select').select2({ width:'100%', data });
+    });
+  });
+
+  // KECAMATAN
+  $('#kabupaten_select').on('change', function () {
+    const kabId = $(this).val();
+    clearOptions('kecamatan_select');
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!kabId) return;
+
+    $.getJSON(urlKecamatan + kabId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kecamatan -" }].concat(res);
+      $('#kecamatan_select').select2({ width:'100%', data });
+    });
+  });
+
+  // KELURAHAN
+  $('#kecamatan_select').on('change', function () {
+    const kecId = $(this).val();
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!kecId) return;
+
+    $.getJSON(urlKelurahan + kecId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kelurahan -" }].concat(res);
+      $('#kelurahan_select').select2({ width:'100%', data });
+    });
+  });
+
+  // ISI INPUT WILAYAH
+  $('#kelurahan_select').on('change', function () {
+    const kel = $('#kelurahan_select :selected').text();
+    const kec = $('#kecamatan_select :selected').text();
+    const kab = $('#kabupaten_select :selected').text();
+    const prov = $('#provinsi_select :selected').text();
+    if (!wilayahInput) return;
+
+    if (!kel || !kec || !kab || !prov || kel.startsWith('- ')) {
+      wilayahInput.value = "";
+      return;
+    }
+
+    wilayahInput.value = `${kel}, ${kec}, ${kab}, ${prov}, Indonesia`;
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const MAX_TOTAL = 5 * 1024 * 1024;
+
+  function validateFiles(input, rules) {
+    const files = Array.from(input.files);
+    if (!files.length) return true;
+
+    let images = 0, videos = 0, totalSize = 0;
+    files.forEach(f => {
+      if (f.type.startsWith('image/')) images++;
+      else if (f.type.startsWith('video/')) videos++;
+      totalSize += f.size;
+    });
+
+    if (rules.maxImages !== null && images > rules.maxImages) {
+      alert(`Maksimal ${rules.maxImages} foto.`);
+      input.value = '';
+      return false;
+    }
+    if (rules.maxVideos !== null && videos > rules.maxVideos) {
+      alert(`Maksimal ${rules.maxVideos} video.`);
+      input.value = '';
+      return false;
+    }
+    if (totalSize > rules.maxTotal) {
+      alert('Total ukuran file maksimal 5 MB.');
+      input.value = '';
+      return false;
+    }
+    return true;
+  }
+
+  const fileInput   = document.getElementById('bukti_file');
+  const form        = document.querySelector('form');
+  const camDataInput = document.getElementById('bukti_camera_data'); // hidden base64 dari kamera
+
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      validateFiles(fileInput, {
+        maxImages: 3,
+        maxVideos: 1,
+        maxTotal: MAX_TOTAL
+      });
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const hasFile   = fileInput && fileInput.files.length > 0;
+      const hasCamera = camDataInput && camDataInput.value.trim() !== '';
+
+      if (!hasFile && !hasCamera) {
+        e.preventDefault();
+        alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
+      }
+    });
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const cameraArea = document.getElementById('cameraArea');
+  const btnOpenCam = document.getElementById('btnOpenCamera');
+  const video      = document.getElementById('camPreview');
+
+  if (btnOpenCam && cameraArea && video && navigator.mediaDevices) {
+    btnOpenCam.addEventListener('click', async () => {
+      cameraArea.classList.remove('hidden');   // tampilkan area kamera
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }, audio: false
+        });
+        video.srcObject = stream;             // mulai preview
+      } catch (err) {
+        alert('Gagal membuka kamera: ' + err.message);
+      }
+    });
+  }
+});
+
+</script>
+
+
 {% endblock %}
 
 

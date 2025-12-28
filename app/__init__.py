@@ -9,7 +9,6 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -17,17 +16,19 @@ def create_app(config_class=DevelopmentConfig):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Login dulu ya!'
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Login dulu ya!"
 
     from app.models import User, Laporan, Kategori
     from app.auth import bp as auth_bp
     from app.main import bp as main_bp
     from app.reports import bp as reports_bp
+    from app.admin import bp as admin_bp       # <-- import di sini
 
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(main_bp)
-    app.register_blueprint(reports_bp, url_prefix='/reports')
+    app.register_blueprint(reports_bp, url_prefix="/reports")
+    app.register_blueprint(admin_bp)           # <-- daftarkan di sini
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -41,9 +42,9 @@ def create_app(config_class=DevelopmentConfig):
 
     @app.after_request
     def add_header(response):
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
         return response
 
     with app.app_context():
