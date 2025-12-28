@@ -13,10 +13,10 @@ class RegisterForm(FlaskForm):
     nama_lengkap = StringField('Nama Lengkap', validators=[
         DataRequired(message='Nama lengkap wajib diisi.'),
         Length(min=3, max=100, message='Nama 3–100 karakter.'),
-        Regexp(
-            r'^[A-Za-zÀ-ÿ\s]+$',
-            message='Nama hanya boleh huruf dan spasi, tanpa angka/simbol.'
-        )
+        # Regexp(
+        #     r'^[A-Za-zÀ-ÿ\s]+$',
+        #     message='Nama hanya boleh huruf dan spasi, tanpa angka/simbol.'
+        # )
     ])
 
     username = StringField('Username', validators=[
