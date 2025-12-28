@@ -2,7 +2,6 @@
   "name": "23g_flask_laporan_publik",
   "version": "1.0.0",
   "description": "LaporIN adalah aplikasi berbasis web yang digunakan untuk melaporkan kerusakan fasilitas publik secara cepat, terstruktur, dan transparan.  \r Aplikasi ini dibuat untuk mempermudah masyarakat dalam menyampaikan laporan serta memudahkan petugas dalam memantau, memverifikasi, dan menindaklanjuti laporan.",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

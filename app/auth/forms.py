@@ -38,10 +38,10 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[
         DataRequired(message='Password wajib diisi.'),
         Length(min=8, message='Password minimal 8 karakter.'),
-        Regexp(
-            r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$',
-            message='Password harus mengandung huruf kapital, angka, dan simbol.'
-        )
+        # Regexp(
+        #     r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$',
+        #     message='Password harus mengandung huruf kapital, angka, dan simbol.'
+        # )
     ])
 
     password2 = PasswordField('Ulangi Password', validators=[
