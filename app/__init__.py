@@ -46,4 +46,8 @@ def create_app(config_class=DevelopmentConfig):
         response.headers['Expires'] = '0'
         return response
 
+    with app.app_context():
+        db.create_all()
+        print("Database tables created!")
+        
     return app
