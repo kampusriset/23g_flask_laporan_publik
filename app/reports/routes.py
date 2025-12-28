@@ -7,6 +7,10 @@ import os
 from app import db
 from app.models import Laporan, Kategori
 from . import bp
+from app.reports import bp
+from flask import render_template, abort
+from app.models import Laporan
+
 
 UPLOAD_FOLDER = 'uploads/laporan_foto'
 
@@ -53,11 +57,28 @@ def riwayat_laporan():
         laporan=laporan
     )
 
-@bp.route('/track')
+@bp.route("/track")
 @login_required
 def track():
-    return render_template('reports/track.html')
+    kode = request.args.get("kode", "").strip()
 
+    laporan = None
+    if kode:
+        laporan = Laporan.query.filter_by(
+            kode_pelaporan=kode,
+            user_id=current_user.id   # opsional: batasi hanya milik user ini
+        ).first()
+
+    return render_template(
+        "reports/track.html",
+        laporan=laporan
+    )
+
+@bp.route("/laporan/<int:laporan_id>")
+@login_required
+def detail(laporan_id):
+    laporan = Laporan.query.get_or_404(laporan_id)
+    return render_template("reports/detail.html", laporan=laporan)
 
 @bp.route('/<int:laporan_id>/edit', methods=['GET', 'POST'])
 @login_required

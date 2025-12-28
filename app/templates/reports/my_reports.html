@@ -118,8 +118,10 @@
                 {{ lp.lokasi }}
               </td>
               <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-            {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
+              {% set waktu = lp.updated_at or lp.created_at %}
+              {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
             </td>
+
               <td class="px-4 py-3">
   {% set s = lp.status %}
   {% if s == 'diajukan' %}

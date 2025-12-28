@@ -6,13 +6,14 @@ from app.auth.forms import LoginForm, RegisterForm
 from datetime import datetime
 
 
-
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # Kalau sudah login, selalu ke index dulu
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
 
     form = LoginForm()
+
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
 
@@ -24,21 +25,23 @@ def login():
             db.session.commit()
 
             flash('Berhasil login.', 'success')
+            # reset tiket dashboard
+            session.pop("can_access_dashboard", None)
 
-            next_page = request.args.get('next')
-            if next_page:
-                return redirect(next_page)
+            # SELALU ke index, tidak pakai next lagi
             return redirect(url_for('main.index'))
+        else:
+            flash('Username atau password salah.', 'danger')
 
-        flash('Username atau password salah.', 'danger')
-
+    # GET pertama kali atau form tidak valid
     return render_template('pages/auth/login.html', form=form)
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    # Kalau sudah login, kirim ke index dulu
     if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for("main.index"))
 
     form = RegisterForm()
 
@@ -76,4 +79,5 @@ def logout():
     logout_user()
     session.clear()
     flash('Logout berhasil. Silakan login kembali untuk melanjutkan.', 'success')
-    return redirect(url_for('main.index'))   
+    return redirect(url_for('main.index'))
+

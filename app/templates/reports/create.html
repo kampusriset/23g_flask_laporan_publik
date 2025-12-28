@@ -170,25 +170,30 @@
     Foto/Video Bukti <span class="text-red-500">*</span>
   </label>
 
-  <!-- Dari file -->
-  <label for="bukti_file" class="flex items-center gap-2 text-xs text-gray-300 mb-1 cursor-pointer">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v12"/>
-    </svg>
-    <span>Upload dari file (galeri/penyimpanan)</span>
-  </label>
-  <input
-    id="bukti_file"
-    type="file"
-    name="bukti_file"
-    accept="image/*,video/*"
-    multiple
-    class="block w-full text-sm text-gray-700 dark:text-gray-200 mb-2"
-  >
+ <!-- Dari file -->
+<label for="bukti_file"
+       class="flex items-center gap-2 text-xs font-medium
+              text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v12"/>
+  </svg>
+  <span>Upload dari file (galeri/penyimpanan)</span>
+</label>
 
-  <!-- Dari kamera -->
-<label for="btnOpenCamera" class="flex items-center gap-2 text-xs text-gray-300 mb-1 cursor-pointer">
+<input
+  id="bukti_file"
+  type="file"
+  name="bukti_file"
+  accept="image/*,video/*"
+  multiple
+  class="block w-full text-sm text-slate-800 dark:text-slate-100 mb-2"
+/>
+
+<!-- Dari kamera -->
+<label for="btnOpenCamera"
+       class="flex items-center gap-2 text-xs font-medium
+              text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
           d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
@@ -197,20 +202,28 @@
 </label>
 
 <button type="button" id="btnOpenCamera"
-        class="mb-2 px-3 py-1 text-xs rounded bg-blue-600 text-white">
+        class="mb-2 px-3 py-1 text-xs rounded
+               bg-blue-600 text-white hover:bg-blue-700
+               dark:bg-blue-500 dark:hover:bg-blue-400">
   Buka Kamera
 </button>
 
-<div id="cameraArea" class="hidden mt-2 space-y-2">
-  <video id="camPreview" autoplay playsinline class="w-full rounded border border-gray-600"></video>
+<div id="cameraArea"
+     class="hidden mt-2 space-y-2 p-2 rounded
+            bg-slate-50 border border-slate-300
+            dark:bg-slate-800 dark:border-slate-600">
+  <video id="camPreview"
+         autoplay playsinline
+         class="w-full rounded border border-slate-400 dark:border-slate-500"></video>
   <button type="button" id="btnCapture"
-          class="px-3 py-1 text-xs rounded bg-emerald-600 text-white">
+          class="px-3 py-1 text-xs rounded
+                 bg-emerald-600 text-white hover:bg-emerald-700
+                 dark:bg-emerald-500 dark:hover:bg-emerald-400">
     Ambil Foto
   </button>
 </div>
 
 <input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
-
 
 
        <div>
@@ -489,11 +502,19 @@ if (wilayahInput) wilayahInput.value = "";
 document.addEventListener('DOMContentLoaded', () => {
   const MAX_TOTAL = 5 * 1024 * 1024;
 
+  const fileInput     = document.getElementById('bukti_file');
+  const form          = document.querySelector('form');
+  const camDataInput  = document.getElementById('bukti_camera_data'); // hidden base64
+  const cameraArea    = document.getElementById('cameraArea');
+  const btnOpenCam    = document.getElementById('btnOpenCamera');
+  const video         = document.getElementById('camPreview');
+
   function validateFiles(input, rules) {
     const files = Array.from(input.files);
     if (!files.length) return true;
 
     let images = 0, videos = 0, totalSize = 0;
+
     files.forEach(f => {
       if (f.type.startsWith('image/')) images++;
       else if (f.type.startsWith('video/')) videos++;
@@ -518,10 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return true;
   }
 
-  const fileInput   = document.getElementById('bukti_file');
-  const form        = document.querySelector('form');
-  const camDataInput = document.getElementById('bukti_camera_data'); // hidden base64 dari kamera
-
+  // Validasi file upload
   if (fileInput) {
     fileInput.addEventListener('change', () => {
       validateFiles(fileInput, {
@@ -532,6 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Validasi sebelum submit: harus ada file atau data kamera
   if (form) {
     form.addEventListener('submit', (e) => {
       const hasFile   = fileInput && fileInput.files.length > 0;
@@ -543,27 +562,38 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-  const cameraArea = document.getElementById('cameraArea');
-  const btnOpenCam = document.getElementById('btnOpenCamera');
-  const video      = document.getElementById('camPreview');
+  // Fitur kamera
+  async function openCamera() {
+    cameraArea.classList.remove('hidden');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false
+      });
+      video.srcObject = stream;
+    } catch (err) {
+      alert('Gagal membuka kamera: ' + err.message);
+      closeCamera();
+    }
+  }
+
+  function closeCamera() {
+    cameraArea.classList.add('hidden');
+    if (video && video.srcObject) {
+      const tracks = video.srcObject.getTracks();
+      tracks.forEach(t => t.stop());
+      video.srcObject = null;
+    }
+  }
 
   if (btnOpenCam && cameraArea && video && navigator.mediaDevices) {
-    btnOpenCam.addEventListener('click', async () => {
-      cameraArea.classList.remove('hidden');   // tampilkan area kamera
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' }, audio: false
-        });
-        video.srcObject = stream;             // mulai preview
-      } catch (err) {
-        alert('Gagal membuka kamera: ' + err.message);
-      }
-    });
+    btnOpenCam.addEventListener('click', openCamera);
   }
+
+  
 });
+
 
 </script>
 
