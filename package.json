@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "LaporIN adalah aplikasi berbasis web yang digunakan untuk melaporkan kerusakan fasilitas publik secara cepat, terstruktur, dan transparan.  \r Aplikasi ini dibuat untuk mempermudah masyarakat dalam menyampaikan laporan serta memudahkan petugas dalam memantau, memverifikasi, dan menindaklanjuti laporan.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx @tailwindcss/cli -i ./static/src/input.css -o ./static/tailwind.css --watch",
+    "build": "npx @tailwindcss/cli -i ./static/src/input.css -o ./static/tailwind.css --minify"
   },
   "repository": {
     "type": "git",
@@ -16,8 +17,11 @@
     "url": "https://github.com/kampusriset/23g_flask_laporan_publik/issues"
   },
   "homepage": "https://github.com/kampusriset/23g_flask_laporan_publik#readme",
-  "dependencies": {
+  "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.23",
+    "cssnano": "^7.1.2",
     "tailwindcss": "^4.1.18"
   }
 }

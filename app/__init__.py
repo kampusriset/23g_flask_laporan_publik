@@ -4,13 +4,19 @@ from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from config import DevelopmentConfig
 from datetime import datetime
-
+import os
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
 def create_app(config_class=DevelopmentConfig):
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Path folder 'root' (naik satu tingkat dari 'app')
+    root_dir = os.path.dirname(app_dir)
     app = Flask(__name__)
+    app.static_folder = os.path.join(root_dir, 'static')
+    app.static_url_path = '/static'
     app.config.from_object(config_class)
 
     db.init_app(app)
@@ -50,5 +56,5 @@ def create_app(config_class=DevelopmentConfig):
     with app.app_context():
         db.create_all()
         print("Database tables created!")
-        
+
     return app
