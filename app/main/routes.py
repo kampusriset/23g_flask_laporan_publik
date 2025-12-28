@@ -33,10 +33,13 @@ def profile():
 def index():
     return render_template('pages/main/index.html')
 
-
 @bp.route('/dashboard')
 @login_required
 def dashboard():
+    if current_user.role == "admin":
+        flash("Akses halaman tidak di izinkan!", "warning")
+        return redirect(url_for("admin.dashboard"))
+
     laporans = Laporan.query.filter_by(user_id=current_user.id).all()
 
     count_diajukan = Laporan.query.filter_by(user_id=current_user.id, status='diajukan').count()

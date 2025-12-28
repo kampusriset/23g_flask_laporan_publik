@@ -13,5 +13,5 @@ mysql-connector-python>=8.0
 python-dotenv>=0.21
 
 email-validator>=2.0       
-pymysql
-pytz
+pymysql>=1.1.2
+pytz>=2025.2

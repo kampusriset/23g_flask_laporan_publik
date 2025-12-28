@@ -14,6 +14,9 @@ UPLOAD_FOLDER = 'uploads/laporan_foto'
 @bp.route('/my-reports')
 @login_required
 def my_reports():
+    if current_user.role == "admin":
+        return redirect(url_for("admin.dashboard"))
+
     q = Laporan.query.filter_by(user_id=current_user.id)
 
     search = request.args.get('q', '').strip()
