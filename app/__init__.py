@@ -1,23 +1,28 @@
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from config import DevelopmentConfig
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
+
+
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
+
 def create_app(config_class=DevelopmentConfig):
     app_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Path folder 'root' (naik satu tingkat dari 'app')
     root_dir = os.path.dirname(app_dir)
+
     app = Flask(__name__)
-    app.static_folder = os.path.join(root_dir, 'static')
-    app.static_url_path = '/static'
+    app.static_folder = os.path.join(root_dir, "static")
+    app.static_url_path = "/static"
     app.config.from_object(config_class)
+
+    # timeout session 10 menit
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -29,12 +34,12 @@ def create_app(config_class=DevelopmentConfig):
     from app.auth import bp as auth_bp
     from app.main import bp as main_bp
     from app.reports import bp as reports_bp
-    from app.admin import bp as admin_bp       # <-- import di sini
+    from app.admin import bp as admin_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(main_bp)
     app.register_blueprint(reports_bp, url_prefix="/reports")
-    app.register_blueprint(admin_bp)           # <-- daftarkan di sini
+    app.register_blueprint(admin_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -45,6 +50,9 @@ def create_app(config_class=DevelopmentConfig):
         if current_user.is_authenticated:
             current_user.last_seen = datetime.utcnow()
             db.session.commit()
+        # aktifkan & refresh timeout session di setiap request
+        session.permanent = True
+        session.modified = True
 
     @app.after_request
     def add_header(response):

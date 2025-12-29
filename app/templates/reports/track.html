@@ -29,48 +29,56 @@
         </div>
       </div>
 
-      <nav class="space-y-2 text-sm">
-        <a href="{{ url_for('main.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Dashboard
-        </a>
+     <nav class="space-y-2 text-sm">
+  <a href="{{ url_for('main.dashboard') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    Dashboard
+  </a>
 
-        <a href="{{ url_for('reports.create') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          + Buat Laporan Baru
-        </a>
+  <a href="{{ url_for('reports.create') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    + Buat Laporan Baru
+  </a>
 
-        <a href="{{ url_for('reports.my_reports') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Laporan Saya
-        </a>
+  <a href="{{ url_for('reports.my_reports') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    Laporan Saya
+  </a>
 
-        <a href="{{ url_for('reports.track') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
-          Lacak Laporan
-        </a>
+  <a href="{{ url_for('reports.riwayat_laporan') }}"
+   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+          hover:bg-gray-100 dark:hover:bg-gray-700">
+  Riwayat Laporan
+</a>
 
-        <a href="{{ url_for('reports.riwayat_laporan') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Riwayat Laporan
-        </a>
+<a href="{{ url_for('reports.track') }}"
+   class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
+          dark:bg-blue-900/40 dark:text-blue-300">
+  Lacak Laporan
+</a>
 
-        <a href="{{ url_for('main.notifications') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Pemberitahuan
-        </a>
+  <a href="{{ url_for('main.notifications') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    Pemberitahuan
+  </a>
 
-        <a href="{{ url_for('main.settings') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Pengaturan
-        </a>
+  <a href="{{ url_for('main.settings') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    Pengaturan
+  </a>
 
-        <a href="{{ url_for('main.about') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          Tentang
-        </a>
-      </nav>
+  <a href="{{ url_for('main.about') }}"
+     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700">
+    Tentang
+  </a>
+</nav>
+
     </aside>
 
     <!-- Konten utama -->

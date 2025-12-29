@@ -183,29 +183,33 @@
                   {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
                 </td>
                 <td class="px-4 py-3">
-                  <div class="flex flex-col sm:flex-row gap-2">
-                    <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
-                       class="inline-flex items-center px-3 py-1 rounded-lg text-xs
-                              bg-slate-100 text-slate-700 hover:bg-slate-200
-                              dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600">
-                      Detail
-                    </a>
-                    <!-- contoh tombol ubah status cepat -->
-                    {% if lp.status != 'selesai' %}
-                    <form method="post"
-                          action="{{ url_for('admin.update_report_status', laporan_id=lp.id) }}"
-                          class="inline">
-                      {{ csrf_token() if csrf_token is defined }}
-                      <input type="hidden" name="status" value="selesai">
-                      <button type="submit"
-                              class="inline-flex items-center px-3 py-1 rounded-lg text-xs
-                                     bg-emerald-600 text-white hover:bg-emerald-700">
-                        Tandai selesai
-                      </button>
-                    </form>
-                    {% endif %}
-                  </div>
-                </td>
+  <div class="flex flex-col sm:flex-row gap-2">
+    <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
+       class="inline-flex items-center px-3 py-1 rounded-lg text-xs
+              bg-slate-100 text-slate-700 hover:bg-slate-200
+              dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600">
+      Detail
+    </a>
+
+      <form method="post"
+          action="{{ url_for('admin.update_report_status', laporan_id=lp.id) }}"
+          class="inline-flex items-center gap-2">
+      {{ csrf_token() if csrf_token is defined }}
+      <select name="status"
+              class="rounded-lg border border-slate-300 dark:border-slate-600
+                    bg-white dark:bg-slate-900 px-2 py-1 text-xs
+                    text-slate-800 dark:text-slate-100"
+              onchange="this.form.submit()">
+        <option value="diajukan" {% if lp.status == 'diajukan' %}selected{% endif %}>Diajukan</option>
+        <option value="diproses" {% if lp.status == 'diproses' %}selected{% endif %}>Diproses</option>
+        <option value="selesai"  {% if lp.status == 'selesai'  %}selected{% endif %}>Selesai</option>
+        <option value="ditolak"  {% if lp.status == 'ditolak'  %}selected{% endif %}>Ditolak</option>
+      </select>
+    </form>
+
+  </div>
+</td>
+
               </tr>
               {% else %}
               <tr>

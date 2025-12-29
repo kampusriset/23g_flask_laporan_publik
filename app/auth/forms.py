@@ -7,10 +7,21 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit   = SubmitField('Login')
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit   = SubmitField("Login")
+    
+class ForgotPasswordForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Kirim link reset")
 
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField("Password baru", validators=[DataRequired(), Length(min=8)])
+    password2 = PasswordField(
+        "Ulangi password baru",
+        validators=[DataRequired(), EqualTo("password")]
+    )
+    submit = SubmitField("Ganti password")
 
 class RegisterForm(FlaskForm):
     nama_lengkap = StringField('Nama Lengkap', validators=[

@@ -12,7 +12,6 @@ from app.models import User, Laporan
 from app.forms import UserForm
 
 
-
 def admin_required(view):
     @wraps(view)
     @login_required
@@ -26,12 +25,20 @@ def admin_required(view):
 @bp.route("/dashboard")
 @admin_required
 def dashboard():
+    # hanya hitung laporan dari user non-admin
+    base_reports = (
+        Laporan.query
+        .join(User)
+        .filter(User.role != "admin")
+    )
+
     total_users = User.query.count()
-    total_reports = Laporan.query.count()
-    reports_in_progress = Laporan.query.filter_by(status="diproses").count()
-    reports_done = Laporan.query.filter_by(status="selesai").count()
+    total_reports = base_reports.count()
+    reports_in_progress = base_reports.filter(Laporan.status == "diproses").count()
+    reports_done = base_reports.filter(Laporan.status == "selesai").count()
     latest_reports = (
-        Laporan.query.order_by(Laporan.created_at.desc())
+        base_reports
+        .order_by(Laporan.created_at.desc())
         .limit(10)
         .all()
     )
@@ -45,16 +52,17 @@ def dashboard():
     )
 
 
-# ---------- KELOLA USER (sudah ada, dibiarkan) ----------
-@bp.route('/users')
+# ---------- KELOLA USER ----------
+
+@bp.route("/users")
 @admin_required
 def user_list():
     stmt = select(User).order_by(User.created_at.desc())
     users = db.session.execute(stmt).scalars().all()
-    return render_template('admin/user_list.html', users=users)
+    return render_template("admin/user_list.html", users=users)
 
 
-@bp.route('/users/new', methods=['GET', 'POST'])
+@bp.route("/users/new", methods=["GET", "POST"])
 @admin_required
 def user_create():
     form = UserForm()
@@ -67,7 +75,7 @@ def user_create():
         existing_user = db.session.execute(stmt).scalars().first()
 
         if existing_user:
-            flash('Username atau Email sudah terdaftar.', 'danger')
+            flash("Username atau Email sudah terdaftar.", "danger")
         else:
             new_user = User(
                 nama_lengkap=form.nama_lengkap.data,
@@ -75,28 +83,28 @@ def user_create():
                 email=form.email.data,
                 phone=form.phone.data,
                 role=form.role.data,
-                is_active=form.is_active.data
+                is_active=form.is_active.data,
             )
             if form.password.data:
                 new_user.set_password(form.password.data)
             else:
-                new_user.set_password('12345678')
+                new_user.set_password("12345678")
 
             db.session.add(new_user)
             db.session.commit()
-            flash('User berhasil ditambahkan.', 'success')
-            return redirect(url_for('admin.user_list'))
+            flash("User berhasil ditambahkan.", "success")
+            return redirect(url_for("admin.user_list"))
 
-    return render_template('admin/user_form.html', form=form, title="Tambah User")
+    return render_template("admin/user_form.html", form=form, title="Tambah User")
 
 
-@bp.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@bp.route("/users/<int:user_id>/edit", methods=["GET", "POST"])
 @admin_required
 def user_edit(user_id):
     user = db.session.get(User, user_id)
     if not user:
-        flash('User tidak ditemukan', 'danger')
-        return redirect(url_for('admin.user_list'))
+        flash("User tidak ditemukan", "danger")
+        return redirect(url_for("admin.user_list"))
 
     form = UserForm(obj=user)
 
@@ -109,7 +117,7 @@ def user_edit(user_id):
         duplicate = db.session.execute(stmt).scalars().first()
 
         if duplicate:
-            flash('Username atau Email sudah digunakan user lain.', 'danger')
+            flash("Username atau Email sudah digunakan user lain.", "danger")
         else:
             user.nama_lengkap = form.nama_lengkap.data
             user.username = form.username.data
@@ -122,28 +130,36 @@ def user_edit(user_id):
                 user.set_password(form.password.data)
 
             db.session.commit()
-            flash('Data user berhasil diperbarui.', 'success')
-            return redirect(url_for('admin.user_list'))
+            flash("Data user berhasil diperbarui.", "success")
+            return redirect(url_for("admin.user_list"))
 
-    return render_template('admin/user_form.html', form=form, title="Edit User", user=user)
+    return render_template(
+        "admin/user_form.html",
+        form=form,
+        title="Edit User",
+        user=user,
+    )
 
 
-@bp.route('/users/<int:user_id>/delete', methods=['POST'])
+@bp.route("/users/<int:user_id>/delete", methods=["POST"])
 @admin_required
 def user_delete(user_id):
     user = db.session.get(User, user_id)
 
     if user:
         if user.id == current_user.id:
-            flash('Anda tidak bisa menghapus akun sendiri saat sedang login.', 'warning')
+            flash(
+                "Anda tidak bisa menghapus akun sendiri saat sedang login.",
+                "warning",
+            )
         else:
             db.session.delete(user)
             db.session.commit()
-            flash('User berhasil dihapus.', 'success')
+            flash("User berhasil dihapus.", "success")
     else:
-        flash('User tidak ditemukan.', 'danger')
+        flash("User tidak ditemukan.", "danger")
 
-    return redirect(url_for('admin.user_list'))
+    return redirect(url_for("admin.user_list"))
 
 
 # ---------- KELOLA LAPORAN ----------
@@ -154,17 +170,22 @@ def manage_reports():
     status = request.args.get("status", "").strip()
     q = request.args.get("q", "").strip()
 
-    query = Laporan.query
+    # hanya laporan dari user non-admin
+    query = (
+        Laporan.query
+        .join(User)
+        .filter(User.role != "admin")
+    )
 
     if status:
-        query = query.filter_by(status=status)
+        query = query.filter(Laporan.status == status)
 
     if q:
         like = f"%{q}%"
         query = query.filter(
             or_(
                 Laporan.kode_pelaporan.ilike(like),
-                Laporan.judul.ilike(like)
+                Laporan.judul.ilike(like),
             )
         )
 
@@ -192,9 +213,9 @@ def update_report_status(laporan_id):
         flash("Status tidak valid.", "danger")
         return redirect(url_for("admin.manage_reports"))
 
-    laporan.status = new_status
-    # asumsi model Laporan punya field updated_at dengan default func.now()
     from datetime import datetime
+
+    laporan.status = new_status
     laporan.updated_at = datetime.utcnow()
 
     db.session.commit()

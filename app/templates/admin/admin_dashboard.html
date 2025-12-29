@@ -28,17 +28,19 @@
       </div>
 
       <nav class="space-y-2 text-sm">
-  <a href="{{ url_for('admin.dashboard') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Dashboard Admin
-  </a>
+      <a href="{{ url_for('admin.dashboard') }}"
+      class="block px-3 py-2 rounded-lg
+              bg-blue-50 text-blue-700
+              dark:bg-blue-900/40 dark:text-blue-300">
+      Dashboard Admin
+    </a>
+
 
   <a href="{{ url_for('admin.user_list') }}"
-     class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-            dark:bg-blue-900/40 dark:text-blue-300">
-    Kelola Pengguna
-  </a>
+   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+          hover:bg-gray-100 dark:hover:bg-gray-700">
+  Kelola Pengguna
+</a>
 
   <a href="{{ url_for('admin.manage_reports') }}"
      class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
