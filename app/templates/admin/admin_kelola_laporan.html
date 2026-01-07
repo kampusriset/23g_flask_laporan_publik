@@ -1,0 +1,230 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Kelola Laporan{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <div class="flex flex-col md:flex-row gap-6">
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
+                   bg-emerald-400">
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            Admin {{ current_user.username }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Panel pengelolaan sistem
+          </p>
+        </div>
+      </div>
+
+      <nav class="space-y-2 text-sm">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Dashboard Admin
+        </a>
+
+        <a href="{{ url_for('admin.user_list') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Kelola Pengguna
+        </a>
+
+        <a href="{{ url_for('admin.manage_reports') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
+                  dark:bg-blue-900/40 dark:text-blue-300">
+          Kelola Laporan
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Kategori &amp; Wilayah
+        </a>
+
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pengaturan Sistem
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Konten utama -->
+    <main class="flex-1 space-y-6">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Kelola Laporan</h1>
+        <p class="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+          Pantau, filter, dan update status laporan yang masuk dari pengguna.
+        </p>
+      </div>
+
+      <!-- Filter & search -->
+      <form method="get"
+            action="{{ url_for('admin.manage_reports') }}"
+            class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+            Cari berdasarkan kode atau judul
+          </label>
+          <input
+            type="text"
+            name="q"
+            value="{{ q }}"
+            placeholder="Contoh: LAP-2025-00123 atau 'Lampu jalan mati'"
+            class="w-full rounded-lg border border-slate-300 dark:border-slate-600
+                   bg-white dark:bg-slate-900 px-3 py-2 text-sm
+                   text-slate-900 dark:text-slate-100
+                   placeholder:text-slate-400 dark:placeholder:text-slate-500
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div class="w-full sm:w-48">
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+            Filter status
+          </label>
+          <select name="status"
+                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
+                         bg-white dark:bg-slate-900 px-3 py-2 text-sm
+                         text-slate-900 dark:text-slate-100 focus:outline-none
+                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Semua status</option>
+            <option value="diajukan"  {% if status=='diajukan' %}selected{% endif %}>Diajukan</option>
+            <option value="diproses"  {% if status=='diproses' %}selected{% endif %}>Diproses</option>
+            <option value="selesai"   {% if status=='selesai'  %}selected{% endif %}>Selesai</option>
+            <option value="ditolak"   {% if status=='ditolak'  %}selected{% endif %}>Ditolak</option>
+          </select>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="submit"
+                  class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold
+                         bg-blue-600 text-white hover:bg-blue-700
+                         dark:bg-blue-500 dark:hover:bg-blue-400">
+            Terapkan
+          </button>
+          <a href="{{ url_for('admin.manage_reports') }}"
+             class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold
+                    border border-slate-300 dark:border-slate-600
+                    text-slate-600 dark:text-slate-200
+                    hover:bg-slate-50 dark:hover:bg-slate-800">
+            Reset
+          </a>
+        </div>
+      </form>
+
+      <!-- Tabel kelola laporan -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            Daftar Laporan
+          </h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Total: {{ reports|length }} laporan
+          </p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
+              <tr>
+                <th class="px-4 py-3 text-left">Kode</th>
+                <th class="px-4 py-3 text-left">Pelapor</th>
+                <th class="px-4 py-3 text-left">Judul</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-left">Terakhir update</th>
+                <th class="px-4 py-3 text-left">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              {% for lp in reports %}
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60 align-top">
+                <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
+                  {{ lp.kode_pelaporan }}
+                </td>
+                <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
+                  {{ lp.user.username }}
+                  <div class="text-[11px] text-gray-500 dark:text-gray-400">
+                    {{ lp.user.email }}
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-gray-800 dark:text-gray-100 max-w-xs">
+                  <div class="line-clamp-2">
+                    {{ lp.judul }}
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                               {% if lp.status == 'diajukan' %}
+                                 bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300
+                               {% elif lp.status == 'diproses' %}
+                                 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                               {% elif lp.status == 'selesai' %}
+                                 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+                               {% else %}
+                                 bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
+                               {% endif %}">
+                    {{ lp.status|capitalize }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                  {% set waktu = lp.updated_at or lp.created_at %}
+                  {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
+                </td>
+                <td class="px-4 py-3">
+  <div class="flex flex-col sm:flex-row gap-2">
+    <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
+       class="inline-flex items-center px-3 py-1 rounded-lg text-xs
+              bg-slate-100 text-slate-700 hover:bg-slate-200
+              dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600">
+      Detail
+    </a>
+
+      <form method="post"
+          action="{{ url_for('admin.update_report_status', laporan_id=lp.id) }}"
+          class="inline-flex items-center gap-2">
+      {{ csrf_token() if csrf_token is defined }}
+      <select name="status"
+              class="rounded-lg border border-slate-300 dark:border-slate-600
+                    bg-white dark:bg-slate-900 px-2 py-1 text-xs
+                    text-slate-800 dark:text-slate-100"
+              onchange="this.form.submit()">
+        <option value="diajukan" {% if lp.status == 'diajukan' %}selected{% endif %}>Diajukan</option>
+        <option value="diproses" {% if lp.status == 'diproses' %}selected{% endif %}>Diproses</option>
+        <option value="selesai"  {% if lp.status == 'selesai'  %}selected{% endif %}>Selesai</option>
+        <option value="ditolak"  {% if lp.status == 'ditolak'  %}selected{% endif %}>Ditolak</option>
+      </select>
+    </form>
+
+  </div>
+</td>
+
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="6"
+                    class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                  Belum ada laporan atau filter terlalu spesifik.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+{% endblock %}

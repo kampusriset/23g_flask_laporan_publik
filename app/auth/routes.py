@@ -2,10 +2,11 @@ from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from app.auth import bp
 from app.models import db, User
-from app.auth.forms import LoginForm, RegisterForm
+from app.auth.forms import LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
 from datetime import datetime
-
-
+from app.auth.forms import ForgotPasswordForm
+from flask import url_for
+from app.email import send_email 
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -13,8 +14,10 @@ def login():
         return redirect(url_for('main.index'))
 
     form = LoginForm()
+
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        username = form.username.data.strip()
+        user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(form.password.data):
             remember = request.form.get('remember') == 'y'
@@ -24,21 +27,59 @@ def login():
             db.session.commit()
 
             flash('Berhasil login.', 'success')
-
-            next_page = request.args.get('next')
-            if next_page:
-                return redirect(next_page)
+            session.pop("can_access_dashboard", None)
             return redirect(url_for('main.index'))
-
-        flash('Username atau password salah.', 'danger')
+        else:
+            flash('Username atau password salah.', 'danger')
 
     return render_template('pages/auth/login.html', form=form)
+
+@bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("Email tidak ditemukan.", "warning")
+            return redirect(url_for("auth.forgot_password"))
+
+        # Sementara: langsung arahkan ke halaman reset password
+        token = user.get_reset_token()
+        flash("Silakan masukkan password baru.", "info")
+        return redirect(url_for("auth.reset_password", token=token))
+
+    return render_template("pages/auth/forgot_password.html", form=form)
+
+@bp.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+
+    user = User.verify_reset_token(token)
+    if not user:
+        flash("Token reset password tidak valid atau sudah kedaluwarsa.", "danger")
+        return redirect(url_for("auth.forgot_password"))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash("Password berhasil diubah. Silakan login dengan password baru.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("pages/auth/reset_password.html", form=form)
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    # Kalau sudah login, kirim ke index dulu
     if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for("main.index"))
 
     form = RegisterForm()
 
@@ -76,4 +117,5 @@ def logout():
     logout_user()
     session.clear()
     flash('Logout berhasil. Silakan login kembali untuk melanjutkan.', 'success')
-    return redirect(url_for('main.index'))   
+    return redirect(url_for('main.index'))
+

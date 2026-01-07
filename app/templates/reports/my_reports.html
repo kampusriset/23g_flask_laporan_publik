@@ -44,7 +44,10 @@
                   dark:bg-blue-900/40 dark:text-blue-300">
           Laporan Saya
         </a>
-
+          <a href="{{ url_for('reports.riwayat_laporan') }}"
+            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          Riwayat Laporan
+        </a>
         <a href="{{ url_for('reports.track') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
           Lacak Laporan
@@ -115,8 +118,10 @@
                 {{ lp.lokasi }}
               </td>
               <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-            {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
+              {% set waktu = lp.updated_at or lp.created_at %}
+              {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
             </td>
+
               <td class="px-4 py-3">
   {% set s = lp.status %}
   {% if s == 'diajukan' %}
