@@ -47,13 +47,13 @@
           Kelola Laporan
         </a>
 
-        <a href="{{ url_for('admin.dashboard') }}"
+        <a href="{{ url_for('admin.kelola_kategori') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
                   hover:bg-gray-100 dark:hover:bg-gray-700">
-          Kategori &amp; Wilayah
+          Kategori & Wilayah
         </a>
 
-        <a href="{{ url_for('admin.dashboard') }}"
+        <a href="{{ url_for('admin.pengaturan_sistem') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
                   hover:bg-gray-100 dark:hover:bg-gray-700">
           Pengaturan Sistem
@@ -100,10 +100,9 @@
                          text-slate-900 dark:text-slate-100 focus:outline-none
                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <option value="">Semua status</option>
-            <option value="diajukan"  {% if status=='diajukan' %}selected{% endif %}>Diajukan</option>
-            <option value="diproses"  {% if status=='diproses' %}selected{% endif %}>Diproses</option>
-            <option value="selesai"   {% if status=='selesai'  %}selected{% endif %}>Selesai</option>
-            <option value="ditolak"   {% if status=='ditolak'  %}selected{% endif %}>Ditolak</option>
+            <option value="diproses" {% if status=='diproses' %}selected{% endif %}>Diproses</option>
+            <option value="selesai"  {% if status=='selesai'  %}selected{% endif %}>Selesai</option>
+            <option value="ditolak"  {% if status=='ditolak'  %}selected{% endif %}>Ditolak</option>
           </select>
         </div>
 
@@ -124,107 +123,232 @@
         </div>
       </form>
 
-      <!-- Tabel kelola laporan -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-            Daftar Laporan
-          </h2>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            Total: {{ reports|length }} laporan
-          </p>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
-              <tr>
-                <th class="px-4 py-3 text-left">Kode</th>
-                <th class="px-4 py-3 text-left">Pelapor</th>
-                <th class="px-4 py-3 text-left">Judul</th>
-                <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-4 py-3 text-left">Terakhir update</th>
-                <th class="px-4 py-3 text-left">Aksi</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-              {% for lp in reports %}
-              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60 align-top">
-                <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-                  {{ lp.kode_pelaporan }}
-                </td>
-                <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
-                  {{ lp.user.username }}
-                  <div class="text-[11px] text-gray-500 dark:text-gray-400">
-                    {{ lp.user.email }}
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-gray-800 dark:text-gray-100 max-w-xs">
-                  <div class="line-clamp-2">
-                    {{ lp.judul }}
-                  </div>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                               {% if lp.status == 'diajukan' %}
-                                 bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300
-                               {% elif lp.status == 'diproses' %}
-                                 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
-                               {% elif lp.status == 'selesai' %}
-                                 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
-                               {% else %}
-                                 bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
-                               {% endif %}">
-                    {{ lp.status|capitalize }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {% set waktu = lp.updated_at or lp.created_at %}
-                  {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
-                </td>
-                <td class="px-4 py-3">
-  <div class="flex flex-col sm:flex-row gap-2">
-    <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
-       class="inline-flex items-center px-3 py-1 rounded-lg text-xs
-              bg-slate-100 text-slate-700 hover:bg-slate-200
-              dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600">
-      Detail
-    </a>
-
-      <form method="post"
-          action="{{ url_for('admin.update_report_status', laporan_id=lp.id) }}"
-          class="inline-flex items-center gap-2">
-      {{ csrf_token() if csrf_token is defined }}
-      <select name="status"
-              class="rounded-lg border border-slate-300 dark:border-slate-600
-                    bg-white dark:bg-slate-900 px-2 py-1 text-xs
-                    text-slate-800 dark:text-slate-100"
-              onchange="this.form.submit()">
-        <option value="diajukan" {% if lp.status == 'diajukan' %}selected{% endif %}>Diajukan</option>
-        <option value="diproses" {% if lp.status == 'diproses' %}selected{% endif %}>Diproses</option>
-        <option value="selesai"  {% if lp.status == 'selesai'  %}selected{% endif %}>Selesai</option>
-        <option value="ditolak"  {% if lp.status == 'ditolak'  %}selected{% endif %}>Ditolak</option>
-      </select>
-    </form>
-
+    <!-- Tabel kelola laporan -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+    <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+      Daftar Laporan
+    </h2>
+    <p class="text-xs text-gray-500 dark:text-gray-400">
+      Total: {{ reports|length }} laporan
+    </p>
   </div>
-</td>
 
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="6"
-                    class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
-                  Belum ada laporan atau filter terlalu spesifik.
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+  <div class="w-full overflow-x-auto">
+    <table class="min-w-full text-sm table-auto">
+      <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
+        <tr>
+          <th class="px-3 py-3 text-left whitespace-nowrap">Kode</th>
+          <th class="px-3 py-3 text-left">Pelapor</th>
+          <th class="px-3 py-3 text-left w-1/3">Judul</th>
+          <th class="px-3 py-3 text-left whitespace-nowrap">Status</th>
+          <th class="px-3 py-3 text-left whitespace-nowrap">Terakhir update</th>
+          <th class="px-3 py-3 text-left">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        {% for lp in reports %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60 align-top">
+          <td class="px-3 py-3 font-mono text-[11px] text-gray-700 dark:text-gray-200 whitespace-nowrap">
+            {{ lp.kode_pelaporan }}
+          </td>
+          <td class="px-3 py-3 text-xs text-gray-800 dark:text-gray-100 max-w-[150px] sm:max-w-none">
+        <div class="font-medium truncate">
+          {{ lp.user.username }}
         </div>
-      </div>
-    </main>
+        <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+          {{ lp.user.email }}
+        </div>
+        <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+          {{ lp.user.phone }}
+        </div>
+      </td>
 
+          <td class="px-3 py-3 text-xs text-gray-800 dark:text-gray-100 align-top">
+          <div class="whitespace-normal break-words">
+            {{ lp.judul }}
+          </div>
+        </td>
+          <td class="px-3 py-3 whitespace-nowrap">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold
+                   {% if lp.status == 'diajukan' %}
+                     bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300
+                   {% elif lp.status == 'diproses' %}
+                     bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                   {% elif lp.status == 'selesai' %}
+                     bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+                   {% else %}
+                     bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
+                   {% endif %}">
+              {{ lp.status|capitalize }}
+            </span>
+          </td>
+          <td class="px-3 py-3 text-[11px] text-gray-600 dark:text-gray-300 whitespace-nowrap">
+            {% set waktu = lp.updated_at or lp.created_at %}
+            {{ waktu|format_wib }} WIB
+          </td>
+
+          </td>
+
+          <td class="px-3 py-3">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
+                 class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-[11px]
+                        bg-slate-100 text-slate-700 hover:bg-slate-200
+                        dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600">
+                Detail
+              </a>
+
+              <button type="button"
+                      class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-[11px]
+                             border border-slate-300 text-slate-700
+                             dark:border-slate-500 dark:text-slate-100
+                             hover:bg-slate-50 dark:hover:bg-slate-700"
+                      onclick="openStatusModal({{ lp.id }}, '{{ lp.status }}')">
+                Ubah status
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6"
+              class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+            Belum ada laporan atau filter terlalu spesifik.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
+
+<!-- Modal ubah status (satu saja, di luar loop) -->
+<div id="statusModal"
+     class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md p-5">
+    <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">
+      Ubah status laporan
+    </h3>
+
+    <form method="post" id="statusForm">
+      {{ csrf_token() if csrf_token is defined }}
+      <input type="hidden" id="laporanIdHidden">
+
+      <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+        Status
+      </label>
+      <select name="status" id="statusSelect"
+              class="w-full rounded-lg border border-slate-300 dark:border-slate-600
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm mb-3
+                     text-slate-900 dark:text-slate-100">
+        <option value="diproses">Diproses</option>
+        <option value="selesai">Selesai</option>
+        <option value="ditolak">Ditolak</option>
+      </select>
+
+      <div id="fieldRingkasan" class="mb-3 hidden">
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+          Ringkasan hasil <span class="text-red-500">*</span>
+        </label>
+        <textarea name="ringkasan_hasil" rows="3"
+                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
+                         bg-white dark:bg-slate-900 px-3 py-2 text-xs
+                         text-slate-900 dark:text-slate-100"></textarea>
+      </div>
+
+      <div id="fieldAlasan" class="mb-3 hidden">
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+          Alasan ditolak <span class="text-red-500">*</span>
+        </label>
+        <textarea name="alasan_ditolak" rows="3"
+                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
+                         bg-white dark:bg-slate-900 px-3 py-2 text-xs
+                         text-slate-900 dark:text-slate-100"></textarea>
+      </div>
+
+      <div class="flex justify-between gap-2 mt-4">
+        <button type="button"
+                class="px-3 py-1.5 rounded-lg text-xs border border-amber-300
+                       text-amber-700 dark:text-amber-300
+                       dark:border-amber-500"
+                onclick="submitResetStatus()">
+          Reset ke diajukan
+        </button>
+
+        <div class="flex gap-2">
+          <button type="button"
+                  class="px-3 py-1.5 rounded-lg text-xs border border-slate-300
+                         text-slate-600 dark:text-slate-200
+                         dark:border-slate-600"
+                  onclick="closeStatusModal()">
+            Batal
+          </button>
+          <button type="submit"
+                  class="px-4 py-1.5 rounded-lg text-xs font-semibold
+                         bg-blue-600 text-white hover:bg-blue-700
+                         dark:bg-blue-500 dark:hover:bg-blue-400">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openStatusModal(id, currentStatus) {
+  const modal   = document.getElementById('statusModal');
+  const form    = document.getElementById('statusForm');
+  const select  = document.getElementById('statusSelect');
+  const hiddenId = document.getElementById('laporanIdHidden');
+
+  hiddenId.value = id;
+
+  const allowed = ['diajukan','diproses','selesai','ditolak'];
+  const value   = allowed.includes(currentStatus) ? currentStatus : 'diproses';
+
+  // kalau status masih diajukan, default-kan ke diproses
+  select.value = (value === 'diajukan') ? 'diproses' : value;
+
+  toggleExtraFields(select.value);
+
+  form.action = `/admin/laporan/${id}/status`;
+  modal.classList.remove('hidden');
+}
+
+function closeStatusModal() {
+  document.getElementById('statusModal').classList.add('hidden');
+}
+
+function toggleExtraFields(status) {
+  const ringkasan = document.getElementById('fieldRingkasan');
+  const alasan    = document.getElementById('fieldAlasan');
+  ringkasan.classList.add('hidden');
+  alasan.classList.add('hidden');
+  if (status === 'selesai') {
+    ringkasan.classList.remove('hidden');
+  } else if (status === 'ditolak') {
+    alasan.classList.remove('hidden');
+  }
+}
+
+function submitResetStatus() {
+  const hiddenId = document.getElementById('laporanIdHidden').value;
+  const form     = document.getElementById('statusForm');
+  if (!hiddenId) return;
+  if (!confirm('Kembalikan status ke diajukan?')) return;
+  form.action = `/admin/laporan/${hiddenId}/reset-status`;
+  form.submit();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const select = document.getElementById('statusSelect');
+  if (select) {
+    select.addEventListener('change', function () {
+      toggleExtraFields(this.value);
+    });
+  }
+});
+</script>
 {% endblock %}

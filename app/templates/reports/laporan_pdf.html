@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Surat Pengaduan</title>
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      font-size: 12pt;
+      line-height: 1.5;
+    }
+    .kop {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .kop h1 {
+      font-size: 14pt;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    .kop h2 {
+      font-size: 12pt;
+      margin: 0;
+    }
+    .separator {
+      border-bottom: 2px solid #000;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+    .indent {
+      text-indent: 24pt;
+      text-align: justify;
+    }
+    .table-info {
+      width: 100%;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+    .table-info td {
+      vertical-align: top;
+      padding: 2px 0;
+    }
+    .ttd {
+      width: 100%;
+      margin-top: 32px;
+    }
+    .ttd td {
+      vertical-align: top;
+    }
+  </style>
+</head>
+<body>
+
+<div class="kop">
+  <h1>Surat Pengaduan Masyarakat</h1>
+  <h2>Sistem Layanan Pengaduan Online</h2>
+</div>
+<div class="separator"></div>
+
+<p>Nomor Laporan : {{ laporan.kode_pelaporan or laporan.id }}</p>
+<p>Tanggal       : {{ laporan.created_at|format_wib }} WIB</p>
+<br>
+
+<p>Kepada Yth.</p>
+<p>Pimpinan Instansi Terkait</p>
+<p>di Tempat</p>
+<br>
+
+<p class="indent">
+  Dengan hormat,
+</p>
+
+<p class="indent">
+  Bersama ini saya yang bertanda tangan di bawah ini menyampaikan pengaduan
+  terkait hal sebagai berikut:
+</p>
+
+<table class="table-info">
+  <tr>
+    <td style="width: 120px;">Nama</td>
+    <td style="width: 10px;">:</td>
+    <td>{{ laporan.user.nama_lengkap or laporan.user.username }}</td>
+  </tr>
+  <tr>
+    <td>Alamat</td>
+    <td>:</td>
+    <td>{{ laporan.user.alamat or '-' }}</td>
+  </tr>
+  <tr>
+    <td>No. Telepon</td>
+    <td>:</td>
+    <td>{{ laporan.user.phone or '-' }}</td>
+  </tr>
+  <tr>
+    <td>Email</td>
+    <td>:</td>
+    <td>{{ laporan.user.email }}</td>
+  </tr>
+</table>
+
+<p class="indent">
+  Adapun pokok pengaduan yang ingin saya sampaikan adalah sebagai berikut:
+</p>
+
+<p><strong>Judul Pengaduan:</strong> {{ laporan.judul }}</p>
+
+<p class="indent">
+  {{ laporan.isi|replace('\n', '<br>')|safe }}
+</p>
+
+{% if laporan.lokasi %}
+<p class="indent">
+  Lokasi kejadian: {{ laporan.lokasi }}
+</p>
+{% endif %}
+
+<p class="indent">
+  Besar harapan saya agar pengaduan ini dapat ditindaklanjuti
+  sebagaimana mestinya. Atas perhatian dan kerja sama Bapak/Ibu,
+  saya ucapkan terima kasih.
+</p>
+
+<table class="ttd">
+  <tr>
+    <td style="width: 60%;"></td>
+    <td style="text-align: center;">
+      Hormat saya,<br><br><br><br>
+      <u>{{ laporan.user.nama_lengkap or laporan.user.username }}</u><br>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

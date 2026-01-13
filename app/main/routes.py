@@ -29,10 +29,10 @@ def profile():
 
     return render_template('pages/main/profile.html', form=form, stats=stats)
 
-
-@bp.route('/')
+@bp.route("/")
 def index():
-    return render_template('pages/main/index.html')
+    print("AUTH?", current_user.is_authenticated)
+    return render_template("pages/main/index.html")
 
 @bp.route('/dashboard')
 @login_required

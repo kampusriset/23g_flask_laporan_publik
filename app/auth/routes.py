@@ -8,31 +8,39 @@ from app.auth.forms import ForgotPasswordForm
 from flask import url_for
 from app.email import send_email 
 
-@bp.route('/login', methods=['GET', 'POST'])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
 
     form = LoginForm()
 
     if form.validate_on_submit():
-        username = form.username.data.strip()
+        username = (form.username.data or "").strip()
         user = User.query.filter_by(username=username).first()
 
-        if user and user.check_password(form.password.data):
-            remember = request.form.get('remember') == 'y'
+        if user and user.is_active and user.check_password(form.password.data):
+            # ambil dari field form jika ada, fallback ke request.form
+            remember = getattr(form, "remember", None)
+            if remember is not None:
+                remember = bool(remember.data)
+            else:
+                remember = request.form.get("remember") in ("y", "on", "true")
+
             login_user(user, remember=remember)
 
             user.last_login_at = datetime.utcnow()
             db.session.commit()
 
-            flash('Berhasil login.', 'success')
+            flash("Berhasil login.", "success")
             session.pop("can_access_dashboard", None)
-            return redirect(url_for('main.index'))
-        else:
-            flash('Username atau password salah.', 'danger')
 
-    return render_template('pages/auth/login.html', form=form)
+            next_page = request.args.get("next")
+            return redirect(next_page or url_for("main.index"))
+        else:
+            flash("Username, password, atau status akun tidak valid.", "danger")
+
+    return render_template("pages/auth/login.html", form=form)
 
 @bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -114,8 +122,10 @@ def register():
 @bp.route('/logout')
 @login_required
 def logout():
-    logout_user()
+    logout_user()         
     session.clear()
     flash('Logout berhasil. Silakan login kembali untuk melanjutkan.', 'success')
     return redirect(url_for('main.index'))
+
+
 

@@ -165,12 +165,17 @@
                     required>{{ laporan.deskripsi if laporan else '' }}</textarea>
         </div>
 
-        <div>
+     <div>
   <label class="block text-sm font-medium mb-2">
     Foto/Video Bukti <span class="text-red-500">*</span>
   </label>
 
- <!-- Dari file -->
+  <p class="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
+    Maksimal 3 foto dan 1 video, total ukuran semua file 5 MB.
+    Anda bisa unggah dari galeri atau ambil langsung dari kamera.
+  </p>
+
+  <!-- Dari file -->
 <label for="bukti_file"
        class="flex items-center gap-2 text-xs font-medium
               text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
@@ -187,46 +192,109 @@
   name="bukti_file"
   accept="image/*,video/*"
   multiple
-  class="block w-full text-sm text-slate-800 dark:text-slate-100 mb-2"
+  class="block w-full text-sm text-slate-800 dark:text-slate-100 mb-1"
 />
 
-<!-- Dari kamera -->
-<label for="btnOpenCamera"
-       class="flex items-center gap-2 text-xs font-medium
-              text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-          d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
-  </svg>
-  <span>Ambil langsung dari kamera</span>
-</label>
+<ul id="buktiFileList"
+    class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+</ul>
 
-<button type="button" id="btnOpenCamera"
-        class="mb-2 px-3 py-1 text-xs rounded
-               bg-blue-600 text-white hover:bg-blue-700
-               dark:bg-blue-500 dark:hover:bg-blue-400">
-  Buka Kamera
-</button>
 
+  <!-- Daftar file yang diambil dari kamera (setelah upload AJAX) -->
+  <ul id="cameraFilesList"
+      class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+    <!-- Diisi lewat JS -->
+  </ul>
+
+  <!-- Path file kamera yang sudah tersimpan di server -->
+  <input type="hidden" id="bukti_camera_path" name="bukti_camera_path">
+
+  <!-- Dari kamera -->
+  <label for="btnOpenCamera"
+         class="flex items-center gap-2 text-xs font-medium
+                text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
+    </svg>
+    <span>Ambil langsung dari kamera</span>
+  </label>
+
+  <button type="button" id="btnOpenCamera"
+          class="mb-2 px-3 py-1 text-xs rounded
+                 bg-blue-600 text-white hover:bg-blue-700
+                 dark:bg-blue-500 dark:hover:bg-blue-400">
+    Buka Kamera
+  </button>
+
+ <!-- Live kamera -->
 <div id="cameraArea"
      class="hidden mt-2 space-y-2 p-2 rounded
             bg-slate-50 border border-slate-300
             dark:bg-slate-800 dark:border-slate-600">
+
   <video id="camPreview"
          autoplay playsinline
          class="w-full rounded border border-slate-400 dark:border-slate-500"></video>
-  <button type="button" id="btnCapture"
-          class="px-3 py-1 text-xs rounded
-                 bg-emerald-600 text-white hover:bg-emerald-700
-                 dark:bg-emerald-500 dark:hover:bg-emerald-400">
-    Ambil Foto
-  </button>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" id="btnCapture"
+            class="px-3 py-1 text-xs rounded
+                   bg-emerald-600 text-white hover:bg-emerald-700
+                   dark:bg-emerald-500 dark:hover:bg-emerald-400">
+      Ambil Foto
+    </button>
+
+    <button type="button" id="btnStartRec"
+            class="px-3 py-1 text-xs rounded
+                   bg-red-600 text-white hover:bg-red-700
+                   dark:bg-red-500 dark:hover:bg-red-400">
+      Mulai Rekam Video
+    </button>
+
+    <button type="button" id="btnStopRec"
+            class="px-3 py-1 text-xs rounded
+                   bg-slate-600 text-white hover:bg-slate-700
+                   dark:bg-slate-500 dark:hover:bg-slate-400"
+            disabled>
+      Stop Rekaman
+    </button>
+
+    <!-- Timer durasi video -->
+    <span id="videoTimer"
+          class="text-xs text-slate-500 dark:text-slate-300 ml-2">
+      00:00
+    </span>
+  </div>
+
+  <!-- Daftar file hasil kamera (foto+video) -->
+  <ul id="cameraFilesList"
+      class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+  </ul>
 </div>
 
-<input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
+  <!-- Preview hasil foto dari kamera -->
+  <div id="cameraPreviewArea" class="hidden mt-2 space-y-2">
+    <img id="photoPreview"
+         class="w-full rounded border border-slate-400 dark:border-slate-500" />
+    <div class="flex gap-2">
+      <button type="button" id="btnRetake"
+              class="px-3 py-1 text-xs rounded bg-slate-600 text-white">
+        Ulangi
+      </button>
+      <button type="button" id="btnKeep"
+              class="px-3 py-1 text-xs rounded bg-emerald-600 text-white">
+        Simpan Foto Ini
+      </button>
+    </div>
+  </div>
 
+  <!-- Hidden untuk data kamera mentah (base64 / video) -->
+  <input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
+  <input type="hidden" name="bukti_video_data"  id="bukti_video_data">
+</div>
 
-       <div>
+<div>
   <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
   <input
     type="text"
@@ -412,102 +480,136 @@ function setAddressFromPosition(lat, lng) {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-const urlProvinsi  = "https://ibnux.github.io/data-indonesia/provinsi.json";
+const urlProvinsi  = "https://ibnux.github.io/data-indonesia/provinsi.json";
 const urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
 const urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
 const urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
+
 function clearOptions(id) {
-  $('#' + id).empty().trigger('change');
+  $('#' + id).empty().trigger('change');
 }
 
+
 $(function () {
-  const wilayahInput = document.getElementById('wilayah_input');
+  const wilayahInput = document.getElementById('wilayah_input');
 if (wilayahInput) wilayahInput.value = "";
 
 
-  // PROVINSI
-  $.getJSON(urlProvinsi, function (res) {
-    res = res.sort((a,b) => a.nama.localeCompare(b.nama));   // A-Z
-    res = $.map(res, o => ({ id: o.id, text: o.nama }));
-    const data = [{ id: "", text: "- Pilih Provinsi -" }].concat(res);
-    $('#provinsi_select').select2({ width:'100%', data });
-  });
 
-  // KABUPATEN
-  $('#provinsi_select').on('change', function () {
-    const provId = $(this).val();
-    clearOptions('kabupaten_select');
-    clearOptions('kecamatan_select');
-    clearOptions('kelurahan_select');
-    if (wilayahInput) wilayahInput.value = "";
-    if (!provId) return;
+  // PROVINSI
+  $.getJSON(urlProvinsi, function (res) {
+    res = res.sort((a,b) => a.nama.localeCompare(b.nama));   // A-Z
+    res = $.map(res, o => ({ id: o.id, text: o.nama }));
+    const data = [{ id: "", text: "- Pilih Provinsi -" }].concat(res);
+    $('#provinsi_select').select2({ width:'100%', data });
+  });
 
-    $.getJSON(urlKabupaten + provId + ".json", function (res) {
-      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
-      res = $.map(res, o => ({ id: o.id, text: o.nama }));
-      const data = [{ id:"", text:"- Pilih Kabupaten -" }].concat(res);
-      $('#kabupaten_select').select2({ width:'100%', data });
-    });
-  });
 
-  // KECAMATAN
-  $('#kabupaten_select').on('change', function () {
-    const kabId = $(this).val();
-    clearOptions('kecamatan_select');
-    clearOptions('kelurahan_select');
-    if (wilayahInput) wilayahInput.value = "";
-    if (!kabId) return;
+  // KABUPATEN
+  $('#provinsi_select').on('change', function () {
+    const provId = $(this).val();
+    clearOptions('kabupaten_select');
+    clearOptions('kecamatan_select');
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!provId) return;
 
-    $.getJSON(urlKecamatan + kabId + ".json", function (res) {
-      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
-      res = $.map(res, o => ({ id: o.id, text: o.nama }));
-      const data = [{ id:"", text:"- Pilih Kecamatan -" }].concat(res);
-      $('#kecamatan_select').select2({ width:'100%', data });
-    });
-  });
 
-  // KELURAHAN
-  $('#kecamatan_select').on('change', function () {
-    const kecId = $(this).val();
-    clearOptions('kelurahan_select');
-    if (wilayahInput) wilayahInput.value = "";
-    if (!kecId) return;
+    $.getJSON(urlKabupaten + provId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kabupaten -" }].concat(res);
+      $('#kabupaten_select').select2({ width:'100%', data });
+    });
+  });
 
-    $.getJSON(urlKelurahan + kecId + ".json", function (res) {
-      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
-      res = $.map(res, o => ({ id: o.id, text: o.nama }));
-      const data = [{ id:"", text:"- Pilih Kelurahan -" }].concat(res);
-      $('#kelurahan_select').select2({ width:'100%', data });
-    });
-  });
 
-  // ISI INPUT WILAYAH
-  $('#kelurahan_select').on('change', function () {
-    const kel = $('#kelurahan_select :selected').text();
-    const kec = $('#kecamatan_select :selected').text();
-    const kab = $('#kabupaten_select :selected').text();
-    const prov = $('#provinsi_select :selected').text();
-    if (!wilayahInput) return;
+  // KECAMATAN
+  $('#kabupaten_select').on('change', function () {
+    const kabId = $(this).val();
+    clearOptions('kecamatan_select');
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!kabId) return;
 
-    if (!kel || !kec || !kab || !prov || kel.startsWith('- ')) {
-      wilayahInput.value = "";
-      return;
-    }
 
-    wilayahInput.value = `${kel}, ${kec}, ${kab}, ${prov}, Indonesia`;
-  });
+    $.getJSON(urlKecamatan + kabId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kecamatan -" }].concat(res);
+      $('#kecamatan_select').select2({ width:'100%', data });
+    });
+  });
+
+
+  // KELURAHAN
+  $('#kecamatan_select').on('change', function () {
+    const kecId = $(this).val();
+    clearOptions('kelurahan_select');
+    if (wilayahInput) wilayahInput.value = "";
+    if (!kecId) return;
+
+
+    $.getJSON(urlKelurahan + kecId + ".json", function (res) {
+      res = res.sort((a,b) => a.nama.localeCompare(b.nama));
+      res = $.map(res, o => ({ id: o.id, text: o.nama }));
+      const data = [{ id:"", text:"- Pilih Kelurahan -" }].concat(res);
+      $('#kelurahan_select').select2({ width:'100%', data });
+    });
+  });
+
+
+  // ISI INPUT WILAYAH
+  $('#kelurahan_select').on('change', function () {
+    const kel = $('#kelurahan_select :selected').text();
+    const kec = $('#kecamatan_select :selected').text();
+    const kab = $('#kabupaten_select :selected').text();
+    const prov = $('#provinsi_select :selected').text();
+    if (!wilayahInput) return;
+
+
+    if (!kel || !kec || !kab || !prov || kel.startsWith('- ')) {
+      wilayahInput.value = "";
+      return;
+    }
+
+
+    wilayahInput.value = `${kel}, ${kec}, ${kab}, ${prov}, Indonesia`;
+  });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const MAX_TOTAL = 5 * 1024 * 1024;
+  const MAX_TOTAL = 5 * 1024 * 1024; // 5 MB
 
-  const fileInput     = document.getElementById('bukti_file');
   const form          = document.querySelector('form');
-  const camDataInput  = document.getElementById('bukti_camera_data'); // hidden base64
-  const cameraArea    = document.getElementById('cameraArea');
-  const btnOpenCam    = document.getElementById('btnOpenCamera');
-  const video         = document.getElementById('camPreview');
+  const fileInput     = document.getElementById('bukti_file');
+  const camDataInput  = document.getElementById('bukti_camera_data');  // base64 foto
+  const camVideoInput = document.getElementById('bukti_video_data');   // base64 video
+
+  const cameraArea        = document.getElementById('cameraArea');
+  const btnOpenCam        = document.getElementById('btnOpenCamera');
+  const btnCapture        = document.getElementById('btnCapture');
+  const btnStartRec       = document.getElementById('btnStartRec');
+  const btnStopRec        = document.getElementById('btnStopRec');
+  const video             = document.getElementById('camPreview');
+  const cameraPreviewArea = document.getElementById('cameraPreviewArea');
+  const photoPreview      = document.getElementById('photoPreview');
+  const btnRetake         = document.getElementById('btnRetake');
+  const btnKeep           = document.getElementById('btnKeep');
+
+  const cameraFilesList   = document.getElementById('cameraFilesList');
+  const videoTimer        = document.getElementById('videoTimer');
+
+  let camStream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let timerInterval = null;
+
+  function resetTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    if (videoTimer) videoTimer.textContent = '00:00';
+  }
 
   function validateFiles(input, rules) {
     const files = Array.from(input.files);
@@ -539,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return true;
   }
 
-  // Validasi file upload
+  // Validasi file upload (galeri)
   if (fileInput) {
     fileInput.addEventListener('change', () => {
       validateFiles(fileInput, {
@@ -550,28 +652,87 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Validasi sebelum submit: harus ada file atau data kamera
+  const buktiFileList = document.getElementById('buktiFileList');
+
+if (fileInput && buktiFileList) {
+  fileInput.addEventListener('change', () => {
+    buktiFileList.innerHTML = '';
+
+    const dt = new DataTransfer();
+
+    Array.from(fileInput.files).forEach((file, index) => {
+      const sizeKB = (file.size / 1024).toFixed(1);
+
+      const li = document.createElement('li');
+      li.className = 'flex items-center gap-1';
+
+      const spanText = document.createElement('span');
+      spanText.textContent =
+        `✔ ${file.name} (${sizeKB} KB, dari file/penyimpanan)`;
+
+      const btnRemove = document.createElement('button');
+      btnRemove.type = 'button';
+      btnRemove.textContent = '×';
+      btnRemove.className =
+        'ml-2 text-red-500 hover:text-red-700 text-xl leading-none px-1';
+
+      btnRemove.addEventListener('click', () => {
+        const newDt = new DataTransfer();
+        Array.from(fileInput.files).forEach((f, i) => {
+          if (i !== index) newDt.items.add(f);
+        });
+        fileInput.files = newDt.files;
+        li.remove();
+
+        validateFiles(fileInput, {
+          maxImages: 3,
+          maxVideos: 1,
+          maxTotal: MAX_TOTAL,
+        });
+      });
+
+      li.appendChild(spanText);
+      li.appendChild(btnRemove);
+      buktiFileList.appendChild(li);
+
+      dt.items.add(file);
+    });
+
+    fileInput.files = dt.files;
+
+    validateFiles(fileInput, {
+      maxImages: 3,
+      maxVideos: 1,
+      maxTotal: MAX_TOTAL,
+    });
+  });
+}
+
+
+  // Validasi sebelum submit: harus ada file atau kamera
   if (form) {
     form.addEventListener('submit', (e) => {
-      const hasFile   = fileInput && fileInput.files.length > 0;
-      const hasCamera = camDataInput && camDataInput.value.trim() !== '';
+      const hasFile     = fileInput && fileInput.files.length > 0;
+      const hasCamPhoto = camDataInput && camDataInput.value.trim() !== '';
+      const hasCamVideo = camVideoInput && camVideoInput.value.trim() !== '';
 
-      if (!hasFile && !hasCamera) {
+      if (!hasFile && !hasCamPhoto && !hasCamVideo) {
         e.preventDefault();
         alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
       }
     });
   }
 
-  // Fitur kamera
+  // ---- Kamera: buka / tutup ----
   async function openCamera() {
+    if (cameraPreviewArea) cameraPreviewArea.classList.add('hidden');
     cameraArea.classList.remove('hidden');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      camStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
-        audio: false
+        audio: true
       });
-      video.srcObject = stream;
+      video.srcObject = camStream;
     } catch (err) {
       alert('Gagal membuka kamera: ' + err.message);
       closeCamera();
@@ -585,17 +746,233 @@ document.addEventListener('DOMContentLoaded', () => {
       tracks.forEach(t => t.stop());
       video.srcObject = null;
     }
+    camStream = null;
+    resetTimer();
   }
 
   if (btnOpenCam && cameraArea && video && navigator.mediaDevices) {
-    btnOpenCam.addEventListener('click', openCamera);
+    btnOpenCam.addEventListener('click', () => {
+      if (camStream) closeCamera();
+      else openCamera();
+    });
   }
 
-  
+  function showPreview(dataUrl) {
+    if (!photoPreview || !cameraPreviewArea) return;
+    photoPreview.src = dataUrl;
+    cameraArea.classList.add('hidden');
+    cameraPreviewArea.classList.remove('hidden');
+    closeCamera();
+  }
+
+  // ---- Ambil FOTO dari kamera ----
+  if (btnCapture && video) {
+    btnCapture.addEventListener('click', () => {
+      if (!camStream) {
+        alert('Kamera belum aktif.');
+        return;
+      }
+
+      const trackSettings = camStream.getVideoTracks()[0].getSettings();
+      const canvas = document.createElement('canvas');
+      canvas.width  = trackSettings.width  || 640;
+      canvas.height = trackSettings.height || 480;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      camDataInput.value = dataUrl;
+      showPreview(dataUrl);
+    });
+  }
+
+  // Ulangi foto
+  if (btnRetake) {
+    btnRetake.addEventListener('click', () => {
+      camDataInput.value = '';
+      cameraPreviewArea.classList.add('hidden');
+      openCamera();
+    });
+  }
+
+  // Simpan foto kamera -> list
+  if (btnKeep) {
+    btnKeep.addEventListener('click', () => {
+      if (!camDataInput.value) {
+        alert('Tidak ada foto yang tersimpan.');
+        return;
+      }
+
+      const list = cameraFilesList;
+      const currentCount = list ? list.children.length : 0;
+      if (currentCount >= 3) {
+        alert('Maksimal 3 foto dari kamera.');
+        closeCamera();
+        camDataInput.value = '';
+        if (cameraPreviewArea) {
+          cameraPreviewArea.classList.add('hidden');
+        }
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('bukti_camera_data', camDataInput.value);
+
+      fetch('/reports/upload-camera-photo', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (!res.ok) {
+            alert('Gagal menyimpan foto: ' + (res.error || ''));
+            return;
+          }
+
+          if (list) {
+            let sizeText = ' (dari kamera)';
+            if (res.filesize_bytes) {
+              const sizeKB = (res.filesize_bytes / 1024).toFixed(1);
+              sizeText = ` (${sizeKB} KB, dari kamera)`;
+            }
+
+            const li = document.createElement('li');
+            li.className = 'flex items-center gap-1';
+
+            const spanText = document.createElement('span');
+            spanText.textContent = `✔ ${res.filename}${sizeText}`;
+
+            const btnRemove = document.createElement('button');
+            btnRemove.type = 'button';
+            btnRemove.textContent = '×';
+            btnRemove.className = 'ml-2 text-red-500 hover:text-red-700 text-xl leading-none px-1';
+
+            btnRemove.addEventListener('click', () => {
+              li.remove();
+              // opsional: fetch('/reports/delete-camera-photo', ...)
+            });
+
+            li.appendChild(spanText);
+            li.appendChild(btnRemove);
+            list.appendChild(li);
+          }
+
+          cameraPreviewArea.classList.add('hidden');
+          camDataInput.value = '';
+
+          const pathInput = document.getElementById('bukti_camera_path');
+          if (pathInput) {
+            pathInput.value = (pathInput.value ? pathInput.value + ',' : '') + res.path;
+          }
+
+          alert(`Foto disimpan sebagai ${res.filename}.`);
+        })
+        .catch(err => {
+          alert('Terjadi kesalahan saat upload: ' + err.message);
+        });
+    });
+  }
+
+  // ---- Rekam VIDEO + timer + list ----
+  if (btnStartRec && btnStopRec) {
+    btnStartRec.addEventListener('click', () => {
+      if (!camStream) {
+        alert('Kamera belum aktif.');
+        return;
+      }
+
+      // mulai timer
+      let seconds = 0;
+      resetTimer();
+      timerInterval = setInterval(() => {
+        seconds++;
+        const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        if (videoTimer) videoTimer.textContent = `${m}:${s}`;
+      }, 1000);
+
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(camStream, { mimeType: 'video/webm' });
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        resetTimer();
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+
+        // cek total size (fileInput + video kamera)
+        const existingFiles = fileInput ? Array.from(fileInput.files) : [];
+        const totalExisting = existingFiles.reduce((sum, f) => sum + f.size, 0);
+        const totalWithVideo = totalExisting + blob.size;
+
+       if (totalWithVideo > MAX_TOTAL) {
+  alert('Ukuran video membuat total file melebihi 5 MB. Rekam lebih singkat atau hapus file lain.');
+  recordedChunks = [];
+  if (camVideoInput) camVideoInput.value = '';
+  btnStartRec.disabled = false;
+  btnStopRec.disabled  = true;
+  closeCamera();
+  return;
+}
+
+
+        // simpan base64 ke input hidden
+        if (camVideoInput) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            camVideoInput.value = reader.result; // data:video/webm;base64,...
+          };
+          reader.readAsDataURL(blob);
+        }
+
+        // tampil di list kamera
+        if (cameraFilesList) {
+          const sizeKB = (blob.size / 1024).toFixed(1);
+          const li = document.createElement('li');
+          li.className = 'flex items-center gap-1';
+
+          const spanText = document.createElement('span');
+          spanText.textContent = `✔ Video kamera (${sizeKB} KB)`;
+
+          const btnRemove = document.createElement('button');
+          btnRemove.type = 'button';
+          btnRemove.textContent = '×';
+          btnRemove.className = 'ml-2 text-red-500 hover:text-red-700 text-xl leading-none px-1';
+          btnRemove.addEventListener('click', () => {
+            li.remove();
+            camVideoInput.value = '';
+          });
+
+          li.appendChild(spanText);
+          li.appendChild(btnRemove);
+          cameraFilesList.appendChild(li);
+        }
+
+        btnStartRec.disabled = false;
+        btnStopRec.disabled  = true;
+        alert('Video dari kamera sudah direkam dan siap dikirim.');
+        closeCamera(); 
+      };
+
+      mediaRecorder.start();
+      btnStartRec.disabled = true;
+      btnStopRec.disabled  = false;
+      alert('Rekaman video dimulai. Tekan "Stop Rekaman" untuk selesai.');
+    });
+
+    btnStopRec.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+    });
+  }
 });
 
-
-</script>
+</script> 
 
 
 {% endblock %}

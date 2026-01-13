@@ -133,7 +133,7 @@
         <!-- Hasil tracking (hanya tampil jika ada objek laporan) -->
         {% if laporan %}
         <section class="space-y-4">
-         <!-- Info ringkas laporan -->
+     <!-- Info ringkas laporan -->
 <div class="rounded-xl border border-slate-200 dark:border-slate-700
             bg-white dark:bg-slate-900 px-4 py-3 space-y-2">
   <div class="flex justify-between gap-4">
@@ -167,46 +167,62 @@
     </div>
   </div>
 
-  <!-- detail lokasi/proses terakhir -->
   <div class="flex items-start gap-3 pt-2 border-t border-dashed border-slate-200 dark:border-slate-700">
     <div class="mt-1">
-      <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-        i
-      </span>
+      {% if laporan.status == 'selesai' %}
+        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                     bg-emerald-500 text-white text-xs">
+          ✓
+        </span>
+      {% elif laporan.status == 'ditolak' %}
+        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                     bg-rose-500 text-white text-xs">
+          ✕
+        </span>
+      {% else %}
+        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                     bg-blue-600 text-white text-xs">
+          i
+        </span>
+      {% endif %}
     </div>
+
     <div class="text-xs text-slate-600 dark:text-slate-300">
       {% if laporan.status == 'diajukan' %}
         <p class="font-semibold">Laporan diterima sistem</p>
-        <p>
-          Laporanmu sudah tersimpan dan menunggu untuk diverifikasi petugas.
-        </p>
+        <p>Laporanmu sudah tersimpan dan menunggu untuk diverifikasi petugas.</p>
+
       {% elif laporan.status == 'diproses' %}
         <p class="font-semibold">Sedang ditindaklanjuti</p>
-        <p>
-          Petugas yang bertanggung jawab sudah menerima laporan dan sedang melakukan
-          pengecekan lapangan / verifikasi data.
-        </p>
+        <p>Petugas yang bertanggung jawab sudah menerima laporan dan sedang melakukan pengecekan lapangan atau verifikasi data.</p>
         {% if laporan.petugas_nama %}
           <p class="mt-1">
             Petugas: <span class="font-semibold">{{ laporan.petugas_nama }}</span>
           </p>
         {% endif %}
+
       {% elif laporan.status == 'selesai' %}
-        <p class="font-semibold">Penanganan selesai</p>
-        <p>
-          Laporan sudah diselesaikan. Ringkasan hasil penanganan:
-          <span class="font-semibold">{{ laporan.ringkasan_hasil or 'belum diisi' }}</span>
-        </p>
-      {% elif laporan.status == 'ditolak' %}
-        <p class="font-semibold">Laporan ditolak</p>
-        <p>
-          Laporan tidak dapat diproses dengan alasan:
-          <span class="font-semibold">{{ laporan.alasan_ditolak or 'tidak disebutkan' }}</span>
-        </p>
+  <p class="font-semibold">Penanganan selesai</p>
+  <p>
+    Laporan sudah diselesaikan. Ringkasan hasil penanganan:
+    <span class="font-semibold">{{ laporan.ringkasan_hasil or 'belum diisi' }}</span>
+  </p>
+
+{% elif laporan.status == 'ditolak' %}
+  <p class="font-semibold">Laporan ditolak</p>
+  <p>
+    Laporan tidak dapat diproses dengan alasan:
+    <span class="font-semibold">{{ laporan.alasan_ditolak or 'tidak disebutkan' }}</span>
+  </p>
+
+      {% else %}
+        <p class="font-semibold">Status tidak dikenal</p>
+        <p>Silakan hubungi admin jika status ini muncul terus.</p>
       {% endif %}
     </div>
   </div>
 </div>
+
 
 <!-- Timeline / progress -->
 <div class="rounded-xl border border-slate-200 dark:border-slate-700
@@ -215,32 +231,35 @@
     Riwayat Status
   </h2>
 
+  {% set step =
+      1 if laporan.status == 'diajukan'
+      else 2 if laporan.status == 'diproses'
+      else 3
+  %}
+  {% set is_rejected = laporan.status == 'ditolak' %}
+
   <ol class="relative border-l border-slate-200 dark:border-slate-700 space-y-6 ml-3">
-  <!-- 1. Diajukan -->
-<li class="ml-4">
-  <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-              bg-emerald-500 text-white">
-    1
-  </div>
-  <div>
-    <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
-      <span class="font-bold">Laporan diajukan &amp; diterima petugas</span>
-    </p>
-    
-    <p class="text-xs text-slate-500 dark:text-slate-400">
-      Diajukan: {{ laporan.updated_at.strftime('%d %b %Y, %H:%M') if laporan.updated_at else '-' }}
-    </p>
-  </div>
-</li>
+    <!-- 1. Diajukan -->
+    <li class="ml-4">
+      <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
+                  {{ 'bg-emerald-500 text-white' if step == 1 else 'bg-slate-300 text-slate-600' }}">
+        1
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
+          <span class="font-bold">Laporan diajukan &amp; diterima petugas</span>
+        </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+        Diajukan:
+        {{ laporan.created_at|format_wib }} WIB
+      </p>
+      </div>
+    </li>
 
     <!-- 2. Diproses -->
     <li class="ml-4">
       <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-                  {% if laporan.tgl_diproses %}
-                    bg-blue-600 text-white
-                  {% else %}
-                    bg-slate-300 text-slate-600
-                  {% endif %}">
+                  {{ 'bg-emerald-500 text-white' if step == 2 else 'bg-slate-300 text-slate-600' }}">
         2
       </div>
       <div>
@@ -248,16 +267,21 @@
           Sedang diproses
         </p>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          {{ laporan.tgl_diproses.strftime('%d %b %Y, %H:%M') if laporan.tgl_diproses else 'Menunggu diproses.' }}
-        </p>
-      </div>
+  {% if laporan.tgl_diproses %}
+    {{ laporan.tgl_diproses|format_wib }} WIB
+  {% else %}
+    Petugas sedang memproses laporan.
+  {% endif %}
+</p>
     </li>
 
     <!-- 3. Selesai / Ditolak -->
     <li class="ml-4">
       <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-                  {% if laporan.tgl_selesai or laporan.tgl_ditolak %}
-                    bg-blue-600 text-white
+                  {% if step == 3 and is_rejected %}
+                    bg-red-500 text-white
+                  {% elif step == 3 %}
+                    bg-emerald-500 text-white
                   {% else %}
                     bg-slate-300 text-slate-600
                   {% endif %}">
@@ -265,21 +289,28 @@
       </div>
       <div>
         <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          {% if laporan.status == 'selesai' %}Selesai{% elif laporan.status == 'ditolak' %}Ditolak{% else %}Tahap akhir{% endif %}
+          {% if laporan.status == 'ditolak' %}
+            Ditolak
+          {% elif laporan.status == 'selesai' %}
+            Selesai
+          {% else %}
+            Tahap akhir
+          {% endif %}
         </p>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          {% if laporan.tgl_selesai %}
-            {{ laporan.tgl_selesai.strftime('%d %b %Y, %H:%M') }} – laporan dinyatakan selesai.
-          {% elif laporan.tgl_ditolak %}
-            {{ laporan.tgl_ditolak.strftime('%d %b %Y, %H:%M') }} – laporan ditolak.
+          {% if laporan.status == 'ditolak' and laporan.tgl_ditolak %}
+            {{ laporan.tgl_ditolak|format_wib }} WIB – laporan ditolak.
+          {% elif laporan.status == 'selesai' and laporan.tgl_selesai %}
+            {{ laporan.tgl_selesai|format_wib }} WIB – laporan dinyatakan selesai.
           {% else %}
-            Menunggu keputusan akhir dari petugas.
+            Konfirmasi petugas untuk laporan Anda.
           {% endif %}
         </p>
       </div>
     </li>
   </ol>
 </div>
+
 
         </section>
         {% elif request.args.get('kode') %}
