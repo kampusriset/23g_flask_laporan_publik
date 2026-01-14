@@ -96,20 +96,11 @@ python gen-secret.py
 cp .env.example
 python3 gen-secret.py
 ```
-### 7. Set flask app agar simple
-### - windows 
+### 7. seeder admin ke db
 ```
-set FLASK_APP=run.py
+flask seed-db
 ```
-### - linux
-```
-export FLASK_APP=run.py
-```
-### 8. seeder admin ke db
-```
-flask seed-user
-```
-### 9. Jalankan Aplikasi
+### 8. Jalankan Aplikasi
 ```
 flask run
 ```
