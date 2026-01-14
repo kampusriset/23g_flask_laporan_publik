@@ -230,5 +230,53 @@
       });
     });
   });
-</script>
+</script> 
+<div class="mb-4 relative inline-block text-left" x-data="{ open: false }">
+    <div>
+        <button 
+            @click="open = !open" 
+            @click.away="open = false"
+            type="button" 
+            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm"
+        >
+            <i class="bi bi-printer mr-2"></i> Cetak Rekap PDF
+            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+
+    <div 
+        x-show="open"
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="transform opacity-0 scale-95"
+        x-transition:enter-end="transform opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="transform opacity-100 scale-100"
+        x-transition:leave-end="transform opacity-0 scale-95"
+        class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+        style="display: none;" 
+    >
+        <div class="py-1">
+            <a href="{{ url_for('reports.download_rekap_pdf', status='all') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+                Semua Laporan
+            </a>
+            
+            <div class="border-t border-gray-100 my-1"></div> <a href="{{ url_for('reports.download_rekap_pdf', status='selesai') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+                Hanya Status Selesai
+            </a>
+            <a href="{{ url_for('reports.download_rekap_pdf', status='diproses') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+                Hanya Status Diproses
+            </a>
+            <a href="{{ url_for('reports.download_rekap_pdf', status='ditolak') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+                Hanya Status Ditolak
+            </a>
+            <a href="{{ url_for('reports.download_rekap_pdf', status='diajukan') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+                Hanya Status Diajukan
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+
