@@ -229,35 +229,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const pass1 = document.getElementById('password');
   const pass2 = document.getElementById('password2');
 
-  nama.addEventListener('input', () => {
-    const ok = /^[A-Za-zÀ-ÿ\s]+$/.test(nama.value.trim());
-    setMsg('nama_lengkap_live', ok || nama.value === '' ?
-      '' : 'Nama hanya boleh huruf dan spasi');
-  });
+  if (nama) {
+    nama.addEventListener('input', () => {
+      const ok = /^[A-Za-zÀ-ÿ\s]+$/.test(nama.value.trim());
+      setMsg('nama_lengkap_live', ok || nama.value === ''
+        ? '' : 'Nama hanya boleh huruf dan spasi');
+    });
+  }
 
-  username.addEventListener('input', () => {
-    const ok = /^[a-zA-Z0-9_.-]{3,20}$/.test(username.value);
-    setMsg('username_live', ok || username.value === '' ?
-      '' : 'Username 3–20 karakter, huruf/angka/titik/garis');
-  });
+  if (username) {
+    username.addEventListener('input', () => {
+      const ok = /^[a-zA-Z0-9_.-]{3,20}$/.test(username.value);
+      setMsg('username_live', ok || username.value === ''
+        ? '' : 'Username 3–20 karakter, huruf/angka/titik/garis');
+    });
+  }
 
-  email.addEventListener('input', () => {
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
-    setMsg('email_live', ok || email.value === '' ?
-      '' : 'Format email belum valid');
-  });
+  if (email) {
+    email.addEventListener('input', () => {
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+      setMsg('email_live', ok || email.value === ''
+        ? '' : 'Format email belum valid');
+    });
+  }
 
-  pass1.addEventListener('input', () => {
-    const v = pass1.value;
-    const ok = v.length >= 8 &&
-               /[A-Z]/.test(v) &&
-               /\d/.test(v) &&
-               /[^A-Za-z0-9]/.test(v);
-    setMsg('password_live', ok || v === '' ?
-      '' : 'Min 8, ada huruf besar, angka, dan simbol');
-  });
+  if (pass1) {
+    pass1.addEventListener('input', () => {
+      const v = pass1.value;
+      const ok = v.length >= 8 &&
+                 /[A-Z]/.test(v) &&
+                 /\d/.test(v) &&
+                 /[^A-Za-z0-9]/.test(v);
+      setMsg('password_live', ok || v === ''
+        ? '' : 'Min 8, ada huruf besar, angka, dan simbol');
+    });
+  }
 
   function cekSamaPassword() {
+    if (!pass1 || !pass2) return;
     if (pass2.value === '' || pass1.value === '') {
       setMsg('password2_live', '');
     } else {
@@ -265,8 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pass1.value === pass2.value ? '' : 'Password tidak sama');
     }
   }
-  pass1.addEventListener('input', cekSamaPassword);
-  pass2.addEventListener('input', cekSamaPassword);
+
+  if (pass1) pass1.addEventListener('input', cekSamaPassword);
+  if (pass2) pass2.addEventListener('input', cekSamaPassword);
 
   function togglePassword(id, btn) {
     const input = document.getElementById(id);
@@ -275,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.type = isPassword ? 'text' : 'password';
   }
 </script>
+
 
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

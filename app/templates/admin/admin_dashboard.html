@@ -48,17 +48,17 @@
     Kelola Laporan
   </a>
 
-  <a href="{{ url_for('admin.dashboard') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Kategori &amp; Wilayah
-  </a>
+  <a href="{{ url_for('admin.kelola_kategori') }}"
+   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+          hover:bg-gray-100 dark:hover:bg-gray-700">
+  Kategori & Wilayah
+</a>
 
-  <a href="{{ url_for('admin.dashboard') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Pengaturan Sistem
-  </a>
+   <a href="{{ url_for('admin.pengaturan_sistem') }}"
+   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+          hover:bg-gray-100 dark:hover:bg-gray-700">
+  Pengaturan Sistem
+</a>
 </nav>
 
 </aside>
@@ -69,83 +69,92 @@
         Ringkasan aktivitas sistem dan shortcut untuk mengelola pengguna serta laporan.
       </p>
 
-      <!-- Kartu statistik -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</span>
-          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {{ total_users }}
-          </span>
-        </div>
-        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Laporan</span>
-          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {{ total_reports }}
-          </span>
-        </div>
-        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Diproses</span>
-          <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {{ reports_in_progress }}
-          </span>
-        </div>
-        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Selesai</span>
-          <span class="text-2xl font-bold text-green-600 dark:text-green-400">
-            {{ reports_done }}
-          </span>
-        </div>
-      </div>
+     <!-- Kartu statistik -->
+<div class="grid gap-4 mb-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</span>
+    <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      {{ total_users }}
+    </span>
+  </div>
 
-      <!-- Tabel laporan terbaru -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-            Laporan Terbaru
-          </h2>
-          <a href="{{ url_for('admin.dashboard') }}"
-             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-            Lihat semua
-          </a>
-        </div>
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
-            <tr>
-              <th class="px-4 py-3 text-left">Kode</th>
-              <th class="px-4 py-3 text-left">Pelapor</th>
-              <th class="px-4 py-3 text-left">Judul</th>
-              <th class="px-4 py-3 text-left">Status</th>
-              <th class="px-4 py-3 text-left">Dibuat</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-            {% for lp in latest_reports %}
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60">
-              <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-                {{ lp.kode_pelaporan }}
-              </td>
-              <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
-                {{ lp.user.username }}
-              </td>
-              <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
-                {{ lp.judul }}
-              </td>
-              <td class="px-4 py-3">
-                {{ lp.status|capitalize }}
-              </td>
-              <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-                {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
-                Belum ada laporan yang masuk.
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Laporan</span>
+    <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      {{ total_reports }}
+    </span>
+  </div>
+
+  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Diproses</span>
+    <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+      {{ reports_in_progress }}
+    </span>
+  </div>
+
+  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
+    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Selesai</span>
+    <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+      {{ reports_done }}
+    </span>
+  </div>
+</div>
+
+<!-- Tabel laporan terbaru -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+    <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+      Laporan Terbaru
+    </h2>
+    <a href="{{ url_for('admin.manage_reports') }}"
+       class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+      Lihat semua
+    </a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
+        <tr>
+          <th class="px-4 py-3 text-left whitespace-nowrap">Kode</th>
+          <th class="px-4 py-3 text-left whitespace-nowrap">Pelapor</th>
+          <th class="px-4 py-3 text-left">Judul</th>
+          <th class="px-4 py-3 text-left whitespace-nowrap">Status</th>
+          <th class="px-4 py-3 text-left whitespace-nowrap">Dibuat</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        {% for lp in latest_reports %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60">
+          <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200 whitespace-nowrap">
+            {{ lp.kode_pelaporan }}
+          </td>
+          <td class="px-4 py-3 text-gray-800 dark:text-gray-100 whitespace-nowrap">
+            {{ lp.user.username }}
+          </td>
+          <td class="px-4 py-3 text-gray-800 dark:text-gray-100">
+            <div class="line-clamp-2">
+              {{ lp.judul }}
+            </div>
+          </td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            {{ lp.status|capitalize }}
+          </td>
+          <td class="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+            {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+            Belum ada laporan yang masuk.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
       </div>
     </main>
   </div>

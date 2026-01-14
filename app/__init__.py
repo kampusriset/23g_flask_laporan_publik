@@ -6,7 +6,6 @@ from config import DevelopmentConfig
 from datetime import datetime, timedelta
 import os
 
-
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
@@ -14,6 +13,13 @@ login_manager = LoginManager()
 
 def create_app(config_class=DevelopmentConfig):
     app_dir = os.path.dirname(os.path.abspath(__file__))
+
+    app = Flask(
+        __name__,
+        static_folder=os.path.join(app_dir, "static"),
+        static_url_path="/static",
+    )
+    app.config.from_object(config_class)
     root_dir = os.path.dirname(app_dir)
 
     app = Flask(__name__)
@@ -21,7 +27,7 @@ def create_app(config_class=DevelopmentConfig):
     app.static_url_path = "/static"
     app.config.from_object(config_class)
 
-    # timeout session 10 menit
+    # session timeout 10 menit
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
     db.init_app(app)
@@ -29,6 +35,13 @@ def create_app(config_class=DevelopmentConfig):
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
     login_manager.login_message = "Login dulu ya!"
+
+    # ---- Filter waktu WIB untuk Jinja ----
+    from app.utils import to_wib, format_wib
+
+    app.jinja_env.filters["to_wib"] = to_wib
+    app.jinja_env.filters["format_wib"] = format_wib
+    # --------------------------------------
 
     from app.models import User, Laporan, Kategori
     from app.auth import bp as auth_bp
@@ -50,13 +63,14 @@ def create_app(config_class=DevelopmentConfig):
         if current_user.is_authenticated:
             current_user.last_seen = datetime.utcnow()
             db.session.commit()
-        # aktifkan & refresh timeout session di setiap request
         session.permanent = True
         session.modified = True
 
     @app.after_request
     def add_header(response):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, max-age=0, private"
+        )
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response
