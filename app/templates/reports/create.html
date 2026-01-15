@@ -171,7 +171,7 @@
   </label>
 
   <p class="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
-    Maksimal 3 foto dan 1 video, total ukuran semua file 5 MB.
+    Maksimal 3 foto dan 1 video, total ukuran semua file 100 MB.
     Anda bisa unggah dari galeri atau ambil langsung dari kamera.
   </p>
 
@@ -580,7 +580,7 @@ if (wilayahInput) wilayahInput.value = "";
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const MAX_TOTAL = 5 * 1024 * 1024; // 5 MB
+  const MAX_TOTAL = 100 * 1024 * 1024; // 100 MB
 
   const form          = document.querySelector('form');
   const fileInput     = document.getElementById('bukti_file');
@@ -716,10 +716,13 @@ if (fileInput && buktiFileList) {
       const hasCamPhoto = camDataInput && camDataInput.value.trim() !== '';
       const hasCamVideo = camVideoInput && camVideoInput.value.trim() !== '';
 
-      if (!hasFile && !hasCamPhoto && !hasCamVideo) {
-        e.preventDefault();
-        alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
-      }
+      const adaBukti = hasFile || hasCamPhotoPath || hasCamVideo;
+
+      // Jika TIDAK ADA bukti sama sekali, baru alert
+      if (!adaBukti) {
+        e.preventDefault();
+        alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
+      }
     });
   }
 

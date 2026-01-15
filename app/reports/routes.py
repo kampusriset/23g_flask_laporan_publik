@@ -8,7 +8,7 @@ from pydoc import html
 
 from flask import (
     Blueprint, render_template, request, redirect,
-    url_for, flash, abort, jsonify, make_response
+    url_for, flash, abort, jsonify, make_response,current_app
 )
 import uuid
 from flask_login import login_required, current_user
@@ -19,12 +19,6 @@ import pdfkit
 from app import db
 from app.models import Laporan, Kategori
 from app.reports import bp
-
-
-import os
-import uuid
-from pathlib import Path
-from werkzeug.utils import secure_filename
 
 # 1. Pastikan BASE_DIR ini beneran nunjuk ke folder 'app' lo
 # Kalau file ini ada di dalam folder 'app/', code ini udah bener.
@@ -80,50 +74,60 @@ def save_uploaded_file(file_obj):
 def save_camera_photo(data_url):
     """
     Terima data URL base64 dari kamera (image),
-    simpan sebagai JPEG, kembalikan path relatif atau None.
+    simpan sebagai JPEG dengan nama unik UUID.
     """
     if not data_url:
         return None
 
     try:
         header, encoded = data_url.split(",", 1)
-    except ValueError:
+        binary = base64.b64decode(encoded)
+        
+        img = Image.open(io.BytesIO(binary))
+        # Convert ke RGB jika format aslinya RGBA (PNG) agar bisa disave jadi JPEG
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+            
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=85) # Kompresi dikit biar ringan
+        buf.seek(0)
+
+        # GUNAKAN UUID AGAR NAMA FILE TIDAK BENTROK
+        filename = secure_filename(f"cam_{uuid.uuid4().hex}.jpg")
+        full_path = UPLOAD_FOLDER / filename
+        
+        with open(full_path, "wb") as f:
+            f.write(buf.read())
+
+        return to_relative(full_path)
+    except Exception as e:
+        print(f"Error save camera photo: {e}")
         return None
-
-    binary = base64.b64decode(encoded)
-    img = Image.open(io.BytesIO(binary))
-    buf = io.BytesIO()
-    img.save(buf, format="JPEG")
-    buf.seek(0)
-
-    filename = secure_filename(f"kamera_{int(datetime.now().timestamp())}.jpg")
-    full_path = UPLOAD_FOLDER / filename
-    with open(full_path, "wb") as f:
-        f.write(buf.read())
-
-    return to_relative(full_path)
 
 
 def save_camera_video(data_url):
     """
     Terima data URL base64 video/webm dari kamera,
-    simpan ke disk, kembalikan path relatif atau None.
+    simpan ke disk dengan nama unik UUID.
     """
     if not data_url:
         return None
 
     try:
         header, encoded = data_url.split(",", 1)
-    except ValueError:
+        binary = base64.b64decode(encoded)
+        
+        # GUNAKAN UUID
+        filename = secure_filename(f"vid_{uuid.uuid4().hex}.webm")
+        full_path = UPLOAD_FOLDER / filename
+        
+        with open(full_path, "wb") as f:
+            f.write(binary)
+
+        return to_relative(full_path)
+    except Exception as e:
+        print(f"Error save camera video: {e}")
         return None
-
-    binary = base64.b64decode(encoded)
-    filename = secure_filename(f"video_{int(datetime.utcnow().timestamp())}.webm")
-    full_path = UPLOAD_FOLDER / filename
-    with open(full_path, "wb") as f:
-        f.write(binary)
-
-    return to_relative(full_path)
 
 
 @bp.route("/my-reports")
@@ -288,6 +292,10 @@ def delete(laporan_id):
 @bp.route("/create", methods=["GET", "POST"])
 @login_required
 def create():
+    limit = current_app.config.get('MAX_CONTENT_LENGTH')
+    print(f"DEBUG: Limit Upload Server saat ini: {limit} bytes")
+    if limit:
+        print(f"DEBUG: Dalam MB: {limit / (1024 * 1024)} MB")
     if request.method == "POST":
         judul = request.form["judul"]
         kategori_id = request.form["kategori_id"]
@@ -311,16 +319,16 @@ def create():
         kamera_paths_str = request.form.get("bukti_camera_path", "").strip()
         if kamera_paths_str:
             for p in kamera_paths_str.split(","):
-                p = p.strip()
-                if p:
-                    paths.append(p)
+                clean_path = p.strip()
+                if clean_path:
+                    paths.append(clean_path)
 
-        # c) video kamera dari form (base64)
+        # c) Video kamera dari form (Base64 di Input Hidden: bukti_video_data)
         video_data = request.form.get("bukti_video_data", "").strip()
         if video_data:
             rel = save_camera_video(video_data)
             if rel:
-                paths.append(rel)
+                paths.append(rel)   
 
         foto_path_str = ",".join(paths) if paths else None
 

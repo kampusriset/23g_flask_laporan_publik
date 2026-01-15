@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, Request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -12,7 +12,8 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-
+class UnlimitedRequest(Request):
+    max_content_length = None
 def create_app(config_class=DevelopmentConfig):
 
     static_folder=os.getenv('APP_URL')
@@ -22,7 +23,17 @@ def create_app(config_class=DevelopmentConfig):
     app.config.from_object(config_class)
     # session timeout 10 menit
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
+    app.config['MAX_CONTENT_LENGTH'] = None
+    app.request_class = UnlimitedRequest
 
+    # ... sisa kode konfigurasi Anda ...
+    app.config.from_object(config_class)
+    
+    # Debugging Wajib: Pastikan Config Terbaca
+    print("--- DEBUG STARTUP ---")
+    print(f"Config MAX_CONTENT_LENGTH: {app.config.get('MAX_CONTENT_LENGTH')}")
+    print(f"Request Class: {app.request_class}")
+    print("---------------------")
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)

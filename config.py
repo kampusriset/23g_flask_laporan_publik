@@ -8,9 +8,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///laporin.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    UPLOAD_FOLDER = "app/static/uploads"
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
-    RATELIMIT_ENABLED = True
 
     # Email settings
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
