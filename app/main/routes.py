@@ -81,7 +81,13 @@ def after_login():
 @bp.route('/notifications')
 @login_required
 def notifications():
-    return render_template('pages/main/notifications.html')
+    notifikasi_list = Laporan.query.filter(
+        Laporan.user_id == current_user.id,
+        Laporan.status.in_(['diproses', 'selesai', 'ditolak'])
+    ).order_by(Laporan.updated_at.desc()).all()
+
+    return render_template('pages/main/notifications.html', notifications=notifikasi_list)
+
 
 
 @bp.route('/settings')
