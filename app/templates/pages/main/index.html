@@ -1,140 +1,247 @@
 {% extends "base.html" %}
+
+{% block title %}LaporIN - Layanan Aspirasi dan Pengaduan Online{% endblock %}
+
 {% block content %}
 
-<section id="beranda" class="py-20 bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid lg:grid-cols-2 gap-12 items-center">
-      <div class="space-y-8">
-        <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent leading-tight">
-          Laporkan Fasilitas<br>Publik Dengan Mudah
-        </h1>
-        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-lg">
-          Temukan, laporkan, dan pantau perbaikan fasilitas publik di sekitarmu secara real-time.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4">
-         <a href="{{ url_for('main.after_login') }}"
-        class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-2xl shadow-xl hover:bg-blue-700 transform hover:-translate-y-1 transition-all duration-300 text-lg">
-        Mulai Laporkan
-      </a>
+<section id="beranda" class="relative pt-6 pb-20 lg:pt-12 lg:pb-24 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 scroll-mt-24">
+  
+  <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 right-0 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl"></div>
+  </div>
 
-          <a href="{{ url_for('main.index', _anchor='fitur') }}" class="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white font-semibold rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-            Lihat Fitur
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-start lg:items-center">
+      
+      <div class="space-y-6 text-center lg:text-left mt-4 lg:mt-0">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
+  Laporkan Fasilitas Publik Dengan Mudah <br class="hidden lg:block">
+</h1>
+
+        <blockquote class="text-base sm:text-lg italic font-medium text-gray-500 dark:text-gray-400 border-l-4 border-blue-500 pl-4 py-2 mx-auto lg:mx-0 max-w-2xl bg-blue-50/50 dark:bg-blue-900/10 rounded-r-lg">
+          "Setiap orang memiliki kelebihan dan kekurangan masing-masing. Oleh karena itu, setiap anggota harus bekerja sama dan saling bahu-membahu untuk menutupi kekurangan dengan kelebihannya."
+        </blockquote>
+
+        <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+          Temukan, laporkan, dan pantau perbaikan fasilitas publik di sekitarmu secara real-time. Jadilah pahlawan bagi kotamu hari ini.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+          <a href="{{ url_for('main.after_login') }}"
+             class="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 transform hover:-translate-y-1 transition-all duration-300 text-center">
+            🚀 Mulai Laporkan
+          </a>
+          <a href="#fitur" 
+             class="px-8 py-4 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 text-center">
+            Pelajari Lebih Lanjut
           </a>
         </div>
       </div>
-      <div class="relative">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 transform rotate-6 hover:rotate-0 transition-transform duration-500">
-          <div class="grid grid-cols-2 gap-4 text-center p-6">
-            <div class="bg-blue-100 dark:bg-blue-900/30 rounded-xl p-4">
-              <div class="w-12 h-12 bg-blue-500 rounded-2xl mx-auto mb-2 flex items-center justify-center">📍</div>
-              <p class="font-semibold">Lokasi GPS</p>
+
+      <div class="relative mx-auto w-full max-w-md lg:max-w-full lg:mt-0">
+        <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-8 transform transition-transform duration-500 hover:scale-105 border border-gray-100 dark:border-gray-700">
+          
+          <div class="absolute -top-6 -right-6 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg rotate-12 z-10">
+            Alpha Version
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 text-center">
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 sm:p-6 transition hover:bg-blue-100 dark:hover:bg-blue-900/40">
+              <div class="w-12 h-12 bg-blue-500 text-white rounded-xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-lg shadow-blue-500/30">
+                📍
+              </div>
+              <h3 class="font-bold text-gray-900 dark:text-white">Lokasi GPS</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Otomatis Terdeteksi</p>
             </div>
-            <div class="bg-green-100 dark:bg-green-900/30 rounded-xl p-4">
-              <div class="w-12 h-12 bg-green-500 rounded-2xl mx-auto mb-2 flex items-center justify-center">📱</div>
-              <p class="font-semibold">Foto Bukti</p>
+
+            <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 sm:p-6 transition hover:bg-green-100 dark:hover:bg-green-900/40">
+              <div class="w-12 h-12 bg-green-500 text-white rounded-xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-lg shadow-green-500/30">
+                📸
+              </div>
+              <h3 class="font-bold text-gray-900 dark:text-white">Foto Bukti</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload Langsung</p>
             </div>
-            <div class="bg-purple-100 dark:bg-purple-900/30 rounded-xl p-4">
-              <div class="w-12 h-12 bg-purple-500 rounded-2xl mx-auto mb-2 flex items-center justify-center">⚡</div>
-              <p class="font-semibold">Tracking</p>
+
+            <div class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4 sm:p-6 transition hover:bg-purple-100 dark:hover:bg-purple-900/40">
+              <div class="w-12 h-12 bg-purple-500 text-white rounded-xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+                ⚡
+              </div>
+              <h3 class="font-bold text-gray-900 dark:text-white">Tracking</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pantau Progres</p>
             </div>
-            <div class="bg-orange-100 dark:bg-orange-900/30 rounded-xl p-4">
-              <div class="w-12 h-12 bg-orange-500 rounded-2xl mx-auto mb-2 flex items-center justify-center">✅</div>
-              <p class="font-semibold">Status Real-time</p>
+
+            <div class="bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 sm:p-6 transition hover:bg-orange-100 dark:hover:bg-orange-900/40">
+              <div class="w-12 h-12 bg-orange-500 text-white rounded-xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-lg shadow-orange-500/30">
+                ✅
+              </div>
+              <h3 class="font-bold text-gray-900 dark:text-white">Respon</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cepat & Tanggap</p>
             </div>
           </div>
         </div>
+        
+        <div class="absolute -z-10 top-10 -right-10 w-full h-full bg-gray-200 dark:bg-gray-700 rounded-3xl transform rotate-6 opacity-50"></div>
       </div>
+
     </div>
-  </div>
+  </div> 
 </section>
 
-<section id="fitur" class="py-20 bg-white dark:bg-gray-900">
+<section id="fitur" class="py-20 bg-white dark:bg-gray-900 scroll-mt-24 border-t border-gray-100 dark:border-gray-800">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-20">
-      <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Fitur Unggulan</h2>
-      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-        Sistem pelaporan modern yang mudah digunakan siapa saja.
+    <div class="text-center mb-16">
+      <span class="text-blue-600 font-semibold tracking-wide uppercase text-sm">Statistik & Dampak</span>
+      <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">Terpercaya & Transparan</h2>
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        Kami berkomitmen untuk memberikan layanan pelaporan yang transparan dengan data real-time.
       </p>
     </div>
-    <div class="grid md:grid-cols-4 gap-8 mb-20 text-center">
-      <div>
-        <div class="text-4xl font-bold text-blue-600">1K+</div>
-        <p class="text-gray-600 dark:text-gray-300">Laporan</p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      
+      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-lg transition">
+        <div class="text-4xl font-extrabold text-blue-600 mb-2">
+            {{ total_laporan }}
+        </div>
+        <p class="font-medium text-gray-600 dark:text-gray-300">Laporan Masuk</p>
       </div>
-      <div>
-        <div class="text-4xl font-bold text-green-600">95%</div>
-        <p class="text-gray-600 dark:text-gray-300">Terselesaikan</p>
+
+      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-lg transition">
+        <div class="text-4xl font-extrabold text-green-600 mb-2">
+            {{ persen_selesai }}%
+        </div>
+        <p class="font-medium text-gray-600 dark:text-gray-300">Terselesaikan</p>
       </div>
-      <div>
-        <div class="text-4xl font-bold text-purple-600">24 Jam</div>
-        <p class="text-gray-600 dark:text-gray-300">Rata-rata Respon</p>
+
+      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-lg transition">
+        <div class="text-4xl font-extrabold text-purple-600 mb-2">24 Jam</div>
+        <p class="font-medium text-gray-600 dark:text-gray-300">Respon Rata-rata</p>
       </div>
-      <div>
-        <div class="text-4xl font-bold text-orange-600">50+</div>
-        <p class="text-gray-600 dark:text-gray-300">Kota</p>
+
+      <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-lg transition">
+        <div class="text-4xl font-extrabold text-orange-600 mb-2">50+</div>
+        <p class="font-medium text-gray-600 dark:text-gray-300">Wilayah Kota</p>
       </div>
+
     </div>
   </div>
 </section>
-
-<section id="tutorial" class="py-20 bg-gray-50 dark:bg-gray-950">
+<section id="tutorial" class="py-20 bg-gray-50 dark:bg-gray-950 scroll-mt-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Tutorial Penggunaan</h2>
+    <div class="text-center mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Cara Menggunakan</h2>
       <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-        Tiga langkah mudah untuk mengirim laporan pertamamu.
+        Hanya butuh 3 langkah sederhana untuk berkontribusi pada kota Anda.
       </p>
     </div>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
-        <h3 class="font-semibold mb-2">1. Daftar & Masuk</h3>
-        <p class="text-gray-600 dark:text-gray-300 text-sm">
-          Buat akun baru atau masuk dengan akun yang sudah ada.
+
+    <div class="grid md:grid-cols-3 gap-8 relative">
+      <div class="hidden md:block absolute top-12 left-0 w-full h-1 bg-gray-200 dark:bg-gray-800 -z-10 transform translate-y-1/2"></div>
+
+      <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 relative hover:-translate-y-2 transition duration-300">
+        <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 mx-auto shadow-lg shadow-blue-600/30">1</div>
+        <h3 class="text-xl font-bold text-center mb-3 text-gray-900 dark:text-white">Daftar & Masuk</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-center text-sm leading-relaxed">
+          Buat akun dalam hitungan detik. Keamanan data Anda adalah prioritas kami.
         </p>
       </div>
-      <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
-        <h3 class="font-semibold mb-2">2. Buat Laporan</h3>
-        <p class="text-gray-600 dark:text-gray-300 text-sm">
-          Isi judul, kategori, lokasi, dan unggah foto bukti kerusakan.
+
+      <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 relative hover:-translate-y-2 transition duration-300">
+        <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 mx-auto shadow-lg shadow-blue-600/30">2</div>
+        <h3 class="text-xl font-bold text-center mb-3 text-gray-900 dark:text-white">Buat Laporan</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-center text-sm leading-relaxed">
+          Foto kerusakan, tambahkan lokasi, dan berikan deskripsi singkat.
         </p>
       </div>
-      <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
-        <h3 class="font-semibold mb-2">3. Pantau Tindak Lanjut</h3>
-        <p class="text-gray-600 dark:text-gray-300 text-sm">
-          Lihat status laporan dan progres perbaikan secara berkala.
+
+      <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 relative hover:-translate-y-2 transition duration-300">
+        <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 mx-auto shadow-lg shadow-blue-600/30">3</div>
+        <h3 class="text-xl font-bold text-center mb-3 text-gray-900 dark:text-white">Pantau</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-center text-sm leading-relaxed">
+          Dapatkan notifikasi real-time saat laporan Anda diproses oleh petugas.
         </p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="tentang" class="py-20 bg-white dark:bg-gray-900">
+<section id="tentang" class="py-20 bg-white dark:bg-gray-900 scroll-mt-24">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Tentang Aplikasi</h2>
-    <p class="text-gray-600 dark:text-gray-300">
-      Aplikasi ini dibuat untuk menjembatani warga dan pemerintah dalam menangani kerusakan fasilitas publik
-      secara lebih cepat, transparan, dan terukur.
+    <div class="inline-block p-4 rounded-full bg-blue-50 dark:bg-blue-900/30 mb-6">
+      <span class="text-4xl">🤝</span>
+    </div>
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Tentang Aplikasi</h2>
+    <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+      Aplikasi ini dibuat sebagai jembatan digital antara warga dan pemerintah. Kami percaya bahwa partisipasi aktif masyarakat adalah kunci untuk membangun infrastruktur publik yang lebih baik, aman, dan nyaman untuk semua.
     </p>
   </div>
 </section>
 
-<section id="kontak" class="py-20 bg-gray-50 dark:bg-gray-950">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">Kontak</h2>
-    <div class="grid md:grid-cols-2 gap-8">
-      <div class="space-y-2 text-gray-700 dark:text-gray-300">
-        <p>Email: support@laporin.test</p>
-        <p>Telepon: 021-123456</p>
-        <p>Alamat: Jl. Contoh No. 123, Yogyakarta</p>
+<section id="kontak" class="py-20 bg-gray-50 dark:bg-gray-950 scroll-mt-24 border-t border-gray-200 dark:border-gray-800">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Hubungi Kami</h2>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Punya pertanyaan atau saran? Kami siap mendengar.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 sm:p-12">
+      
+      <div class="space-y-8 flex flex-col justify-center">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+            📧
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-lg">Email</h3>
+            <p class="text-gray-600 dark:text-gray-400">support@laporin.test</p>
+            <p class="text-sm text-gray-500">Senin - Jumat, 09:00 - 17:00</p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-xl flex items-center justify-center text-xl">
+            📞
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-lg">Telepon</h3>
+            <p class="text-gray-600 dark:text-gray-400">021-123456</p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+            🏢
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-lg">Kantor Utama</h3>
+            <p class="text-gray-600 dark:text-gray-400">Jl. Contoh No. 123, Yogyakarta</p>
+            <p class="text-sm text-gray-500">Indonesia, 55281</p>
+          </div>
+        </div>
       </div>
-      <form class="space-y-4">
-        <input type="text" placeholder="Nama" class="w-full px-4 py-2 rounded-lg border dark:bg-gray-900">
-        <input type="email" placeholder="Email" class="w-full px-4 py-2 rounded-lg border dark:bg-gray-900">
-        <textarea rows="4" placeholder="Pesan" class="w-full px-4 py-2 rounded-lg border dark:bg-gray-900"></textarea>
-        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Kirim
+
+      <form class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
+          <input type="text" placeholder="Masukkan nama Anda" 
+                 class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+          <input type="email" placeholder="nama@email.com" 
+                 class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pesan</label>
+          <textarea rows="4" placeholder="Tuliskan pesan Anda..." 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200 resize-none"></textarea>
+        </div>
+        <button type="submit" class="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+          Kirim Pesan
         </button>
       </form>
+
     </div>
   </div>
 </section>

@@ -5,16 +5,20 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp
 
-
+# --- Form Login ---
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
+    # Tambahan optional: remember me sering dipakai di login
+    remember = BooleanField('Ingat Saya') 
     submit   = SubmitField("Login")
-    
+
+# --- Form Lupa Password ---
 class ForgotPasswordForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Kirim link reset")
 
+# --- Form Reset Password ---
 class ResetPasswordForm(FlaskForm):
     password = PasswordField(
         'Password Baru', 
@@ -32,6 +36,7 @@ class ResetPasswordForm(FlaskForm):
     )
     submit = SubmitField('Ubah Password')
 
+# --- Form Register ---
 class RegisterForm(FlaskForm):
     nama_lengkap = StringField('Nama Lengkap', validators=[
         DataRequired(message='Nama lengkap wajib diisi.'),
@@ -69,7 +74,7 @@ class RegisterForm(FlaskForm):
 
     submit = SubmitField('Register')
 
-
+# --- Form Admin User Management ---
 class UserForm(FlaskForm):
     nama_lengkap = StringField('Nama lengkap', validators=[DataRequired(), Length(max=100)])
     username = StringField('Username', validators=[DataRequired(), Length(max=50)])
@@ -78,3 +83,18 @@ class UserForm(FlaskForm):
     role = SelectField('Role', choices=[('admin', 'Admin'), ('user', 'User')], validators=[DataRequired()])
     is_active = BooleanField('Aktif?', default=True)
     password = PasswordField('Password')  # opsional saat edit
+
+# --- Form Profil Pengguna (YANG SEBELUMNYA HILANG) ---
+class ProfileForm(FlaskForm):
+    nama_lengkap = StringField('Nama Lengkap', validators=[
+        DataRequired(),
+        Length(min=3, max=100, message="Nama harus antara 3-100 karakter")
+    ])
+    
+    phone = StringField('Nomor Telepon', validators=[
+        DataRequired(),
+        Length(min=10, max=15, message="Nomor telepon harus 10-15 digit"),
+        Regexp(r'^[0-9]+$', message="Hanya angka yang diperbolehkan")
+    ])
+    
+    submit = SubmitField('Simpan Perubahan')

@@ -1,12 +1,40 @@
-from flask import render_template, redirect, url_for, flash, request, session
+from flask import render_template, redirect, url_for, flash, request, session, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from app.auth import bp
-from app.models import db, User
+from app import db, mail # <--- PENTING: Import mail dari app
+from app.models.user import User 
 from app.auth.forms import LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
 from datetime import datetime
-from app.auth.forms import ForgotPasswordForm
-from flask import url_for
-from app.email import send_email 
+from flask_mail import Message # <--- PENTING: Import Message
+
+# --- FUNGSI HELPER PENGIRIM EMAIL ---
+def send_reset_email(user):
+    token = user.get_reset_token()
+    
+    # Membuat pesan email
+    msg = Message('Permintaan Reset Password - LaporIN',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[user.email])
+    
+    # _external=True PENTING agar menghasilkan URL lengkap (http://localhost:5000/...)
+    url = url_for('auth.reset_password', token=token, _external=True)
+    
+    # Isi email (Body)
+    msg.body = f'''Halo {user.nama_lengkap},
+
+Untuk mereset password akun LaporIN Anda, silakan klik tautan berikut:
+{url}
+
+Tautan ini hanya berlaku selama 30 menit.
+Jika Anda tidak merasa melakukan permintaan ini, abaikan saja email ini.
+
+Salam,
+Tim LaporIN
+'''
+    # Kirim email
+    mail.send(msg)
+
+# --- ROUTES ---
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -20,7 +48,6 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and user.is_active and user.check_password(form.password.data):
-            # ambil dari field form jika ada, fallback ke request.form
             remember = getattr(form, "remember", None)
             if remember is not None:
                 remember = bool(remember.data)
@@ -42,6 +69,7 @@ def login():
 
     return render_template("pages/auth/login.html", form=form)
 
+
 @bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if current_user.is_authenticated:
@@ -53,51 +81,49 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            flash("Email tidak ditemukan.", "warning")
+            # Demi keamanan, sebenarnya pesan ini sebaiknya generik
+            # Tapi untuk tugas kuliah, spesifik tidak apa-apa
+            flash("Email tidak ditemukan dalam sistem.", "warning")
             return redirect(url_for("auth.forgot_password"))
 
-        # Sementara: langsung arahkan ke halaman reset password
-        token = user.get_reset_token()
-        flash("Silakan masukkan password baru.", "info")
-        return redirect(url_for("auth.reset_password", token=token))
+        # --- KIRIM EMAIL ---
+        try:
+            send_reset_email(user)
+            flash("Instruksi reset password telah dikirim ke email Anda. Silakan cek Inbox atau Spam.", "info")
+            return redirect(url_for("auth.login")) # Redirect ke login, bukan langsung reset
+        except Exception as e:
+            # Menangkap error jika koneksi internet mati atau config salah
+            print(f"Error sending email: {e}")
+            flash("Terjadi kesalahan saat mengirim email. Pastikan koneksi internet lancar.", "danger")
 
     return render_template("pages/auth/forgot_password.html", form=form)
 
+
 @bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    # 1. Jika user sudah login, tidak boleh akses halaman ini
     if current_user.is_authenticated:
-        return redirect(url_for("main.dashboard")) # Sesuaikan dengan halaman utama Anda
+        return redirect(url_for("main.dashboard"))
 
-    # 2. Verifikasi Token menggunakan method static di Model User
     user = User.verify_reset_token(token)
     
-    # 3. Jika token invalid atau expired (user None)
     if not user:
         flash("Link reset password tidak valid atau sudah kedaluwarsa.", "danger")
-        return redirect(url_for("auth.forgot_password")) # Kembali ke halaman minta link
+        return redirect(url_for("auth.forgot_password"))
 
-    # 4. Load Form
     form = ResetPasswordForm()
 
-    # 5. Proses Submit Password Baru
     if form.validate_on_submit():
-        # Enkripsi password baru (method set_password ada di User model)
         user.set_password(form.password.data)
-        
-        # Simpan perubahan ke database
         db.session.commit()
         
         flash("Password berhasil diubah. Silakan login dengan password baru.", "success")
         return redirect(url_for("auth.login"))
 
-    # 6. Render Halaman Reset
-    return render_template("auth/reset_password.html", form=form)
+    return render_template("pages/auth/reset_password.html", form=form)
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # Kalau sudah login, kirim ke index dulu
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
 
@@ -105,12 +131,12 @@ def register():
 
     if form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():
-            flash('Username sudah dipakai, silakan gunakan yang lain.')
-            return redirect(url_for('auth.register'))
+            flash('Username sudah dipakai, silakan gunakan yang lain.', 'danger')
+            return render_template('pages/auth/register.html', form=form)
 
         if User.query.filter_by(email=form.email.data).first():
-            flash('Email sudah terdaftar, silakan gunakan email lain.')
-            return redirect(url_for('auth.register'))
+            flash('Email sudah terdaftar, silakan gunakan email lain.', 'danger')
+            return render_template('pages/auth/register.html', form=form)
 
         user = User(
             nama_lengkap=form.nama_lengkap.data,
@@ -122,12 +148,10 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Registrasi sukses! Silakan login.')
+        
+        flash('Registrasi sukses! Silakan login.', 'success')
         return redirect(url_for('auth.login'))
-
-    # SETIAP GET / REFRESH: form baru, kosong, tanpa error
-    form = RegisterForm(formdata=None)
-
+    
     return render_template('pages/auth/register.html', form=form)
 
 
@@ -136,11 +160,7 @@ def register():
 def logout():
     logout_user()         
     session.clear()
-    flash('Logout berhasil. Silakan login kembali untuk melanjutkan.', 'success')
+    flash('Logout berhasil.', 'success')
     response = redirect(url_for('main.index'))
     response.delete_cookie('session')
-    response.delete_cookie('remember_token') 
     return response
-
-
-

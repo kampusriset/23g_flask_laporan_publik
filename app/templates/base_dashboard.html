@@ -163,4 +163,52 @@
     }
   }
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Ambil elemen tombol dan menu berdasarkan ID
+    const userToggle = document.getElementById('user-menu-toggle');
+    const userMenu = document.getElementById('user-menu');
+
+    // Pastikan elemen ada sebelum menjalankan logika
+    if (userToggle && userMenu) {
+        
+        // 2. Event saat tombol diklik
+        userToggle.addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah klik tembus ke document
+            userMenu.classList.toggle('hidden'); // Hapus/Tambah class 'hidden'
+        });
+
+        // 3. Event saat klik di mana saja di luar menu (untuk menutup menu)
+        document.addEventListener('click', function(e) {
+            // Jika yang diklik BUKAN tombol DAN BUKAN menu itu sendiri
+            if (!userToggle.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.add('hidden'); // Sembunyikan menu
+            }
+        });
+    }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var themeToggleBtn = document.getElementById('theme-toggle');
+
+    // Cek apakah tombol ada (untuk menghindari error di halaman tanpa navbar)
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function() {
+            
+            // Toggle class 'dark' pada elemen <html>
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+        });
+    }
+});
+</script>
 {% endblock %}
