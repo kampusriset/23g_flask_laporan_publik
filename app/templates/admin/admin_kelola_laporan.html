@@ -231,7 +231,7 @@
       Ubah status laporan
     </h3>
 
-    <form method="post" id="statusForm">
+    <form method="post" id="statusForm" enctype="multipart/form-data">
       {{ csrf_token() if csrf_token is defined }}
       <input type="hidden" id="laporanIdHidden">
 
@@ -255,6 +255,18 @@
                   class="w-full rounded-lg border border-slate-300 dark:border-slate-600
                          bg-white dark:bg-slate-900 px-3 py-2 text-xs
                          text-slate-900 dark:text-slate-100"></textarea>
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-gray-700">
+          Foto hasil penanganan
+        </label>
+        <input
+          type="file"
+          name="admin_foto"
+          accept="image/*"
+          class="mt-1 block w-full text-sm"
+        />
       </div>
 
       <div id="fieldAlasan" class="mb-3 hidden">

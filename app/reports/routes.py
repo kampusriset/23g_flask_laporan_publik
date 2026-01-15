@@ -471,3 +471,41 @@ def download_rekap_pdf():
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
     
     return response
+
+@bp.route("/admin/laporan/<int:laporan_id>/update-status", methods=["POST"])
+@login_required
+def admin_update_status(laporan_id):
+    if current_user.role != "admin":
+        abort(403)
+
+    laporan = Laporan.query.get_or_404(laporan_id)
+
+    status_baru = request.form.get("status")
+    ringkasan = request.form.get("ringkasan_hasil")
+    alasan = request.form.get("alasan_ditolak")
+
+    # === FOTO ADMIN ===
+    file = request.files.get("foto_path")
+    if file and file.filename:
+        rel_path = save_uploaded_file(file)
+        if rel_path:
+            laporan.foto_path = rel_path
+
+    # === STATUS LOGIC ===
+    if status_baru == "diproses":
+        laporan.status = "diproses"
+        laporan.tgl_diproses = datetime.now()
+
+    elif status_baru == "selesai":
+        laporan.status = "selesai"
+        laporan.ringkasan_hasil = ringkasan
+        laporan.tgl_selesai = datetime.now()
+
+    elif status_baru == "ditolak":
+        laporan.status = "ditolak"
+        laporan.alasan_ditolak = alasan
+        laporan.tgl_ditolak = datetime.now()
+
+    db.session.commit()
+    flash("Status laporan berhasil diperbarui", "success")
+    return redirect(url_for("admin.detail_laporan", laporan_id=laporan.id))
