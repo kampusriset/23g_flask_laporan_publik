@@ -10,6 +10,9 @@ from app import db
 from app.admin import bp           # <-- ini satu-satunya blueprint
 from app.models import User, Laporan, Kategori
 from app.forms import UserForm
+import os
+from werkzeug.utils import secure_filename
+from flask import current_app
 
 
 # ---------- GUARD ADMIN ----------
@@ -229,10 +232,10 @@ def update_report_status(laporan_id):
     from datetime import datetime
     now = datetime.utcnow()
 
-    # simpan nilai updated_at lama
+    # simpan updated_at lama
     last_updated = laporan.updated_at
 
-    # hanya ubah status dan field terkait
+    # reset field
     laporan.status = new_status
     laporan.tgl_selesai = None
     laporan.tgl_ditolak = None
@@ -242,9 +245,24 @@ def update_report_status(laporan_id):
     if new_status == "diproses":
         if laporan.tgl_diproses is None:
             laporan.tgl_diproses = now
+
     elif new_status == "selesai":
         laporan.tgl_selesai = now
         laporan.ringkasan_hasil = ringkasan_hasil
+
+        # 🔽🔽🔽 TAMBAHAN PENTING: UPLOAD FOTO ADMIN 🔽🔽🔽
+        file = request.files.get("foto_admin")
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            folder = "uploads/admin"
+            upload_dir = os.path.join(current_app.static_folder, folder)
+
+            os.makedirs(upload_dir, exist_ok=True)
+            file.save(os.path.join(upload_dir, filename))
+
+            # SIMPAN RELATIVE PATH (INI KUNCI)
+            laporan.foto_admin = f"{folder}/{filename}"
+
     elif new_status == "ditolak":
         laporan.tgl_ditolak = now
         laporan.alasan_ditolak = alasan_ditolak
@@ -255,6 +273,7 @@ def update_report_status(laporan_id):
     db.session.commit()
     flash("Status laporan berhasil diperbarui.", "success")
     return redirect(url_for("admin.manage_reports"))
+
 
 
 @bp.route("/laporan/<int:laporan_id>/reset-status", methods=["POST"])

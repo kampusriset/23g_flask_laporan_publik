@@ -504,11 +504,11 @@ def admin_update_status(laporan_id):
     alasan = request.form.get("alasan_ditolak")
 
     # === FOTO ADMIN ===
-    file = request.files.get("foto_path")
+    file = request.files.get("admin_foto")
     if file and file.filename:
         rel_path = save_uploaded_file(file)
         if rel_path:
-            laporan.foto_path = rel_path
+            laporan.foto_admin = rel_path
 
     # === STATUS LOGIC ===
     if status_baru == "diproses":
