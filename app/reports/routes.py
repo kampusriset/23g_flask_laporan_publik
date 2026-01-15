@@ -10,6 +10,7 @@ from flask import (
     Blueprint, render_template, request, redirect,
     url_for, flash, abort, jsonify, make_response
 )
+import uuid
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -21,11 +22,10 @@ from app.reports import bp
 
 
 # Folder upload di dalam static
-BASE_DIR = Path(__file__).resolve().parent.parent  # app/
+BASE_DIR = Path(__file__).resolve().parent # app/
 STATIC_FOLDER = BASE_DIR / "static"
 UPLOAD_FOLDER = STATIC_FOLDER / "uploads" / "laporan_foto"
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
-
 
 def to_relative(path: Path) -> str:
     """
@@ -35,14 +35,27 @@ def to_relative(path: Path) -> str:
     return str(path.relative_to(STATIC_FOLDER)).replace("\\", "/")
 
 
+import uuid
+import os
+from werkzeug.utils import secure_filename
+
 def save_uploaded_file(file_obj):
-    """Simpan satu file upload (foto/video) dari galeri, kembalikan path relatif atau None."""
+    """
+    Simpan file dengan nama random (hashed/UUID) untuk mencegah duplikasi.
+    Contoh hasil: 'a1b2c3d4e5... .jpg'
+    """
     if not file_obj or not file_obj.filename:
         return None
-    filename = secure_filename(file_obj.filename)
-    full_path = UPLOAD_FOLDER / filename
-    file_obj.save(full_path)
-    return to_relative(full_path)
+    original_filename = secure_filename(file_obj.filename)
+    _, ext = os.path.splitext(original_filename)
+    unique_filename = f"{uuid.uuid4().hex}{ext.lower()}"
+    full_path = UPLOAD_FOLDER / unique_filename
+    try:
+        file_obj.save(full_path)
+        return to_relative(full_path)
+    except Exception as e:
+        print(f"❌ Gagal save file: {e}")
+        return None
 
 
 def save_camera_photo(data_url):
@@ -64,7 +77,7 @@ def save_camera_photo(data_url):
     img.save(buf, format="JPEG")
     buf.seek(0)
 
-    filename = secure_filename(f"kamera_{int(datetime.utcnow().timestamp())}.jpg")
+    filename = secure_filename(f"kamera_{int(datetime.now().timestamp())}.jpg")
     full_path = UPLOAD_FOLDER / filename
     with open(full_path, "wb") as f:
         f.write(buf.read())

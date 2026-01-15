@@ -38,7 +38,7 @@
         <div class="w-32">
           {% if lower.endswith('.mp4') or lower.endswith('.webm') or lower.endswith('.ogg') %}
             <video
-              src="{{ url_for('static', filename=path) }}"
+              src="{{ app_url }}{{ url_for('static', filename=path) }}"
               controls
               class="w-32 h-32 rounded-lg border border-gray-300 dark:border-gray-700 object-contain bg-black">
             </video>
@@ -47,7 +47,7 @@
             </p>
           {% else %}
             <img
-              src="{{ url_for('static', filename=path) }}"
+              src="{{ app_url }}{{ url_for('static', filename=path) }}"
               alt="Lampiran {{ loop.index }}"
               class="w-32 h-32 rounded-lg border border-gray-300 dark:border-gray-700 object-cover bg-white" />
             <p class="mt-1 text-[11px] text-gray-500 truncate">
