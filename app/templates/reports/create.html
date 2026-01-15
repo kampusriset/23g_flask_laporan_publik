@@ -580,7 +580,7 @@ if (wilayahInput) wilayahInput.value = "";
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const MAX_TOTAL = 100 * 1024 * 1024; // 100 MB
+  const MAX_TOTAL = 150 * 1024 * 1024; // 100 MB
 
   const form          = document.querySelector('form');
   const fileInput     = document.getElementById('bukti_file');
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     if (totalSize > rules.maxTotal) {
-      alert('Total ukuran file maksimal 5 MB.');
+      alert('Total ukuran file maksimal 150 MB.');
       input.value = '';
       return false;
     }

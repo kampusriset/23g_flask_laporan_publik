@@ -1,4 +1,4 @@
-from flask import Flask, session, Request
+from flask import Flask, session, request, Request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -12,35 +12,23 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-class UnlimitedRequest(Request):
-    max_content_length = None
+class BigFormRequest(Request):
+    max_form_memory_size = 100 * 1024 * 1024
+
 def create_app(config_class=DevelopmentConfig):
 
-    static_folder=os.getenv('APP_URL')
-# Paksa Flask pake folder static yg kita tunjuk
     app = Flask(__name__, static_url_path='/app/static')
-    
     app.config.from_object(config_class)
-    # session timeout 10 menit
+    
+    app.request_class = BigFormRequest
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
-    app.config['MAX_CONTENT_LENGTH'] = None
-    app.request_class = UnlimitedRequest
-
-    # ... sisa kode konfigurasi Anda ...
-    app.config.from_object(config_class)
     
-    # Debugging Wajib: Pastikan Config Terbaca
-    print("--- DEBUG STARTUP ---")
-    print(f"Config MAX_CONTENT_LENGTH: {app.config.get('MAX_CONTENT_LENGTH')}")
-    print(f"Request Class: {app.request_class}")
-    print("---------------------")
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
     login_manager.login_message = "Login dulu ya!"
 
-    # ---- Filter waktu WIB untuk Jinja ----
     from app.utils import to_wib, format_wib
 
     app.jinja_env.filters["to_wib"] = to_wib
@@ -84,6 +72,19 @@ def create_app(config_class=DevelopmentConfig):
             # Ambil dari env, kalau gak ada default ke kosong
             app_url=os.getenv('APP_URL', 'http://localhost:5000')
         )
+    
+    @app.errorhandler(413)
+    def request_entity_too_large(e):
+        # Kita intip berapa size yang kebaca sama server
+        cl = request.headers.get('Content-Length')
+        limit = app.config.get('MAX_CONTENT_LENGTH')
+        
+        print("\n!!!!!!!!!! TERTANGKAP BASAH (413) !!!!!!!!!!")
+        print(f"Server Nerima Request Sebesar: {cl} bytes")
+        print(f"Padahal Limit Server: {limit} bytes")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+        
+        return "File kegedean woy! Cek Terminal buat detailnya.", 413
     
     with app.app_context():
         db.create_all()

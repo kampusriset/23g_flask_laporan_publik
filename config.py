@@ -8,7 +8,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///laporin.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-
+    MAX_CONTENT_LENGTH = 150 * 1024 * 1024
     # Email settings
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 465))
