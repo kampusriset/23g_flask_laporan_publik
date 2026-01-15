@@ -125,7 +125,10 @@ def logout():
     logout_user()         
     session.clear()
     flash('Logout berhasil. Silakan login kembali untuk melanjutkan.', 'success')
-    return redirect(url_for('main.index'))
+    response = redirect(url_for('main.index'))
+    response.delete_cookie('session')
+    response.delete_cookie('remember_token') 
+    return response
 
 
 

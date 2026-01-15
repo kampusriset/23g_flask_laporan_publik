@@ -382,3 +382,79 @@ def upload_camera_photo():
         path=rel_path,
         filesize_bytes=filesize,
     )
+    # --- Tambahkan ini di bagian bawah app/reports/routes.py ---
+
+@bp.route("/download-rekap-pdf")
+@login_required
+def download_rekap_pdf():
+    # 1. Ambil filter status dari URL (contoh: /download-rekap-pdf?status=selesai)
+    status_filter = request.args.get("status", "all")
+    
+    # 2. Query dasar (milik user yang login)
+    query = Laporan.query.filter_by(user_id=current_user.id)
+    
+    # 3. Terapkan filter jika bukan 'all'
+    title_suffix = "Semua Status"
+    if status_filter != "all":
+        # Validasi status agar sesuai Enum di database
+        valid_statuses = ["diajukan", "diproses", "selesai", "ditolak"]
+        if status_filter in valid_statuses:
+            query = query.filter_by(status=status_filter)
+            title_suffix = status_filter.capitalize()
+    
+    # Urutkan dari yang terbaru
+    laporan_list = query.order_by(Laporan.created_at.desc()).all()
+    
+    # 4. Jika data kosong, beri notifikasi
+    if not laporan_list:
+        flash(f"Tidak ada laporan dengan status '{status_filter}' untuk dicetak.", "warning")
+        return redirect(url_for("reports.my_reports"))
+
+    # 5. Render template HTML khusus rekap
+    html_content = render_template(
+        "reports/rekap_pdf.html",
+        laporan_list=laporan_list,
+        filter_status=title_suffix,
+        user=current_user,
+        tanggal_cetak=datetime.now()
+    )
+
+    # 6. Konfigurasi PDFKit (Sesuaikan path jika dipindah ke server lain)
+    # Pastikan path ini benar ada di komputer Anda
+    path_wkhtmltopdf = r"D:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    
+    # Cek apakah file exe ada (untuk menghindari error server 500)
+    if not os.path.exists(path_wkhtmltopdf):
+        # Fallback untuk Linux/Production biasanya tidak butuh path spesifik
+        config = None 
+    else:
+        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+    # Opsi agar tabel rapi di PDF
+    options = {
+        'page-size': 'A4',
+        'orientation': 'Landscape', # Landscape agar tabel lebar muat
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'no-outline': None
+    }
+
+    try:
+        pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
+    except OSError as e:
+        # Error biasanya karena wkhtmltopdf tidak ditemukan atau path salah
+        print(f"Error PDFKit: {e}")
+        flash("Gagal memproses PDF. Pastikan wkhtmltopdf terinstall.", "danger")
+        return redirect(url_for("reports.my_reports"))
+
+    # 7. Return Response
+    response = make_response(pdf)
+    filename = f"Rekap_Laporan_{status_filter}_{datetime.now().strftime('%Y%m%d')}.pdf"
+    response.headers["Content-Type"] = "application/pdf"
+    # Gunakan 'attachment' agar otomatis download, atau 'inline' untuk preview browser
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    
+    return response

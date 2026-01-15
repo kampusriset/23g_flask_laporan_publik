@@ -3,34 +3,54 @@ from app.models import db
 
 app = create_app()
 
-@app.cli.command("seed-user")
-def seed_user():
-    """Seed data user pertama buat admin."""
-    from app.models import User # Pastikan path import bener
-    
-    # Cek dulu biar nggak duplikat email/username
-    existing_user = User.query.filter_by(username='admin').first()
-    if existing_user:
-        print("Username 'admin_kece' udah ada, nggak usah di-seed lagi ya.")
-        return
+from flask.cli import with_appcontext
+from app import db # Sesuaikan dengan lokasi db lo
+from app.models import User, Kategori # Import modelnya
 
-    # Buat instance user baru
-    new_user = User(
-        nama_lengkap="Administrator Utama",
-        username="admin",
-        email="admin@vibes.com",
-        phone="08123456789",
-        role="admin",
-        is_active=True
-    )
+@app.cli.command("seed-db")
+@with_appcontext
+def seed_db():
+    """Seed data awal: Kategori & Admin."""
     
-    # WAJIB: Pake method set_password biar di-hash!
-    new_user.set_password("admin123")
+    # --- 1. SEED KATEGORI ---
+    print("⏳ Lagi nanam data kategori...")
+    data_kategori = [
+        {'id': 1, 'nama': 'Jalan Rusak', 'deskripsi': 'Kerusakan jalan raya, trotoar, lubang, atau permukaan bergelombang.'},
+        {'id': 2, 'nama': 'Lampu Jalan', 'deskripsi': 'Lampu penerangan jalan umum mati, redup, atau rusak.'},
+        {'id': 3, 'nama': 'Sampah & Kebersihan', 'deskripsi': 'Penumpukan sampah, TPS liar, lingkungan kotor.'},
+        {'id': 4, 'nama': 'Fasilitas Umum', 'deskripsi': 'Kerusakan taman, halte, trotoar, jembatan penyeberangan, dsb.'},
+        {'id': 5, 'nama': 'Drainase & Banjir', 'deskripsi': 'Saluran air tersumbat, genangan, atau banjir lokal.'},
+    ]
+
+    for kat in data_kategori:
+        existing_kat = Kategori.query.get(kat['id'])
+        if not existing_kat:
+            new_kat = Kategori(id=kat['id'], nama=kat['nama'], deskripsi=kat['deskripsi'])
+            db.session.add(new_kat)
     
-    db.session.add(new_user)
-    db.session.commit()
-    
-    print("Mantap! Admin berhasil di-spawn. Silakan login!")
+    # --- 2. SEED ADMIN ---
+    print("⏳ Lagi spawn admin kece...")
+    existing_user = User.query.filter_by(username='admin').first()
+    if not existing_user:
+        admin = User(
+            nama_lengkap="Administrator Utama",
+            username="admin",
+            email="admin@vibes.com",
+            phone="08123456789",
+            role="admin",
+            is_active=True
+        )
+        admin.set_password("admin123")
+        db.session.add(admin)
+    else:
+        print("⚠️ Admin udah ada, skip!")
+
+    try:
+        db.session.commit()
+        print("✅ Mantap! Database udah terisi. Gaspol!")
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error pas seeding: {e}") 
 
 if __name__ == '__main__':
     

@@ -44,5 +44,5 @@ class Laporan(db.Model):
 
     @staticmethod
     def generate_kode(user_id: int) -> str:
-        timestamp = int(datetime.utcnow().timestamp())
+        timestamp = int(datetime.now().timestamp())
         return f"LPR-{user_id}-{timestamp}"
