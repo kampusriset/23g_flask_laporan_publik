@@ -65,22 +65,34 @@ def forgot_password():
 
 @bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
+    # 1. Jika user sudah login, tidak boleh akses halaman ini
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.dashboard")) # Sesuaikan dengan halaman utama Anda
 
+    # 2. Verifikasi Token menggunakan method static di Model User
     user = User.verify_reset_token(token)
+    
+    # 3. Jika token invalid atau expired (user None)
     if not user:
-        flash("Token reset password tidak valid atau sudah kedaluwarsa.", "danger")
-        return redirect(url_for("auth.forgot_password"))
+        flash("Link reset password tidak valid atau sudah kedaluwarsa.", "danger")
+        return redirect(url_for("auth.forgot_password")) # Kembali ke halaman minta link
 
+    # 4. Load Form
     form = ResetPasswordForm()
+
+    # 5. Proses Submit Password Baru
     if form.validate_on_submit():
+        # Enkripsi password baru (method set_password ada di User model)
         user.set_password(form.password.data)
+        
+        # Simpan perubahan ke database
         db.session.commit()
+        
         flash("Password berhasil diubah. Silakan login dengan password baru.", "success")
         return redirect(url_for("auth.login"))
 
-    return render_template("pages/auth/reset_password.html", form=form)
+    # 6. Render Halaman Reset
+    return render_template("auth/reset_password.html", form=form)
 
 
 @bp.route('/register', methods=['GET', 'POST'])

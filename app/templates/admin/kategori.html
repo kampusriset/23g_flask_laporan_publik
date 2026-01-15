@@ -57,10 +57,9 @@
       </nav>
     </aside>
 
-    <!-- Konten utama -->
     <main class="flex-1 space-y-6">
       <div>
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
           Kategori &amp; Wilayah
         </h1>
         <p class="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
@@ -68,89 +67,207 @@
         </p>
       </div>
 
-      <!-- Card form -->
-      <div class="bg-white dark:bg-gray-900 p-5 rounded-xl shadow space-y-4">
-        <h2 class="font-semibold">
+      <div class="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-xl shadow space-y-4">
+        <h2 class="font-semibold text-gray-800 dark:text-gray-100">
           {{ 'Edit Kategori' if kategori else 'Tambah Kategori' }}
         </h2>
         <form method="post" class="space-y-3">
           {{ csrf_token() if csrf_token is defined }}
           <div>
-            <label class="block text-sm font-medium mb-1">Nama Kategori</label>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nama Kategori</label>
             <input name="nama"
                    value="{{ kategori.nama if kategori else '' }}"
-                   class="w-full px-3 py-2 rounded-lg border bg-gray-50 dark:bg-gray-800"
+                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
                    required>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Deskripsi (opsional)</label>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Deskripsi (opsional)</label>
             <textarea name="deskripsi" rows="2"
-                      class="w-full px-3 py-2 rounded-lg border bg-gray-50 dark:bg-gray-800">{{ kategori.deskripsi if kategori else '' }}</textarea>
+                      class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors">{{ kategori.deskripsi if kategori else '' }}</textarea>
           </div>
-          <button type="submit"
-                  class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
-            {{ 'Update' if kategori else 'Tambah' }}
-          </button>
-          {% if kategori %}
-          <a href="{{ url_for('admin.kelola_kategori') }}"
-             class="ml-2 text-xs text-gray-500 hover:underline">
-            Batal edit
-          </a>
-          {% endif %}
+          
+          <div class="flex items-center pt-2">
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+              {{ 'Update' if kategori else 'Tambah' }}
+            </button>
+            {% if kategori %}
+            <a href="{{ url_for('admin.kelola_kategori') }}"
+               class="ml-3 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline transition-colors">
+              Batal edit
+            </a>
+            {% endif %}
+          </div>
         </form>
       </div>
 
-      <!-- Card tabel -->
-      <div class="bg-white dark:bg-gray-900 p-5 rounded-xl shadow">
-        <h2 class="font-semibold mb-3">Daftar Kategori</h2>
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th class="text-left py-2 w-12">No</th>
-              <th class="text-left py-2">Nama</th>
-              <th class="text-left py-2">Deskripsi</th>
-              <th class="text-left py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for k in kategoris %}
-            <tr class="border-b border-gray-200 dark:border-gray-700">
-              <td class="py-2">{{ loop.index }}</td>
-              <td class="py-2">{{ k.nama }}</td>
-              <td class="py-2">{{ k.deskripsi or '-' }}</td>
-              <td class="py-2">
-                <div class="flex gap-2">
-                  <!-- Edit: reload halaman dengan id -->
-                  <a href="{{ url_for('admin.kelola_kategori', id=k.id) }}"
-                     class="text-xs px-3 py-1 rounded-lg bg-amber-500 text-white hover:bg-amber-600">
-                    Edit
-                  </a>
+      <div class="w-full min-w-0 bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden flex flex-col">
+  
+  <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-900">
+    <h2 class="font-semibold text-gray-800 dark:text-gray-100">Daftar Kategori</h2>
+    <div class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+        <p class="text-xs font-medium">
+        Total: <span class="font-bold">{{ kategoris|length }}</span>
+        </p>
+    </div>
+  </div>
 
-                  <!-- Hapus: form POST + konfirmasi -->
-                  <form method="post"
-                        action="{{ url_for('admin.kategori_delete', kategori_id=k.id) }}"
-                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
-                    {{ csrf_token() if csrf_token is defined }}
-                    <button type="submit"
-                            class="text-xs px-3 py-1 rounded-lg bg-rose-600 text-white hover:bg-rose-700">
-                      Hapus
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="4" class="py-4 text-center text-gray-500">
-                Belum ada kategori.
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <div class="w-full overflow-x-auto">
+    <table class="min-w-full text-sm text-left whitespace-nowrap">
+      <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium border-b border-gray-200 dark:border-gray-700">
+        <tr>
+          <th class="py-3 px-4 sm:px-6 w-12 whitespace-nowrap">No</th>
+          <th class="py-3 px-4 sm:px-6 whitespace-nowrap">Nama</th>
+          <th class="py-3 px-4 sm:px-6 min-w-[150px] whitespace-nowrap">Deskripsi</th>
+          <th class="py-3 px-4 sm:px-6 whitespace-nowrap text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="categoryTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+        {% for k in kategoris %}
+        <tr class="category-row hidden hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <td class="py-3 px-4 sm:px-6 text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            {{ loop.index }}
+          </td>
+          <td class="py-3 px-4 sm:px-6 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
+            {{ k.nama }}
+          </td>
+          <td class="py-3 px-4 sm:px-6 text-gray-600 dark:text-gray-400 truncate max-w-xs">
+            {{ k.deskripsi or '-' }}
+          </td>
+          <td class="py-3 px-4 sm:px-6 whitespace-nowrap text-center">
+            <div class="flex items-center justify-center gap-2">
+              <a href="{{ url_for('admin.kelola_kategori', id=k.id) }}"
+                 class="text-xs px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-colors font-medium">
+                Edit
+              </a>
+
+              <form method="post"
+                    action="{{ url_for('admin.kategori_delete', kategori_id=k.id) }}"
+                    onsubmit="return confirm('Yakin ingin menghapus kategori ini?');"
+                    class="inline-block">
+                {{ csrf_token() if csrf_token is defined }}
+                <button type="submit"
+                        class="text-xs px-3 py-1.5 rounded-md bg-rose-600 text-white hover:bg-rose-700 transition-colors font-medium">
+                  Hapus
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="py-8 text-center text-gray-500 dark:text-gray-400 italic">
+            Belum ada kategori data.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="catPaginationControls" class="hidden px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
+    <button id="catPrevBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+      ← <span class="hidden sm:inline ml-1">Prev</span>
+    </button>
+
+    <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
+      Hal <span id="catCurrentPage" class="font-bold text-gray-900 dark:text-white">1</span> 
+      dari <span id="catTotalPages" class="font-bold">1</span>
+    </span>
+
+    <button id="catNextBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
+      <span class="hidden sm:inline mr-1">Next</span> →
+    </button>
+  </div>
+</div>
+
+
 
     </main>
   </div>
 </div>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+
+    // Toggle Sidebar
+    if (sidebar) {
+        sidebar.classList.toggle('hidden');
+    }
+
+    // Toggle Backdrop (Layar gelap)
+    if (backdrop) {
+        backdrop.classList.toggle('hidden');
+    }
+  }
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // --- Konfigurasi Pagination Kategori ---
+    const catItemsPerPage = 3; // Tampilkan per 3 data
+    let catCurrentPage = 1;
+
+    // --- Selektor DOM (Prefix 'cat' agar tidak bentrok) ---
+    const catRows = document.querySelectorAll('.category-row');
+    const catControls = document.getElementById('catPaginationControls');
+    const catPrevBtn = document.getElementById('catPrevBtn');
+    const catNextBtn = document.getElementById('catNextBtn');
+    const catCurrentPageSpan = document.getElementById('catCurrentPage');
+    const catTotalPagesSpan = document.getElementById('catTotalPages');
+
+    const catTotalItems = catRows.length;
+    const catTotalPages = Math.ceil(catTotalItems / catItemsPerPage);
+
+    // --- Fungsi Tampil Halaman ---
+    function showCategoryPage(page) {
+        if (page < 1) page = 1;
+        if (page > catTotalPages) page = catTotalPages;
+        catCurrentPage = page;
+
+        const start = (catCurrentPage - 1) * catItemsPerPage;
+        const end = start + catItemsPerPage;
+
+        catRows.forEach((row, index) => {
+            if (index >= start && index < end) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        // Update Text Info
+        if(catCurrentPageSpan) catCurrentPageSpan.textContent = catCurrentPage;
+        if(catTotalPagesSpan) catTotalPagesSpan.textContent = catTotalPages;
+
+        // Update Tombol
+        if(catPrevBtn) catPrevBtn.disabled = (catCurrentPage === 1);
+        if(catNextBtn) catNextBtn.disabled = (catCurrentPage === catTotalPages);
+    }
+
+    // --- Inisialisasi ---
+    if (catTotalItems > catItemsPerPage) {
+        if(catControls) catControls.classList.remove('hidden');
+        showCategoryPage(1);
+    } else {
+        // Jika data <= 3, tampilkan semua & sembunyikan kontrol
+        catRows.forEach(row => row.classList.remove('hidden'));
+        if(catControls) catControls.classList.add('hidden');
+    }
+
+    // --- Event Listeners ---
+    if(catPrevBtn) {
+        catPrevBtn.addEventListener('click', () => { 
+            if (catCurrentPage > 1) showCategoryPage(catCurrentPage - 1); 
+        });
+    }
+
+    if(catNextBtn) {
+        catNextBtn.addEventListener('click', () => { 
+            if (catCurrentPage < catTotalPages) showCategoryPage(catCurrentPage + 1); 
+        });
+    }
+});
+</script>
 {% endblock %}

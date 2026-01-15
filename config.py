@@ -1,33 +1,85 @@
 import os
 from dotenv import load_dotenv
+
+# Memuat environment variable dari file .env
 load_dotenv()
 
+# Mendapatkan direktori dasar proyek untuk absolute path
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
+    # --- Security & Core ---
+    # Gunakan key yang kuat di .env untuk produksi
     SECRET_KEY = os.environ.get("SECRET_KEY") or "laporin-super-secret-key-2025-change-this!"
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///laporin.db"
+    
+    # --- Database ---
+    # Default fallback ke SQLite jika DATABASE_URL tidak ada
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or \
+        'sqlite:///' + os.path.join(basedir, 'laporin.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # --- Uploads ---
+    # Menggunakan path absolute agar tidak error
+    UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads")
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # Maksimal 16MB
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'mp4'} # Filter file
 
-    UPLOAD_FOLDER = "app/static/uploads"
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    # --- Rate Limiting ---
     RATELIMIT_ENABLED = True
+    RATELIMIT_DEFAULT = "200 per day"
+    RATELIMIT_STORAGE_URL = "memory://"
 
-    # Email settings
-    MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-    MAIL_PORT = int(os.environ.get("MAIL_PORT", 465))
+    # --- Email Settings (PENTING untuk Reset Password) ---
+    MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.googlemail.com")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
+    # Logika otomatis: Port 465 pakai SSL, 587 pakai TLS
+    MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "true").lower() in ["true", "on", "1"]
+    MAIL_USE_SSL = os.environ.get("MAIL_USE_SSL", "false").lower() in ["true", "on", "1"]
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
-    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", "LaporIN <no-reply@laporin.local>")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD") # App Password Gmail
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", "LaporIN <noreply@laporin.id>")
+
+    # --- Timezone ---
+    TIMEZONE = 'Asia/Jakarta'
 
 
 class DevelopmentConfig(Config):
-    DEBUG = os.environ.get("DEBUG", "true").lower() in ["true", "1", "t"]
-    SQLALCHEMY_DATABASE_URI = (
-        os.environ.get("DATABASE_URL")
-        or f"mysql+pymysql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}"
-           f"@{os.environ.get('DB_URI')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}"
-    )
+    """Konfigurasi untuk lingkungan pengembangan"""
+    DEBUG = True
+    
+    # Cek apakah mau pakai MySQL atau fallback ke SQLite
+    if os.environ.get('DB_TYPE') == 'mysql':
+        SQLALCHEMY_DATABASE_URI = (
+            f"mysql+pymysql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}"
+            f"@{os.environ.get('DB_URI')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}"
+        )
+
+
+class TestingConfig(Config):
+    """Konfigurasi untuk testing otomatis"""
+    TESTING = True
+    WTF_CSRF_ENABLED = False  # Matikan CSRF saat testing form
+    MAIL_SUPPRESS_SEND = True # Jangan kirim email beneran saat testing
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # Database di RAM (cepat & bersih)
 
 
 class ProductionConfig(Config):
+    """Konfigurasi untuk deploy produksi"""
     DEBUG = False
+    
+    # Gunakan database produksi (PostgreSQL/MySQL) yang kuat
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    
+    # Security Cookies (Aktifkan ini jika sudah pakai HTTPS/SSL)
+    SESSION_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+
+
+# Dictionary untuk mempermudah pemanggilan di app.py
+config = {
+    'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}

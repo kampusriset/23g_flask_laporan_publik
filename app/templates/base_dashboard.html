@@ -77,10 +77,17 @@
         </button>
 
 
-      <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-2">
-        <span class="text-xl font-bold text-primary">📢 LaporIN</span>
-        <span class="text-sm text-gray-300 hidden sm:inline">Dashboard</span>
-      </a>
+      <a href="{{ url_for('main.dashboard') }}" class="flex items-center gap-2 flex-shrink-0 group">
+  
+  <span class="text-xl font-bold text-blue-500 group-hover:text-blue-400 transition-colors whitespace-nowrap">
+    📢 LaporIN
+  </span>
+
+  <span class="text-sm text-gray-400 hidden sm:inline border-l border-gray-700 pl-2">
+    Dashboard
+  </span>
+
+</a>
     </div>
 
     <div class="flex items-center space-x-3">
@@ -140,4 +147,20 @@
                text-gray-600 dark:text-gray-500">
   © 2025 Tim LaporIN — All Rights Reserved | Kebijakan Privasi
 </footer>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+
+    // Toggle Sidebar
+    if (sidebar) {
+        sidebar.classList.toggle('hidden');
+    }
+
+    // Toggle Backdrop (Layar gelap)
+    if (backdrop) {
+        backdrop.classList.toggle('hidden');
+    }
+  }
+</script>
 {% endblock %}

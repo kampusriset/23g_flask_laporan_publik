@@ -16,12 +16,21 @@ class ForgotPasswordForm(FlaskForm):
     submit = SubmitField("Kirim link reset")
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField("Password baru", validators=[DataRequired(), Length(min=8)])
-    password2 = PasswordField(
-        "Ulangi password baru",
-        validators=[DataRequired(), EqualTo("password")]
+    password = PasswordField(
+        'Password Baru', 
+        validators=[
+            DataRequired(), 
+            Length(min=6, message="Password minimal 6 karakter")
+        ]
     )
-    submit = SubmitField("Ganti password")
+    confirm_password = PasswordField(
+        'Konfirmasi Password', 
+        validators=[
+            DataRequired(), 
+            EqualTo('password', message='Password tidak cocok.')
+        ]
+    )
+    submit = SubmitField('Ubah Password')
 
 class RegisterForm(FlaskForm):
     nama_lengkap = StringField('Nama Lengkap', validators=[
