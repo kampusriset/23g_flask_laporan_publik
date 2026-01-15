@@ -5,22 +5,31 @@ from flask_migrate import Migrate
 from flask_mail import Mail  # PENTING: Tambahkan ini untuk email
 from config import config    # Import dictionary config
 from datetime import datetime, timedelta
+import os
 
-# Inisialisasi Extension (Global)
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail() # Extension untuk kirim email
 
-def create_app(config_name='default'):
-    # Membuat instance Flask
-    app = Flask(__name__)
-    
-    # Load konfigurasi dari config.py berdasarkan nama (development/production)
-    app.config.from_object(config[config_name])
+def create_app(config_class=DevelopmentConfig):
+    app_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Konfigurasi Session Timeout (Misal: 30 menit, jangan terlalu sebentar 10 menit)
-    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+    app = Flask(
+        __name__,
+        static_folder=os.path.join(app_dir, "static"),
+        static_url_path="/static",
+    )
+    app.config.from_object(config_class)
+    root_dir = os.path.dirname(app_dir)
+
+    app = Flask(__name__)
+    app.static_folder = os.path.join(root_dir, "static")
+    app.static_url_path = "/static"
+    app.config.from_object(config_class)
+
+    # session timeout 10 menit
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
     # Inisialisasi Extension ke dalam App
     db.init_app(app)
@@ -67,10 +76,8 @@ def create_app(config_name='default'):
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(main_bp) # Main biasanya root '/'
     app.register_blueprint(reports_bp, url_prefix="/reports")
-    app.register_blueprint(admin_bp, url_prefix="/admin") # Tambahkan prefix admin biar rapi
+    app.register_blueprint(admin_bp)
 
-    # User Loader untuk Flask-Login
-    from app.models import User
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -79,7 +86,7 @@ def create_app(config_name='default'):
     @app.before_request
     def update_last_seen():
         if current_user.is_authenticated:
-            current_user.last_seen = datetime.utcnow()
+            current_user.last_seen = datetime.now()
             db.session.commit()
         session.permanent = True # Agar session expired sesuai setting config
 
@@ -91,7 +98,6 @@ def create_app(config_name='default'):
         response.headers["Expires"] = "0"
         return response
 
-    # Create Tables (Opsional: Lebih baik pakai flask db upgrade di production)
     with app.app_context():
         db.create_all()
 
