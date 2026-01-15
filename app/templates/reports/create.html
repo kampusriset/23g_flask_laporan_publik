@@ -580,7 +580,7 @@ if (wilayahInput) wilayahInput.value = "";
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const MAX_TOTAL = 5 * 1024 * 1024; // 5 MB
+ const MAX_TOTAL = 200 * 1024 * 1024;
 
   const form          = document.querySelector('form');
   const fileInput     = document.getElementById('bukti_file');
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     if (totalSize > rules.maxTotal) {
-      alert('Total ukuran file maksimal 5 MB.');
+      alert('Total ukuran file maksimal 200 MB.');
       input.value = '';
       return false;
     }
@@ -909,8 +909,10 @@ if (fileInput && buktiFileList) {
         const totalExisting = existingFiles.reduce((sum, f) => sum + f.size, 0);
         const totalWithVideo = totalExisting + blob.size;
 
-       if (totalWithVideo > MAX_TOTAL) {
-  alert('Ukuran video membuat total file melebihi 5 MB. Rekam lebih singkat atau hapus file lain.');
+      if (totalWithVideo > MAX_TOTAL) {
+  // Ganti pesan agar sesuai dengan MAX_TOTAL (200MB)
+  alert('Ukuran video membuat total file melebihi batas 200MB. Rekam lebih singkat atau hapus file lain.');
+  
   recordedChunks = [];
   if (camVideoInput) camVideoInput.value = '';
   btnStartRec.disabled = false;
@@ -990,6 +992,8 @@ if (fileInput && buktiFileList) {
     }
   }
 </script>
+
+
 
 {% endblock %}
 

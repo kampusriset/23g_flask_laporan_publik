@@ -6,7 +6,8 @@ from app.models.user import User
 from app.auth.forms import LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
 from datetime import datetime
 from flask_mail import Message # <--- PENTING: Import Message
-
+from flask import render_template, redirect, url_for, flash, request, session, make_response
+from flask_login import logout_user, login_required
 # --- FUNGSI HELPER PENGIRIM EMAIL ---
 def send_reset_email(user):
     token = user.get_reset_token()
@@ -158,9 +159,13 @@ def register():
 @bp.route('/logout')
 @login_required
 def logout():
-    logout_user()         
+    logout_user()
+
     session.clear()
+    
     flash('Logout berhasil.', 'success')
-    response = redirect(url_for('main.index'))
-    response.delete_cookie('session')
+    response = make_response(redirect(url_for('main.index')))
+    response.set_cookie('session', '', expires=0, path='/')
+    response.set_cookie('remember_token', '', expires=0, path='/')
+    
     return response

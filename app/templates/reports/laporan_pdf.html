@@ -2,39 +2,52 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Surat Pengaduan</title>
+  <title>Surat Pengaduan - {{ laporan.kode_pelaporan }}</title>
   <style>
     body {
       font-family: "Times New Roman", serif;
       font-size: 12pt;
       line-height: 1.5;
+      color: #000;
+      background: #fff;
+      padding: 20px;
     }
     .kop {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
     .kop h1 {
       font-size: 14pt;
       margin: 0;
       text-transform: uppercase;
+      font-weight: bold;
     }
     .kop h2 {
       font-size: 12pt;
       margin: 0;
+      font-weight: normal;
     }
     .separator {
-      border-bottom: 2px solid #000;
+      border-bottom: 3px solid #000;
       margin-top: 8px;
+      margin-bottom: 2px;
+    }
+    .separator-thin {
+      border-bottom: 1px solid #000;
       margin-bottom: 16px;
     }
     .indent {
-      text-indent: 24pt;
       text-align: justify;
+      margin-bottom: 10px;
+    }
+    .first-line-indent {
+        text-indent: 30pt;
     }
     .table-info {
       width: 100%;
       margin-top: 8px;
       margin-bottom: 16px;
+      border-collapse: collapse;
     }
     .table-info td {
       vertical-align: top;
@@ -42,108 +55,157 @@
     }
     .ttd {
       width: 100%;
-      margin-top: 32px;
+      margin-top: 40px;
     }
     .ttd td {
       vertical-align: top;
     }
+    /* Style untuk Lampiran Foto */
+    .lampiran-box {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .foto-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 5px;
+    }
+    .foto-item {
+        max-width: 200px;
+        max-height: 200px;
+        border: 1px solid #ccc;
+        object-fit: contain;
+    }
+    
+    /* CSS Khusus Cetak/Print */
+    @media print {
+        body { padding: 0; }
+        .no-print { display: none; }
+    }
   </style>
 </head>
-<body>
-
-<div class="kop">
+<body onload="window.print()"> <div class="kop">
   <h1>Surat Pengaduan Masyarakat</h1>
-  <h2>Sistem Layanan Pengaduan Online</h2>
+  <h2>Sistem Layanan Pengaduan Online (LaporIN)</h2>
 </div>
 <div class="separator"></div>
+<div class="separator-thin"></div>
 
-<p>Nomor Laporan : {{ laporan.kode_pelaporan or laporan.id }}</p>
-<p>Tanggal       : {{ laporan.created_at|format_wib }} WIB</p>
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 15%;">Nomor</td>
+        <td style="width: 2%;">:</td>
+        <td>{{ laporan.kode_pelaporan or laporan.id }}</td>
+    </tr>
+    <tr>
+        <td>Tanggal</td>
+        <td>:</td>
+        <td>{{ laporan.created_at.strftime('%d %B %Y') }}</td> 
+    </tr>
+    <tr>
+        <td>Perihal</td>
+        <td>:</td>
+        <td><strong>Laporan Pengaduan Fasilitas Publik</strong></td>
+    </tr>
+</table>
 <br>
 
 <p>Kepada Yth.</p>
-<p>Pimpinan Instansi Terkait</p>
+<p><strong>Admin / Pimpinan Instansi Terkait</strong></p>
 <p>di Tempat</p>
 <br>
 
-<p class="indent">
+<p class="indent first-line-indent">
   Dengan hormat,
 </p>
 
-<p class="indent">
-  Bersama ini saya yang bertanda tangan di bawah ini menyampaikan pengaduan
-  terkait hal sebagai berikut:
+<p class="indent first-line-indent">
+  Bersama ini saya yang bertanda tangan di bawah ini menyampaikan laporan pengaduan masyarakat melalui sistem LaporIN, dengan identitas pelapor sebagai berikut:
 </p>
 
 <table class="table-info">
   <tr>
-    <td style="width: 120px;">Nama</td>
+    <td style="width: 130px;">Nama Lengkap</td>
     <td style="width: 10px;">:</td>
     <td>{{ laporan.user.nama_lengkap or laporan.user.username }}</td>
-  </tr>
-  <tr>
-    <td>Alamat</td>
-    <td>:</td>
-    <td>{{ laporan.user.alamat or '-' }}</td>
-  </tr>
-  <tr>
-    <td>No. Telepon</td>
-    <td>:</td>
-    <td>{{ laporan.user.phone or '-' }}</td>
   </tr>
   <tr>
     <td>Email</td>
     <td>:</td>
     <td>{{ laporan.user.email }}</td>
   </tr>
+  <tr>
+    <td>Nomor Telepon</td>
+    <td>:</td>
+    <td>{{ laporan.user.phone or '-' }}</td>
+  </tr>
 </table>
 
 <p class="indent">
-  Adapun pokok pengaduan yang ingin saya sampaikan adalah sebagai berikut:
+  Adapun detail pengaduan yang ingin saya sampaikan adalah sebagai berikut:
 </p>
 
-<p><strong>Judul Pengaduan:</strong> {{ laporan.judul }}</p>
+<table class="table-info">
+    <tr>
+        <td style="width: 130px; font-weight: bold;">Judul Laporan</td>
+        <td style="width: 10px;">:</td>
+        <td style="font-weight: bold;">{{ laporan.judul }}</td>
+    </tr>
+    <tr>
+        <td>Kategori</td>
+        <td>:</td>
+        <td>{{ laporan.kategori.nama if laporan.kategori else '-' }}</td>
+    </tr>
+    <tr>
+        <td>Lokasi Kejadian</td>
+        <td>:</td>
+        <td>{{ laporan.lokasi }} ({{ laporan.wilayah or '-' }})</td>
+    </tr>
+    <tr>
+        <td>Uraian/Deskripsi</td>
+        <td>:</td>
+        <td style="text-align: justify;">
+            {{ laporan.deskripsi | replace('\n', '<br>') | safe }}
+        </td>
+    </tr>
+</table>
 
-<p class="indent">
-  {{ laporan.isi|replace('\n', '<br>')|safe }}
-</p>
+<div class="lampiran-box">
+    <strong>Lampiran Bukti Sebagai Bukti:</strong>
+    <div class="foto-grid">
+        {% if laporan.foto_path %}
+            {# Logika: Jika foto_path dipisah koma (multiple uploads), kita split dulu #}
+            {% set list_foto = laporan.foto_path.split(',') %}
+            
+            {% for foto in list_foto %}
+    {% if foto|trim %}
+        <img src="{{ get_absolute_path(foto|trim) }}" 
+             class="foto-item" 
+             alt="Bukti Laporan">
+    {% endif %}
+{% endfor %}
+        {% else %}
+            <p><i>- Tidak ada lampiran foto -</i></p>
+        {% endif %}
+    </div>
+</div>
 
-{% if laporan.lokasi %}
-<p class="indent">
-  Lokasi kejadian: {{ laporan.lokasi }}
-</p>
-{% endif %}
-
-<p class="indent">
-  Besar harapan saya agar pengaduan ini dapat ditindaklanjuti
-  sebagaimana mestinya. Atas perhatian dan kerja sama Bapak/Ibu,
-  saya ucapkan terima kasih.
+<p class="indent first-line-indent">
+  Demikian surat pengaduan ini saya buat dengan sebenar-benarnya agar dapat ditindaklanjuti sebagaimana mestinya. Atas perhatian dan kerjasamanya, saya ucapkan terima kasih.
 </p>
 
 <table class="ttd">
   <tr>
     <td style="width: 60%;"></td>
     <td style="text-align: center;">
-      Hormat saya,<br><br><br><br>
-      <u>{{ laporan.user.nama_lengkap or laporan.user.username }}</u><br>
+      Hormat saya,<br>
+      Pelapor,<br><br><br><br>
+      
+      <u><strong>{{ laporan.user.nama_lengkap or laporan.user.username }}</strong></u>
     </td>
   </tr>
 </table>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
 
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
-  }
-</script>
 </body>
 </html>

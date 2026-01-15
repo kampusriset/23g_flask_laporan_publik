@@ -71,6 +71,50 @@
   </div>
 </div>
 
+ {% if laporan.ringkasan_hasil or laporan.foto_admin %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4">
+
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      Tanggapan Admin
+    </h2>
+
+    <span class="px-3 py-1 text-xs rounded-full
+      {% if laporan.status == 'selesai' %}
+        bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+      {% elif laporan.status == 'ditolak' %}
+        bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
+      {% else %}
+        bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+      {% endif %}">
+      {{ laporan.status|capitalize }}
+    </span>
+  </div>
+
+  {% if laporan.foto_admin %}
+  <div>
+    <h3 class="text-sm font-semibold mb-2 text-gray-900 dark:text-gray-100">
+      Dokumentasi Hasil
+    </h3>
+    <div class="flex flex-wrap gap-3">
+      <img
+        src="{{ url_for('static', filename=laporan.foto_admin) }}"
+        class="w-40 h-40 object-cover rounded-lg border border-gray-300 dark:border-gray-700"
+        alt="Foto hasil penanganan admin">
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if laporan.ringkasan_hasil %}
+  <p class="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+    {{ laporan.ringkasan_hasil }}
+  </p>
+  {% endif %}
+
+</div>
+{% endif %}
+
 
   {% if laporan.latitude and laporan.longitude %}
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-3">

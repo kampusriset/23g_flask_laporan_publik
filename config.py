@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta  # <--- WAJIB: Import ini untuk mengatur durasi waktu
 
 # Memuat environment variable dari file .env
 load_dotenv()
@@ -12,16 +13,32 @@ class Config:
     # Gunakan key yang kuat di .env untuk produksi
     SECRET_KEY = os.environ.get("SECRET_KEY") or "laporin-super-secret-key-2025-change-this!"
     
-    # --- Database ---
-    # Default fallback ke SQLite jika DATABASE_URL tidak ada
+    # Database: Hardcode ke MySQL XAMPP
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or \
-        'sqlite:///' + os.path.join(basedir, 'laporin.db')
+        'mysql+pymysql://root:@localhost/pelaporan_fasilitas'
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
+    # --- PENGATURAN SESSION & AUTO LOGOUT (10 MENIT) ---
+    # 1. Durasi sesi aktif (idle timeout)
+    # Jika user diam selama 10 menit, sesi hangus.
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
+    
+    # 2. Durasi "Remember Me" (Jika dicentang)
+    # Biasanya lebih lama dari sesi biasa (misal 7 hari)
+    REMEMBER_COOKIE_DURATION = timedelta(days=7)
+    
+    # 3. Refresh cookie setiap request 
+    # (PENTING: Agar saat user aktif klik sana-sini, timer 10 menit di-reset ulang)
+    REMEMBER_COOKIE_REFRESH_EACH_REQUEST = True
+
+    # 4. Keamanan Cookie
+    REMEMBER_COOKIE_HTTPONLY = True
+
     # --- Uploads ---
     # Menggunakan path absolute agar tidak error
     UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads")
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # Maksimal 16MB
+    MAX_CONTENT_LENGTH = 200 * 1024 * 1024
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'mp4'} # Filter file
 
     # --- Rate Limiting ---
@@ -29,10 +46,9 @@ class Config:
     RATELIMIT_DEFAULT = "200 per day"
     RATELIMIT_STORAGE_URL = "memory://"
 
-    # --- Email Settings (PENTING untuk Reset Password) ---
+    # --- Email Settings ---
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.googlemail.com")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
-    # Logika otomatis: Port 465 pakai SSL, 587 pakai TLS
     MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "true").lower() in ["true", "on", "1"]
     MAIL_USE_SSL = os.environ.get("MAIL_USE_SSL", "false").lower() in ["true", "on", "1"]
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
@@ -47,7 +63,12 @@ class DevelopmentConfig(Config):
     """Konfigurasi untuk lingkungan pengembangan"""
     DEBUG = True
     
-    # Cek apakah mau pakai MySQL atau fallback ke SQLite
+    # --- PENTING UNTUK LOCALHOST (HTTP) ---
+    # Wajib False di localhost agar cookie tersimpan
+    REMEMBER_COOKIE_SECURE = False 
+    SESSION_COOKIE_SECURE = False
+
+    # Cek apakah mau pakai MySQL custom dari env atau fallback ke parent
     if os.environ.get('DB_TYPE') == 'mysql':
         SQLALCHEMY_DATABASE_URI = (
             f"mysql+pymysql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}"
@@ -60,17 +81,20 @@ class TestingConfig(Config):
     TESTING = True
     WTF_CSRF_ENABLED = False  # Matikan CSRF saat testing form
     MAIL_SUPPRESS_SEND = True # Jangan kirim email beneran saat testing
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # Database di RAM (cepat & bersih)
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # Database di RAM
+    
+    # Testing tidak butuh cookie secure
+    REMEMBER_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
 
 
 class ProductionConfig(Config):
     """Konfigurasi untuk deploy produksi"""
     DEBUG = False
-    
-    # Gunakan database produksi (PostgreSQL/MySQL) yang kuat
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
     
-    # Security Cookies (Aktifkan ini jika sudah pakai HTTPS/SSL)
+    # --- PENTING UNTUK PRODUKSI (HTTPS) ---
+    # Aktifkan ini jika sudah upload ke hosting dengan SSL
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True

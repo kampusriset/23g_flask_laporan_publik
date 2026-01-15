@@ -1,4 +1,3 @@
-# app/reports/routes.py
 from datetime import datetime, timedelta
 import os
 import base64
@@ -19,15 +18,18 @@ import pdfkit
 from app import db
 from app.models import Laporan, Kategori
 from app.reports import bp
-
+import os
+import pdfkit
+from flask import render_template, make_response, request, current_app, flash, redirect, url_for
+from flask_login import login_required, current_user
+from app.reports import bp
+from app.models.laporan import Laporan
 
 import os
 import uuid
 from pathlib import Path
 from werkzeug.utils import secure_filename
 
-# 1. Pastikan BASE_DIR ini beneran nunjuk ke folder 'app' lo
-# Kalau file ini ada di dalam folder 'app/', code ini udah bener.
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_FOLDER = BASE_DIR / "static"
 UPLOAD_FOLDER = STATIC_FOLDER / "uploads" / "laporan_foto"
@@ -129,11 +131,14 @@ def save_camera_video(data_url):
 @bp.route("/my-reports")
 @login_required
 def my_reports():
+    # 1. Cek Role Admin (Redirect jika admin masuk ke halaman user)
     if current_user.role == "admin":
         return redirect(url_for("admin.dashboard"))
 
+    # 2. Base Query: Filter berdasarkan User ID
     q = Laporan.query.filter_by(user_id=current_user.id)
 
+    # 3. Fitur Pencarian (Search)
     search = request.args.get("q", "").strip()
     if search:
         like = f"%{search}%"
@@ -146,26 +151,51 @@ def my_reports():
             )
         )
 
-    laporan = q.order_by(Laporan.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Tampilkan 5 data per halaman
 
+    pagination = q.order_by(Laporan.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
     now = datetime.now()
     batas = timedelta(minutes=5)
-    for lp in laporan:
-        lp.bisa_edit = (now - lp.created_at) <= batas
-
-    return render_template("reports/my_reports.html", laporan=laporan, search=search)
+    
+    for lp in pagination.items:
+        if lp.created_at:
+            lp.bisa_edit = (now - lp.created_at) <= batas
+        else:
+            lp.bisa_edit = False
+    return render_template(
+        "reports/my_reports.html",  
+        pagination=pagination, 
+        search=search
+    )
 
 
 @bp.route("/riwayat")
 @login_required
 def riwayat_laporan():
-    laporan = (
-        Laporan.query.filter_by(user_id=current_user.id)
-        .order_by(Laporan.created_at.desc())
-        .all()
-    )
-    return render_template("reports/riwayat_laporan.html", laporan=laporan)
+   
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Tampilkan 5 data per halaman
+    pagination = Laporan.query.filter_by(user_id=current_user.id)\
+        .order_by(Laporan.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
 
+    hari_dict = {
+        'Sunday': 'Minggu', 
+        'Monday': 'Senin', 
+        'Tuesday': 'Selasa', 
+        'Wednesday': 'Rabu', 
+        'Thursday': 'Kamis', 
+        'Friday': 'Jumat', 
+        'Saturday': 'Sabtu'
+    }
+    return render_template(
+        "reports/riwayat_laporan.html", 
+        pagination=pagination, 
+        hari=hari_dict
+    )
 
 @bp.route("/track")
 @login_required
@@ -370,24 +400,63 @@ def confirm_cetak(laporan_id):
 @bp.route("/laporan/<int:laporan_id>/cetak-pdf")
 @login_required
 def cetak_pdf(laporan_id):
+    # 1. Ambil data laporan (Pastikan milik user yang login)
     laporan = Laporan.query.filter_by(
         id=laporan_id, user_id=current_user.id
     ).first_or_404()
 
-    html = render_template("reports/laporan_pdf.html", laporan=laporan)
+    # 2. Helper Function: Ubah URL static jadi Path Windows Absolut
+    # Ini solusi utama untuk mengatasi error "ProtocolUnknownError" / Gambar tidak muncul
+    def get_absolute_path(filename):
+        # Gabungkan: Folder Root App + static + uploads + nama file
+        # Hasilnya misal: E:\Project\app\static\uploads\foto.jpg
+        filepath = os.path.join(current_app.root_path, 'static', 'uploads', filename)
+        
+        # Cek apakah file benar-benar ada, jika tidak kembalikan string kosong
+        if os.path.exists(filepath):
+            return filepath
+        return ""
 
-    # sesuaikan path wkhtmltopdf di Windows-mu
-    config = pdfkit.configuration(
-        wkhtmltopdf=r"D:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    # 3. Render Template
+    # Kita kirim fungsi 'get_absolute_path' ke dalam template
+    html = render_template(
+        "reports/laporan_pdf.html", # Pastikan nama file template benar
+        laporan=laporan,
+        get_absolute_path=get_absolute_path 
     )
-    pdf = pdfkit.from_string(html, False, configuration=config)
 
+    # 4. Konfigurasi wkhtmltopdf
+    # Pastikan path ini BENAR sesuai lokasi instalasi di komputer Anda
+    path_wkhtmltopdf = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    
+    # Jika di komputer Anda di D:, gunakan yang ini:
+    # path_wkhtmltopdf = r"D:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+    # 5. Opsi Tambahan (Penting!)
+    options = {
+        'enable-local-file-access': None, # Wajib agar bisa baca gambar lokal
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'no-outline': None
+    }
+
+    # 6. Generate PDF
+    pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+
+    # 7. Buat Response
     response = make_response(pdf)
     filename = f"laporan_{laporan.kode_pelaporan or laporan.id}.pdf"
     response.headers["Content-Type"] = "application/pdf"
+    # 'inline' = buka di browser, 'attachment' = langsung download
     response.headers["Content-Disposition"] = f"inline; filename={filename}"
+    
     return response
-
 
 @bp.route("/upload-camera-photo", methods=["POST"])
 @login_required
@@ -490,3 +559,41 @@ def download_rekap_pdf():
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
     
     return response
+
+@bp.route("/admin/laporan/<int:laporan_id>/update-status", methods=["POST"])
+@login_required
+def admin_update_status(laporan_id):
+    if current_user.role != "admin":
+        abort(403)
+
+    laporan = Laporan.query.get_or_404(laporan_id)
+
+    status_baru = request.form.get("status")
+    ringkasan = request.form.get("ringkasan_hasil")
+    alasan = request.form.get("alasan_ditolak")
+
+    # === FOTO ADMIN ===
+    file = request.files.get("admin_foto")
+    if file and file.filename:
+        rel_path = save_uploaded_file(file)
+        if rel_path:
+            laporan.foto_admin = rel_path
+
+    # === STATUS LOGIC ===
+    if status_baru == "diproses":
+        laporan.status = "diproses"
+        laporan.tgl_diproses = datetime.now()
+
+    elif status_baru == "selesai":
+        laporan.status = "selesai"
+        laporan.ringkasan_hasil = ringkasan
+        laporan.tgl_selesai = datetime.now()
+
+    elif status_baru == "ditolak":
+        laporan.status = "ditolak"
+        laporan.alasan_ditolak = alasan
+        laporan.tgl_ditolak = datetime.now()
+
+    db.session.commit()
+    flash("Status laporan berhasil diperbarui", "success")
+    return redirect(url_for("admin.detail_laporan", laporan_id=laporan.id))

@@ -1,5 +1,5 @@
-import os
-from flask import Flask, session
+import os  # <--- SUDAH DITAMBAHKAN
+from flask import Flask, session, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -17,11 +17,15 @@ def create_app(config_class=DevelopmentConfig):
     # 1. Membuat instance Flask
     app = Flask(__name__)
     
-    # 2. Load Konfigurasi
+    # 2. Load Konfigurasi (Mengambil dari config.py)
     app.config.from_object(config_class)
 
-    # Konfigurasi Session Timeout (Misal: 30 menit)
-    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+    # --- CEK KONFIGURASI UPLOAD (DEBUGGING) ---
+    # Ini akan muncul di terminal saat Anda menjalankan flask run
+    # Pastikan angkanya sekitar 209715200 (untuk 200MB)
+    max_size = app.config.get('MAX_CONTENT_LENGTH')
+    print(f"Status Config: Batas Upload Saat Ini adalah {max_size} bytes")
+    # ------------------------------------------
 
     # 3. Inisialisasi Extension ke dalam App
     db.init_app(app)
@@ -31,10 +35,18 @@ def create_app(config_class=DevelopmentConfig):
     # Konfigurasi Login Manager
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "Silakan login untuk mengakses halaman ini."
+    login_manager.login_message = "Sesi Anda telah berakhir. Silakan login kembali."
     login_manager.login_message_category = "warning"
 
+    # --- ERROR HANDLER: FILE TERLALU BESAR (413) ---
+    # Menangani error jika file > MAX_CONTENT_LENGTH agar tidak crash
+    @app.errorhandler(413)
+    def request_entity_too_large(error):
+        flash('Ukuran file terlalu besar! Harap kurangi ukuran atau durasi video.', 'danger')
+        return redirect(request.referrer or url_for('main.index'))
+
     # 4. Filter Waktu Custom untuk Jinja Template
+    # Pastikan file app/utils.py ada dan memiliki fungsi to_wib & format_wib
     from app.utils import to_wib, format_wib
     
     app.jinja_env.filters["to_wib"] = to_wib
@@ -64,11 +76,7 @@ def create_app(config_class=DevelopmentConfig):
     app.register_blueprint(reports_bp, url_prefix="/reports")
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
-    # 6. User Loader & Last Seen
-    # =========================================================
-    # PERBAIKAN PENTING: Import dari 'app.models.user' 
-    # Karena file model User Anda ada di dalam folder models/user.py
-    # =========================================================
+    # 6. User Loader & Logic Session
     from app.models.user import User
 
     @login_manager.user_loader
@@ -78,11 +86,18 @@ def create_app(config_class=DevelopmentConfig):
         return None
 
     @app.before_request
-    def update_last_seen():
+    def before_request_callback():
+        # A. Update Last Seen di Database
         if current_user.is_authenticated:
             current_user.last_seen = datetime.utcnow()
             db.session.commit()
+        
+        # B. LOGIKA AUTO LOGOUT (Sliding Session)
+        # Baris ini mereset timer 10 menit setiap kali ada request baru
         session.permanent = True
+        
+        # Memaksa browser memperbarui cookie expiration time
+        session.modified = True 
 
     @app.after_request
     def add_header(response):
