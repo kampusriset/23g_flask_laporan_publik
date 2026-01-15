@@ -35,6 +35,8 @@ class Laporan(db.Model):
     tgl_ditolak = db.Column(db.DateTime, nullable=True)
 
     foto_path = db.Column(db.String(255), nullable=True)
+    foto_admin = db.Column(db.String(255), nullable=True)
+
 
     created_at = db.Column(db.DateTime, default=func.now())
     updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
