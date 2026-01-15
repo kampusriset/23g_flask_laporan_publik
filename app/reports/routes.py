@@ -21,38 +21,57 @@ from app.models import Laporan, Kategori
 from app.reports import bp
 
 
-# Folder upload di dalam static
-BASE_DIR = Path(__file__).resolve().parent # app/
+import os
+import uuid
+from pathlib import Path
+from werkzeug.utils import secure_filename
+
+# 1. Pastikan BASE_DIR ini beneran nunjuk ke folder 'app' lo
+# Kalau file ini ada di dalam folder 'app/', code ini udah bener.
+BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_FOLDER = BASE_DIR / "static"
 UPLOAD_FOLDER = STATIC_FOLDER / "uploads" / "laporan_foto"
+
+# Auto-create folder pas server start (biar aman)
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
 def to_relative(path: Path) -> str:
-    """
-    Mengubah path absolut di bawah folder static menjadi
-    path relatif yang dipakai di template: 'uploads/laporan_foto/xxx.jpg'
-    """
-    return str(path.relative_to(STATIC_FOLDER)).replace("\\", "/")
-
-
-import uuid
-import os
-from werkzeug.utils import secure_filename
+    """Mengubah path absolut disk menjadi path relatif URL."""
+    try:
+        return str(path.relative_to(STATIC_FOLDER)).replace("\\", "/")
+    except ValueError:
+        return None
 
 def save_uploaded_file(file_obj):
     """
     Simpan file dengan nama random (hashed/UUID) untuk mencegah duplikasi.
-    Contoh hasil: 'a1b2c3d4e5... .jpg'
     """
+    # Cek file kosong
     if not file_obj or not file_obj.filename:
         return None
-    original_filename = secure_filename(file_obj.filename)
-    _, ext = os.path.splitext(original_filename)
-    unique_filename = f"{uuid.uuid4().hex}{ext.lower()}"
-    full_path = UPLOAD_FOLDER / unique_filename
+    
     try:
-        file_obj.save(full_path)
-        return to_relative(full_path)
+        # 1. Generate Nama Unik
+        original_filename = secure_filename(file_obj.filename)
+        _, ext = os.path.splitext(original_filename)
+        if not ext: ext = ".jpg" # Fallback extension
+        
+        unique_filename = f"{uuid.uuid4().hex}{ext.lower()}"
+        full_path_obj = UPLOAD_FOLDER / unique_filename
+
+        # 2. [CRITICAL FIX] Reset cursor jaga-jaga file udah dibaca sebelumnya
+        file_obj.seek(0)
+        
+        # 3. [CRITICAL FIX] Convert Path Object jadi String biasa
+        # Flask .save() kadang nolak kalau dikasih object Path mentah
+        save_path_str = str(full_path_obj)
+        
+        print(f"DEBUG: Saving to -> {save_path_str}") # Cek console buat mastiin
+        
+        file_obj.save(save_path_str)
+        
+        return to_relative(full_path_obj)
+        
     except Exception as e:
         print(f"❌ Gagal save file: {e}")
         return None
