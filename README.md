@@ -64,7 +64,7 @@ cd 23g_flask_laporan_publik
 ```
 ### 3. Persiapan Lingkungan env
 ```
-python -m venv env :: (nama bebas)
+python -m venv env
 ```
 ### 4, Aktivasi env
 ### - windows

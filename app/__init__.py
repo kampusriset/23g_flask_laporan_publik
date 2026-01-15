@@ -4,29 +4,22 @@ from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from config import DevelopmentConfig
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
 
 def create_app(config_class=DevelopmentConfig):
-    app_dir = os.path.dirname(os.path.abspath(__file__))
 
-    app = Flask(
-        __name__,
-        static_folder=os.path.join(app_dir, "static"),
-        static_url_path="/static",
-    )
+    static_folder=os.getenv('APP_URL')
+# Paksa Flask pake folder static yg kita tunjuk
+    app = Flask(__name__, static_url_path='/app/static')
+    
     app.config.from_object(config_class)
-    root_dir = os.path.dirname(app_dir)
-
-    app = Flask(__name__)
-    app.static_folder = os.path.join(root_dir, "static")
-    app.static_url_path = "/static"
-    app.config.from_object(config_class)
-
     # session timeout 10 menit
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
@@ -53,7 +46,6 @@ def create_app(config_class=DevelopmentConfig):
     app.register_blueprint(main_bp)
     app.register_blueprint(reports_bp, url_prefix="/reports")
     app.register_blueprint(admin_bp)
-
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -61,7 +53,7 @@ def create_app(config_class=DevelopmentConfig):
     @app.before_request
     def update_last_seen():
         if current_user.is_authenticated:
-            current_user.last_seen = datetime.utcnow()
+            current_user.last_seen = datetime.now()
             db.session.commit()
         session.permanent = True
         session.modified = True
@@ -75,6 +67,13 @@ def create_app(config_class=DevelopmentConfig):
         response.headers["Expires"] = "0"
         return response
 
+    @app.context_processor
+    def inject_global_vars():
+        return dict(
+            # Ambil dari env, kalau gak ada default ke kosong
+            app_url=os.getenv('APP_URL', 'http://localhost:5000')
+        )
+    
     with app.app_context():
         db.create_all()
         print("Database tables created!")
