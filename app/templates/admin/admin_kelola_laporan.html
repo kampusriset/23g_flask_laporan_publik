@@ -2,13 +2,15 @@
 {% block title %}Kelola Laporan{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <div class="flex flex-col md:flex-row gap-6">
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
 
-    <!-- Sidebar -->
     <aside id="sidebar"
-           class="w-full md:w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -30,313 +32,270 @@
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('admin.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Dashboard Admin
         </a>
 
         <a href="{{ url_for('admin.user_list') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kelola Pengguna
         </a>
 
         <a href="{{ url_for('admin.manage_reports') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
           Kelola Laporan
         </a>
 
         <a href="{{ url_for('admin.kelola_kategori') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kategori & Wilayah
         </a>
 
         <a href="{{ url_for('admin.pengaturan_sistem') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pengaturan Sistem
         </a>
       </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <main class="flex-1 min-w-0 space-y-6">
-      <div>
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Kelola Laporan</h1>
-        <p class="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Kelola Laporan</h1>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
           Pantau, filter, dan update status laporan yang masuk dari pengguna.
         </p>
       </div>
 
-      <!-- Filter & search -->
-      <form method="get"
-            action="{{ url_for('admin.manage_reports') }}"
-            class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+      <form method="get" action="{{ url_for('admin.manage_reports') }}" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end mb-6">
         <div class="flex-1">
           <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
             Cari berdasarkan kode atau judul
           </label>
-          <input
-            type="text"
-            name="q"
-            value="{{ q }}"
-            placeholder="Contoh: LAP-2025-00123 atau 'Lampu jalan mati'"
-            class="w-full rounded-lg border border-slate-300 dark:border-slate-600
-                   bg-white dark:bg-slate-900 px-3 py-2 text-sm
-                   text-slate-900 dark:text-slate-100
-                   placeholder:text-slate-400 dark:placeholder:text-slate-500
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <input type="text" name="q" value="{{ q }}" placeholder="Contoh: LAP-2025-00123 atau 'Lampu jalan mati'"
+                 class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
 
         <div class="w-full sm:w-48">
           <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
             Filter status
           </label>
-          <select name="status"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
-                         bg-white dark:bg-slate-900 px-3 py-2 text-sm
-                         text-slate-900 dark:text-slate-100 focus:outline-none
-                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <select name="status" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <option value="">Semua status</option>
             <option value="diproses" {% if status=='diproses' %}selected{% endif %}>Diproses</option>
-            <option value="selesai"  {% if status=='selesai'  %}selected{% endif %}>Selesai</option>
-            <option value="ditolak"  {% if status=='ditolak'  %}selected{% endif %}>Ditolak</option>
+            <option value="selesai" {% if status=='selesai' %}selected{% endif %}>Selesai</option>
+            <option value="ditolak" {% if status=='ditolak' %}selected{% endif %}>Ditolak</option>
           </select>
         </div>
 
         <div class="flex gap-2">
-          <button type="submit"
-                  class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold
-                         bg-blue-600 text-white hover:bg-blue-700
-                         dark:bg-blue-500 dark:hover:bg-blue-400">
+          <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 transition-colors">
             Terapkan
           </button>
-          <a href="{{ url_for('admin.manage_reports') }}"
-             class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold
-                    border border-slate-300 dark:border-slate-600
-                    text-slate-600 dark:text-slate-200
-                    hover:bg-slate-50 dark:hover:bg-slate-800">
+          <a href="{{ url_for('admin.manage_reports') }}" class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             Reset
           </a>
         </div>
       </form>
 
- <div class="w-full min-w-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
+      <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800">
   
-  <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800">
-    <h2 class="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100 tracking-wide">
-      DAFTAR LAPORAN
-    </h2>
-    <div class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
-        <p class="text-xs font-medium">
-        Total: <span id="totalDataCount" class="font-bold">{{ reports|length }}</span>
-        </p>
+  <h2 class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide">
+    DAFTAR LAPORAN
+  </h2>
+
+  <div class="flex items-center gap-3">
+    
+    <div class="relative">
+      <button onclick="togglePrintMenu()" 
+              class="flex items-center justify-center p-2 text-gray-600 hover:text-blue-600 bg-white hover:bg-blue-50 border border-gray-300 rounded-lg shadow-sm transition-all dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
+              title="Cetak Laporan">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+        </svg>
+      </button>
+
+      <div id="printMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden origin-top-right transition-all">
+        <div class="py-1">
+          <div class="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            Opsi Cetak
+          </div>
+          <a href="{{ url_for('admin.cetak_laporan', periode='minggu') }}" target="_blank" 
+             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-blue-400">
+             📅 Minggu Ini
+          </a>
+          <a href="{{ url_for('admin.cetak_laporan', periode='bulan') }}" target="_blank"
+             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-blue-400">
+             📅 Bulan Ini
+          </a>
+          <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+          <a href="{{ url_for('admin.cetak_laporan', periode='semua') }}" target="_blank"
+             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-blue-400">
+             🖨️ Cetak Semua
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="w-full overflow-x-auto">
-    <table class="min-w-full text-sm whitespace-nowrap">
-      <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
-        <tr>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Kode</th>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Pelapor</th>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700 min-w-[200px]">Judul</th>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Status</th>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Update</th>
-          <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700 text-center">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="reportTableBody" class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
-        {% for lp in reports %}
-        <tr class="report-row hidden hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-          
-          <td class="px-4 sm:px-6 py-4 align-top">
-            <span class="font-mono text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                {{ lp.kode_pelaporan }}
-            </span>
-          </td>
+    <div class="px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
+      <p class="text-xs font-medium">Total: <span id="totalDataCount" class="font-bold">{{ reports|length }}</span></p>
+    </div>
 
-          <td class="px-4 sm:px-6 py-4 align-top">
-            <div class="flex flex-col max-w-[150px] truncate">
-                <span class="font-semibold text-gray-800 dark:text-white text-sm truncate">{{ lp.user.username }}</span>
-                <span class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ lp.user.email }}</span>
-                <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ lp.user.phone }}</span>
-            </div>
-          </td>
-
-          <td class="px-4 sm:px-6 py-4 align-top whitespace-normal">
-            <p class="text-sm text-gray-800 dark:text-gray-200 leading-snug line-clamp-2">
-                {{ lp.judul }}
-            </p>
-          </td>
-
-          <td class="px-4 sm:px-6 py-4 align-top">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                    {% if lp.status == 'diajukan' %} bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-800
-                    {% elif lp.status == 'diproses' %} bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800
-                    {% elif lp.status == 'selesai' %} bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800
-                    {% else %} bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800
-                    {% endif %}">
-              {{ lp.status|capitalize }}
-            </span>
-          </td>
-
-          <td class="px-4 sm:px-6 py-4 align-top">
-            {% set waktu = lp.updated_at or lp.created_at %}
-            <div class="flex flex-col">
-                <span class="text-sm text-gray-600 dark:text-gray-300">
-                    {{ waktu|format_wib }} WIB
-                </span>
-            </div>
-          </td>
-
-          <td class="px-4 sm:px-6 py-4 align-top text-center">
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-2">
-              <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
-                 class="w-full sm:w-auto px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all shadow-sm text-center">
-                Detail
-              </a>
-              <button type="button"
-                      onclick="openStatusModal({{ lp.id }}, '{{ lp.status }}')"
-                      class="w-full sm:w-auto px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/50 transition-all shadow-sm text-center">
-                Ubah
-              </button>
-            </div>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-            <div class="flex flex-col items-center justify-center">
-                <p>Belum ada data laporan ditemukan.</p>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <div id="paginationControls" class="hidden px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
-    <button id="prevBtn" class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
-      ← <span class="hidden sm:inline ml-1">Prev</span>
-    </button>
-
-    <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
-      Hal <span id="currentPageSpan" class="font-bold text-gray-900 dark:text-white">1</span> 
-      dari <span id="totalPagesSpan" class="font-bold">1</span>
-    </span>
-
-    <button id="nextBtn" class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
-      <span class="hidden sm:inline mr-1">Next</span> →
-    </button>
   </div>
 </div>
 
+        <div class="w-full overflow-x-auto">
+          <table class="min-w-full text-sm whitespace-nowrap">
+            <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
+              <tr>
+                <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Kode</th>
+                <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Pelapor</th>
+                <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700 min-w-[200px]">Judul</th>
+                <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Status</th>
+                <th class="px-4 sm:px-6 py-3 text-left border-b dark:border-gray-700">Update</th>
+                <th class="px-4 sm:px-6 py-3 text-center border-b dark:border-gray-700">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody" class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+              {% for lp in reports %}
+              <tr class="report-row hidden hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                <td class="px-4 sm:px-6 py-4 align-top">
+                  <span class="font-mono text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    {{ lp.kode_pelaporan }}
+                  </span>
+                </td>
+                <td class="px-4 sm:px-6 py-4 align-top">
+                  <div class="flex flex-col max-w-[150px] truncate">
+                    <span class="font-semibold text-gray-800 dark:text-white text-sm truncate">{{ lp.user.username }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ lp.user.email }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ lp.user.phone }}</span>
+                  </div>
+                </td>
+                <td class="px-4 sm:px-6 py-4 align-top whitespace-normal">
+                  <p class="text-sm text-gray-800 dark:text-gray-200 leading-snug line-clamp-2">
+                    {{ lp.judul }}
+                  </p>
+                </td>
+                <td class="px-4 sm:px-6 py-4 align-top">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                        {% if lp.status == 'diajukan' %} bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-800
+                        {% elif lp.status == 'diproses' %} bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800
+                        {% elif lp.status == 'selesai' %} bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800
+                        {% else %} bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800
+                        {% endif %}">
+                    {{ lp.status|capitalize }}
+                  </span>
+                </td>
+                <td class="px-4 sm:px-6 py-4 align-top">
+                  {% set waktu = lp.updated_at or lp.created_at %}
+                  <span class="text-sm text-gray-600 dark:text-gray-300">{{ waktu|format_wib }} WIB</span>
+                </td>
+                <td class="px-4 sm:px-6 py-4 align-top text-center">
+                  <div class="flex flex-col sm:flex-row items-center justify-center gap-2">
+                    <a href="{{ url_for('reports.detail', laporan_id=lp.id) }}"
+                       class="w-full sm:w-auto px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all shadow-sm">
+                      Detail
+                    </a>
+                    <button type="button"
+                            onclick="openStatusModal({{ lp.id }}, '{{ lp.status }}')"
+                            class="w-full sm:w-auto px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/50 transition-all shadow-sm">
+                      Ubah
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+                  <p>Belum ada data laporan ditemukan.</p>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
-<!-- Modal ubah status (satu saja, di luar loop) -->
-<div id="statusModal"
-     class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md p-5">
-    <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">
-      Ubah status laporan
-    </h3>
+        <div id="paginationControls" class="hidden px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
+          <button id="prevBtn" class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
+            ← <span class="hidden sm:inline ml-1">Prev</span>
+          </button>
+          <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
+            Hal <span id="currentPageSpan" class="font-bold text-gray-900 dark:text-white">1</span> dari <span id="totalPagesSpan" class="font-bold">1</span>
+          </span>
+          <button id="nextBtn" class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
+            <span class="hidden sm:inline mr-1">Next</span> →
+          </button>
+        </div>
+      </div>
 
+    </main>
+  </div>
+</div>
+
+<div id="statusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md p-6 transform transition-all scale-100">
+    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Ubah Status Laporan</h3>
+    
     <form method="post" id="statusForm" enctype="multipart/form-data">
       {{ csrf_token() if csrf_token is defined }}
       <input type="hidden" id="laporanIdHidden">
 
-      <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-        Status
-      </label>
-      <select name="status" id="statusSelect"
-              class="w-full rounded-lg border border-slate-300 dark:border-slate-600
-                     bg-white dark:bg-slate-900 px-3 py-2 text-sm mb-3
-                     text-slate-900 dark:text-slate-100">
-        <option value="diproses">Diproses</option>
-        <option value="selesai">Selesai</option>
-        <option value="ditolak">Ditolak</option>
-      </select>
-
-      <div id="fieldRingkasan" class="mb-3 hidden">
-        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-          Ringkasan hasil <span class="text-red-500">*</span>
-        </label>
-        <textarea name="ringkasan_hasil" rows="3"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
-                         bg-white dark:bg-slate-900 px-3 py-2 text-xs
-                         text-slate-900 dark:text-slate-100"></textarea>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Status Baru</label>
+        <select name="status" id="statusSelect" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500">
+          <option value="diproses">Diproses</option>
+          <option value="selesai">Selesai</option>
+          <option value="ditolak">Ditolak</option>
+        </select>
       </div>
 
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700">
-          Foto hasil penanganan
-        </label>
-        <input
-          type="file"
-          name="foto_admin"
-          accept="image/*"
-          class="mt-1 block w-full text-sm"
-        />
+      <div id="fieldRingkasan" class="mb-4 hidden">
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Ringkasan Hasil <span class="text-red-500">*</span></label>
+        <textarea name="ringkasan_hasil" rows="3" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"></textarea>
       </div>
 
-      <div id="fieldAlasan" class="mb-3 hidden">
-        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-          Alasan ditolak <span class="text-red-500">*</span>
-        </label>
-        <textarea name="alasan_ditolak" rows="3"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600
-                         bg-white dark:bg-slate-900 px-3 py-2 text-xs
-                         text-slate-900 dark:text-slate-100"></textarea>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Foto Bukti Penanganan</label>
+        <input type="file" name="foto_admin" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors"/>
       </div>
 
-      <div class="flex justify-between gap-2 mt-4">
-        <button type="button"
-                class="px-3 py-1.5 rounded-lg text-xs border border-amber-300
-                       text-amber-700 dark:text-amber-300
-                       dark:border-amber-500"
-                onclick="submitResetStatus()">
-          Reset ke diajukan
-        </button>
+      <div id="fieldAlasan" class="mb-4 hidden">
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Alasan Penolakan <span class="text-red-500">*</span></label>
+        <textarea name="alasan_ditolak" rows="3" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"></textarea>
+      </div>
 
+      <div class="flex justify-between items-center mt-6">
+        <button type="button" class="text-amber-600 hover:text-amber-800 text-sm font-medium" onclick="submitResetStatus()">Reset ke Diajukan</button>
         <div class="flex gap-2">
-          <button type="button"
-                  class="px-3 py-1.5 rounded-lg text-xs border border-slate-300
-                         text-slate-600 dark:text-slate-200
-                         dark:border-slate-600"
-                  onclick="closeStatusModal()">
-            Batal
-          </button>
-          <button type="submit"
-                  class="px-4 py-1.5 rounded-lg text-xs font-semibold
-                         bg-blue-600 text-white hover:bg-blue-700
-                         dark:bg-blue-500 dark:hover:bg-blue-400">
-            Simpan
-          </button>
+          <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors" onclick="closeStatusModal()">Batal</button>
+          <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md">Simpan Perubahan</button>
         </div>
       </div>
     </form>
   </div>
 </div>
-</main>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>
 
 <script>
 function openStatusModal(id, currentStatus) {
-  const modal   = document.getElementById('statusModal');
-  const form    = document.getElementById('statusForm');
-  const select  = document.getElementById('statusSelect');
+  const modal = document.getElementById('statusModal');
+  const form = document.getElementById('statusForm');
+  const select = document.getElementById('statusSelect');
   const hiddenId = document.getElementById('laporanIdHidden');
 
   hiddenId.value = id;
-
   const allowed = ['diajukan','diproses','selesai','ditolak'];
-  const value   = allowed.includes(currentStatus) ? currentStatus : 'diproses';
-
-  // kalau status masih diajukan, default-kan ke diproses
+  const value = allowed.includes(currentStatus) ? currentStatus : 'diproses';
+  
   select.value = (value === 'diajukan') ? 'diproses' : value;
-
   toggleExtraFields(select.value);
 
   form.action = `/admin/laporan/${id}/status`;
@@ -349,22 +308,20 @@ function closeStatusModal() {
 
 function toggleExtraFields(status) {
   const ringkasan = document.getElementById('fieldRingkasan');
-  const alasan    = document.getElementById('fieldAlasan');
+  const alasan = document.getElementById('fieldAlasan');
   ringkasan.classList.add('hidden');
   alasan.classList.add('hidden');
-  if (status === 'selesai') {
-    ringkasan.classList.remove('hidden');
-  } else if (status === 'ditolak') {
-    alasan.classList.remove('hidden');
-  }
+  
+  if (status === 'selesai') ringkasan.classList.remove('hidden');
+  else if (status === 'ditolak') alasan.classList.remove('hidden');
 }
 
 function submitResetStatus() {
-  const hiddenId = document.getElementById('laporanIdHidden').value;
-  const form     = document.getElementById('statusForm');
-  if (!hiddenId) return;
-  if (!confirm('Kembalikan status ke diajukan?')) return;
-  form.action = `/admin/laporan/${hiddenId}/reset-status`;
+  const id = document.getElementById('laporanIdHidden').value;
+  const form = document.getElementById('statusForm');
+  if (!id || !confirm('Yakin ingin mengembalikan status laporan ini menjadi "Diajukan"?')) return;
+  
+  form.action = `/admin/laporan/${id}/reset-status`;
   form.submit();
 }
 
@@ -379,29 +336,28 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
-
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
+  // Fungsi untuk toggle menu cetak
+  function togglePrintMenu() {
+    const menu = document.getElementById('printMenu');
+    menu.classList.toggle('hidden');
   }
+
+  // Menutup dropdown jika klik di luar
+  document.addEventListener('click', function(event) {
+    const menu = document.getElementById('printMenu');
+    const button = event.target.closest('button[onclick="togglePrintMenu()"]');
+    
+    // Jika menu terbuka DAN yang diklik bukan tombol toggle DAN bukan bagian dalam menu
+    if (!menu.classList.contains('hidden') && !button && !menu.contains(event.target)) {
+      menu.classList.add('hidden');
+    }
+  });
 </script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // --- KONFIGURASI PAGINATION ---
     const itemsPerPage = 5; 
     let currentPage = 1;
-
-    // --- SELEKTOR DOM ---
     const rows = document.querySelectorAll('.report-row');
     const paginationControls = document.getElementById('paginationControls');
     const prevBtn = document.getElementById('prevBtn');
@@ -409,37 +365,26 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentPageSpan = document.getElementById('currentPageSpan');
     const totalPagesSpan = document.getElementById('totalPagesSpan');
 
-    // Hitung total halaman
     const totalItems = rows.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    // --- FUNGSI TAMPILKAN HALAMAN ---
     function showPage(page) {
         if (page < 1) page = 1;
         if (page > totalPages) page = totalPages;
         currentPage = page;
-
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
         rows.forEach((row, index) => {
-            if (index >= start && index < end) {
-                row.classList.remove('hidden');
-            } else {
-                row.classList.add('hidden');
-            }
+            row.classList.toggle('hidden', !(index >= start && index < end));
         });
 
-        // Update Text Info
         if(currentPageSpan) currentPageSpan.textContent = currentPage;
         if(totalPagesSpan) totalPagesSpan.textContent = totalPages;
-
-        // Update State Tombol
         if(prevBtn) prevBtn.disabled = (currentPage === 1);
         if(nextBtn) nextBtn.disabled = (currentPage === totalPages);
     }
 
-    // --- INISIALISASI ---
     if (totalItems > itemsPerPage) {
         if(paginationControls) paginationControls.classList.remove('hidden');
         showPage(1);
@@ -448,18 +393,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if(paginationControls) paginationControls.classList.add('hidden');
     }
 
-    // --- EVENT LISTENERS ---
-    if(prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) showPage(currentPage - 1);
-        });
-    }
-
-    if(nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if (currentPage < totalPages) showPage(currentPage + 1);
-        });
-    }
+    if(prevBtn) prevBtn.addEventListener('click', () => { if (currentPage > 1) showPage(currentPage - 1); });
+    if(nextBtn) nextBtn.addEventListener('click', () => { if (currentPage < totalPages) showPage(currentPage + 1); });
 });
 </script>
 {% endblock %}

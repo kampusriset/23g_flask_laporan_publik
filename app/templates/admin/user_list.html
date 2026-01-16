@@ -2,13 +2,15 @@
 {% block title %}Manajemen Pengguna{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <div class="flex flex-col md:flex-row gap-6">
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
 
-    <!-- Sidebar -->
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -30,185 +32,183 @@
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('admin.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Dashboard Admin
         </a>
 
         <a href="{{ url_for('admin.user_list') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
           Kelola Pengguna
         </a>
 
         <a href="{{ url_for('admin.manage_reports') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kelola Laporan
         </a>
 
         <a href="{{ url_for('admin.kelola_kategori') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Kategori & Wilayah
-</a>
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kategori & Wilayah
+        </a>
 
-
-         <a href="{{ url_for('admin.pengaturan_sistem') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Pengaturan Sistem
-</a>
+        <a href="{{ url_for('admin.pengaturan_sistem') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Pengaturan Sistem
+        </a>
       </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <main class="flex-1">
-      <div class="py-2">
-        <div class="flex flex-row mb-4 justify-between w-full items-center">
-          <div>
-            <h2 class="text-2xl font-bold leading-tight text-gray-800 dark:text-gray-100">
-              Manajemen Pengguna
-            </h2>
-            <p class="text-gray-500 text-sm mt-1">
-              Total Pengguna: {{ users|length }}
-            </p>
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-2xl font-bold leading-tight text-gray-800 dark:text-gray-100">
+            Manajemen Pengguna
+          </h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Total Pengguna: <span class="font-bold">{{ users|length }}</span>
+          </p>
+        </div>
+        <a href="{{ url_for('admin.user_create') }}"
+           class="flex-shrink-0 inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
+           + Tambah User
+        </a>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="p-4 rounded-lg shadow-sm text-sm border-l-4 
+                {% if category == 'success' %} bg-green-50 border-green-500 text-green-700 dark:bg-green-900/20 dark:text-green-300
+                {% elif category == 'danger' %} bg-red-50 border-red-500 text-red-700 dark:bg-red-900/20 dark:text-red-300
+                {% else %} bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
           </div>
-          <div class="text-end">
-            <a href="{{ url_for('admin.user_create') }}"
-               class="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 ease-in-out">
-              + Tambah User
-            </a>
+        {% endif %}
+      {% endwith %}
+
+      <div class="w-full min-w-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
+        <div class="w-full overflow-x-auto">
+          <table class="min-w-full text-sm whitespace-nowrap leading-normal">
+            <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
+              <tr>
+                <th class="px-6 py-4 text-left border-b dark:border-gray-700">User Info</th>
+                <th class="px-6 py-4 text-left border-b dark:border-gray-700">Role</th>
+                <th class="px-6 py-4 text-left border-b dark:border-gray-700">Status</th>
+                <th class="px-6 py-4 text-left border-b dark:border-gray-700">Terakhir Login</th>
+                <th class="px-6 py-4 text-center border-b dark:border-gray-700">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+              {% for user in users %}
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                
+                <td class="px-6 py-4">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 w-10 h-10">
+                      <div class="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 font-bold uppercase border border-gray-300 dark:border-gray-600">
+                        {{ user.username[0] }}
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-gray-900 dark:text-white font-semibold text-sm">
+                        {{ user.nama_lengkap }}
+                      </p>
+                      <p class="text-gray-500 dark:text-gray-400 text-xs">
+                        {{ user.email }}
+                      </p>
+                      <p class="text-gray-400 text-xs italic">@{{ user.username }}</p>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4">
+                  {% if user.role == 'admin' %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                      Admin
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                      User
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    {% if user.is_active %}
+                      <span class="flex w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                      <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">Aktif</span>
+                    {% else %}
+                      <span class="flex w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                      <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">Nonaktif</span>
+                    {% endif %}
+                  </div>
+                </td>
+
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
+                  {% set last_login = user.last_login_wib() %}
+                  {% if last_login %}
+                    <div class="flex flex-col">
+                      <span class="font-medium text-xs">{{ last_login.strftime('%d %b %Y') }}</span>
+                      <span class="text-xs text-gray-500 dark:text-gray-400">{{ last_login.strftime('%H:%M') }} WIB</span>
+                    </div>
+                  {% else %}
+                    <span class="text-xs text-gray-400 italic">Belum pernah login</span>
+                  {% endif %}
+                </td>
+
+                <td class="px-6 py-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <a href="{{ url_for('admin.user_edit', user_id=user.id) }}"
+                       class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/50 transition-all shadow-sm">
+                      Edit
+                    </a>
+
+                    {% if user.id != current_user.id %}
+                    <form action="{{ url_for('admin.user_delete', user_id=user.id) }}" method="POST"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus user {{ user.username }}? Tindakan ini tidak dapat dibatalkan.');">
+                      <button type="submit" class="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/50 transition-all shadow-sm">
+                        Hapus
+                      </button>
+                    </form>
+                    {% else %}
+                      <span class="px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 rounded-lg cursor-not-allowed dark:bg-gray-800 dark:border-gray-700">Hapus</span>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% if not users %}
+          <div class="p-10 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
+            Data pengguna tidak ditemukan.
           </div>
+          {% endif %}
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="mt-2 mb-4 space-y-2">
-            {% for category, message in messages %}
-              <div class="p-4 rounded-md shadow-sm border-l-4 
-                  {% if category == 'success' %} bg-green-50 border-green-500 text-green-700 
-                  {% elif category == 'danger' %} bg-red-50 border-red-500 text-red-700 
-                  {% else %} bg-blue-50 border-blue-500 text-blue-700 {% endif %}">
-                {{ message }}
-              </div>
-            {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
-       <div class="w-full min-w-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-  
-  <div class="w-full overflow-x-auto">
-    <table class="min-w-full text-sm whitespace-nowrap leading-normal">
-      <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
-        <tr>
-          <th class="px-6 py-4 text-left border-b dark:border-gray-700">User Info</th>
-          <th class="px-6 py-4 text-left border-b dark:border-gray-700">Role</th>
-          <th class="px-6 py-4 text-left border-b dark:border-gray-700">Status</th>
-          <th class="px-6 py-4 text-left border-b dark:border-gray-700">Terakhir Login</th>
-          <th class="px-6 py-4 text-center border-b dark:border-gray-700">Aksi</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
-        {% for user in users %}
-        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-          
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 w-10 h-10">
-                <div class="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 font-bold uppercase border border-gray-300 dark:border-gray-600">
-                  {{ user.username[0] }}
-                </div>
-              </div>
-              <div class="ml-3">
-                <p class="text-gray-900 dark:text-white font-semibold text-sm">
-                  {{ user.nama_lengkap }}
-                </p>
-                <p class="text-gray-500 dark:text-gray-400 text-xs">
-                  {{ user.email }}
-                </p>
-                <p class="text-gray-400 text-xs italic">@{{ user.username }}</p>
-              </div>
-            </div>
-          </td>
-
-          <td class="px-6 py-4">
-            {% if user.role == 'admin' %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                Admin
-              </span>
-            {% else %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
-                User
-              </span>
-            {% endif %}
-          </td>
-
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              {% if user.is_active %}
-                <span class="flex w-2.5 h-2.5 bg-green-500 rounded-full mr-2"></span>
-                <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">Aktif</span>
-              {% else %}
-                <span class="flex w-2.5 h-2.5 bg-red-500 rounded-full mr-2"></span>
-                <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">Nonaktif</span>
-              {% endif %}
-            </div>
-          </td>
-
-          <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
-            {% set last_login = user.last_login_wib() %}
-            {% if last_login %}
-              <div class="flex flex-col">
-                <span class="font-medium text-xs">{{ last_login.strftime('%d %b %Y') }}</span>
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ last_login.strftime('%H:%M') }} WIB</span>
-              </div>
-            {% else %}
-              <span class="text-xs text-gray-400 italic">Belum pernah login</span>
-            {% endif %}
-          </td>
-
-          <td class="px-6 py-4 text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="{{ url_for('admin.user_edit', user_id=user.id) }}"
-                 class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/50 transition-all shadow-sm">
-                Edit
-              </a>
-
-              {% if user.id != current_user.id %}
-              <form action="{{ url_for('admin.user_delete', user_id=user.id) }}" method="POST"
-                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus user {{ user.username }}? Tindakan ini tidak dapat dibatalkan.');">
-                <button type="submit" class="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/50 transition-all shadow-sm">
-                  Hapus
-                </button>
-              </form>
-              {% else %}
-                <span class="px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 rounded-lg cursor-not-allowed dark:bg-gray-800 dark:border-gray-700">Hapus</span>
-              {% endif %}
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    {% if not users %}
-    <div class="p-10 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-      Data pengguna tidak ditemukan.
-    </div>
-    {% endif %}
-  </div>
-
-  <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col xs:flex-row items-center xs:justify-between">
-    <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
-      Menampilkan <span class="font-bold text-gray-900 dark:text-white">{{ users|length }}</span> data pengguna
-    </span>
-  </div>
-</div>
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
+            Menampilkan seluruh data pengguna.
+          </span>
+        </div>
       </div>
-    </main>
 
+    </main>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>
 {% endblock %}

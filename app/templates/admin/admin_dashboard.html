@@ -2,12 +2,15 @@
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <div class="flex flex-col md:flex-row gap-6">
-    <!-- Sidebar -->
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -28,209 +31,198 @@
       </div>
 
       <nav class="space-y-2 text-sm">
-      <a href="{{ url_for('admin.dashboard') }}"
-      class="block px-3 py-2 rounded-lg
-              bg-blue-50 text-blue-700
-              dark:bg-blue-900/40 dark:text-blue-300">
-      Dashboard Admin
-    </a>
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+          Dashboard Admin
+        </a>
 
+        <a href="{{ url_for('admin.user_list') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kelola Pengguna
+        </a>
 
-  <a href="{{ url_for('admin.user_list') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Kelola Pengguna
-</a>
+        <a href="{{ url_for('admin.manage_reports') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kelola Laporan
+        </a>
 
-  <a href="{{ url_for('admin.manage_reports') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Kelola Laporan
-  </a>
+        <a href="{{ url_for('admin.kelola_kategori') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kategori & Wilayah
+        </a>
 
-  <a href="{{ url_for('admin.kelola_kategori') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Kategori & Wilayah
-</a>
+        <a href="{{ url_for('admin.pengaturan_sistem') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Pengaturan Sistem
+        </a>
+      </nav>
+    </aside>
 
-   <a href="{{ url_for('admin.pengaturan_sistem') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Pengaturan Sistem
-</a>
-</nav>
-
-</aside>
-    <!-- Konten utama -->
-    <main class="flex-1">
-      <h1 class="text-3xl font-bold mb-2">Dashboard Admin</h1>
-      <p class="mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Dashboard Admin</h1>
+      <p class="mb-6 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
         Ringkasan aktivitas sistem dan shortcut untuk mengelola pengguna serta laporan.
       </p>
 
-     <!-- Kartu statistik -->
-<div class="grid gap-4 mb-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</span>
-    <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-      {{ total_users }}
-    </span>
-  </div>
-
-  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Laporan</span>
-    <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-      {{ total_reports }}
-    </span>
-  </div>
-
-  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Diproses</span>
-    <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-      {{ reports_in_progress }}
-    </span>
-  </div>
-
-  <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow flex flex-col">
-    <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Selesai</span>
-    <span class="text-2xl font-bold text-green-600 dark:text-green-400">
-      {{ reports_done }}
-    </span>
-  </div>
-</div>
-
-<<div class="w-full min-w-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-  
-  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800">
-    <h2 class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide">
-      LAPORAN TERBARU
-    </h2>
-    <a href="{{ url_for('admin.manage_reports') }}"
-       class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors">
-      Lihat semua →
-    </a>
-  </div>
-
-  <div class="w-full overflow-x-auto">
-    <table class="min-w-full text-sm whitespace-nowrap">
-      <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
-        <tr>
-          <th class="px-6 py-3 text-left border-b dark:border-gray-700">Kode</th>
-          <th class="px-6 py-3 text-left border-b dark:border-gray-700">Pelapor</th>
-          <th class="px-6 py-3 text-left border-b dark:border-gray-700 min-w-[200px]">Judul</th>
-          <th class="px-6 py-3 text-left border-b dark:border-gray-700">Status</th>
-          <th class="px-6 py-3 text-left border-b dark:border-gray-700">Dibuat</th>
-        </tr>
-      </thead>
-      <tbody id="dashboardTableBody" class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+      <div class="grid gap-4 mb-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         
-        {% for lp in latest_reports|reverse %}
-        <tr class="dashboard-row hidden hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-          
-          <td class="px-6 py-4 align-top">
-             <span class="font-mono text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                {{ lp.kode_pelaporan }}
-            </span>
-          </td>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow border border-gray-100 dark:border-gray-700 flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</span>
+          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {{ total_users }}
+          </span>
+        </div>
 
-          <td class="px-6 py-4 align-top text-gray-800 dark:text-gray-100 font-medium">
-            {{ lp.user.username }}
-          </td>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow border border-gray-100 dark:border-gray-700 flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Laporan</span>
+          <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {{ total_reports }}
+          </span>
+        </div>
 
-          <td class="px-6 py-4 align-top whitespace-normal">
-            <p class="text-sm text-gray-800 dark:text-gray-200 leading-snug line-clamp-2">
-              {{ lp.judul }}
-            </p>
-          </td>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow border border-gray-100 dark:border-gray-700 flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Diproses</span>
+          <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            {{ reports_in_progress }}
+          </span>
+        </div>
 
-          <td class="px-6 py-4 align-top">
-             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                    {% if lp.status == 'diajukan' %} bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-800
-                    {% elif lp.status == 'diproses' %} bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800
-                    {% elif lp.status == 'selesai' %} bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800
-                    {% else %} bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800
-                    {% endif %}">
-              {{ lp.status|capitalize }}
-            </span>
-          </td>
-
-          <td class="px-6 py-4 align-top text-gray-600 dark:text-gray-300 text-xs">
-            {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-            Belum ada laporan yang masuk.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <div id="dashPaginationControls" class="hidden px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
-    <button id="dashPrevBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
-      ← <span class="hidden sm:inline ml-1">Prev</span>
-    </button>
-
-    <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
-      Hal <span id="dashCurrentPage" class="font-bold text-gray-900 dark:text-white">1</span> 
-      dari <span id="dashTotalPages" class="font-bold">1</span>
-    </span>
-
-    <button id="dashNextBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
-      <span class="hidden sm:inline mr-1">Next</span> →
-    </button>
-  </div>
-</div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 shadow border border-gray-100 dark:border-gray-700 flex flex-col">
+          <span class="text-xs text-gray-500 dark:text-gray-400 mb-1">Laporan Selesai</span>
+          <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {{ reports_done }}
+          </span>
+        </div>
       </div>
+
+      <div class="w-full min-w-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800">
+          <h2 class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide">
+            LAPORAN TERBARU
+          </h2>
+          <a href="{{ url_for('admin.manage_reports') }}"
+             class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors">
+            Lihat semua →
+          </a>
+        </div>
+
+        <div class="w-full overflow-x-auto">
+          <table class="min-w-full text-sm whitespace-nowrap">
+            <thead class="bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 uppercase text-xs font-bold tracking-wider">
+              <tr>
+                <th class="px-6 py-3 text-left border-b dark:border-gray-700">Kode</th>
+                <th class="px-6 py-3 text-left border-b dark:border-gray-700">Pelapor</th>
+                <th class="px-6 py-3 text-left border-b dark:border-gray-700 min-w-[200px]">Judul</th>
+                <th class="px-6 py-3 text-left border-b dark:border-gray-700">Status</th>
+                <th class="px-6 py-3 text-left border-b dark:border-gray-700">Dibuat</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardTableBody" class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+              
+              {% for lp in latest_reports|reverse %}
+              <tr class="dashboard-row hidden hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                
+                <td class="px-6 py-4 align-top">
+                   <span class="font-mono text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                      {{ lp.kode_pelaporan }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4 align-top text-gray-800 dark:text-gray-100 font-medium">
+                  {{ lp.user.username }}
+                </td>
+
+                <td class="px-6 py-4 align-top whitespace-normal">
+                  <p class="text-sm text-gray-800 dark:text-gray-200 leading-snug line-clamp-2">
+                    {{ lp.judul }}
+                  </p>
+                </td>
+
+                <td class="px-6 py-4 align-top">
+                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                          {% if lp.status == 'diajukan' %} bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-800
+                          {% elif lp.status == 'diproses' %} bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800
+                          {% elif lp.status == 'selesai' %} bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800
+                          {% else %} bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800
+                          {% endif %}">
+                    {{ lp.status|capitalize }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4 align-top text-gray-600 dark:text-gray-300 text-xs">
+                  {{ lp.created_at.strftime('%d %b %Y %H:%M') }} WIB
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  Belum ada laporan yang masuk.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div id="dashPaginationControls" class="hidden px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
+          <button id="dashPrevBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
+            ← <span class="hidden sm:inline ml-1">Prev</span>
+          </button>
+
+          <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
+            Hal <span id="dashCurrentPage" class="font-bold text-gray-900 dark:text-white">1</span> 
+            dari <span id="dashTotalPages" class="font-bold">1</span>
+          </span>
+
+          <button id="dashNextBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 shadow-sm transition-all">
+            <span class="hidden sm:inline mr-1">Next</span> →
+          </button>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
+{% endblock %}
 
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
-  }
-</script>
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Gunakan nama variabel unik agar tidak bentrok dengan script tabel lain
-    const dashItemsPerPage = 5; 
-    let dashCurrentPage = 1;
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.dashboard-row');
+    const rowsPerPage = 5; 
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    let currentPage = 1;
 
-    const dashRows = document.querySelectorAll('.dashboard-row');
-    const dashControls = document.getElementById('dashPaginationControls');
-    const dashPrevBtn = document.getElementById('dashPrevBtn');
-    const dashNextBtn = document.getElementById('dashNextBtn');
-    const dashCurrentPageSpan = document.getElementById('dashCurrentPage');
-    const dashTotalPagesSpan = document.getElementById('dashTotalPages');
+    const prevBtn = document.getElementById('dashPrevBtn');
+    const nextBtn = document.getElementById('dashNextBtn');
+    const pageSpan = document.getElementById('dashCurrentPage');
+    const totalSpan = document.getElementById('dashTotalPages');
+    const controls = document.getElementById('dashPaginationControls');
 
-    const dashTotalItems = dashRows.length;
-    const dashTotalPages = Math.ceil(dashTotalItems / dashItemsPerPage);
+    // Jika data <= 5, tidak perlu pagination
+    if (rows.length <= rowsPerPage) {
+        rows.forEach(r => r.classList.remove('hidden'));
+        return; 
+    }
 
-    function showDashPage(page) {
-        if (page < 1) page = 1;
-        if (page > dashTotalPages) page = dashTotalPages;
-        dashCurrentPage = page;
+    // Tampilkan kontrol jika data > 5
+    controls.classList.remove('hidden');
+    totalSpan.textContent = totalPages;
 
-        const start = (dashCurrentPage - 1) * dashItemsPerPage;
-        const end = start + dashItemsPerPage;
+    function showPage(page) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
 
-        dashRows.forEach((row, index) => {
+        rows.forEach((row, index) => {
             if (index >= start && index < end) {
                 row.classList.remove('hidden');
             } else {
@@ -238,32 +230,27 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        if(dashCurrentPageSpan) dashCurrentPageSpan.textContent = dashCurrentPage;
-        if(dashTotalPagesSpan) dashTotalPagesSpan.textContent = dashTotalPages;
-
-        if(dashPrevBtn) dashPrevBtn.disabled = (dashCurrentPage === 1);
-        if(dashNextBtn) dashNextBtn.disabled = (dashCurrentPage === dashTotalPages);
+        pageSpan.textContent = page;
+        prevBtn.disabled = (page === 1);
+        nextBtn.disabled = (page === totalPages);
     }
 
-    if (dashTotalItems > dashItemsPerPage) {
-        if(dashControls) dashControls.classList.remove('hidden');
-        showDashPage(1);
-    } else {
-        dashRows.forEach(row => row.classList.remove('hidden'));
-        if(dashControls) dashControls.classList.add('hidden');
-    }
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
 
-    if(dashPrevBtn) {
-        dashPrevBtn.addEventListener('click', () => { 
-            if (dashCurrentPage > 1) showDashPage(dashCurrentPage - 1); 
-        });
-    }
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
 
-    if(dashNextBtn) {
-        dashNextBtn.addEventListener('click', () => { 
-            if (dashCurrentPage < dashTotalPages) showDashPage(dashCurrentPage + 1); 
-        });
-    }
+    // Init halaman pertama
+    showPage(1);
 });
 </script>
 {% endblock %}

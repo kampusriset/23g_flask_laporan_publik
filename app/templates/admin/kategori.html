@@ -2,13 +2,15 @@
 {% block title %}Kategori & Wilayah{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <div class="flex flex-col md:flex-row gap-6">
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
 
-    <!-- Sidebar -->
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -30,48 +32,49 @@
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('admin.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Dashboard Admin
         </a>
+
         <a href="{{ url_for('admin.user_list') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kelola Pengguna
         </a>
+
         <a href="{{ url_for('admin.manage_reports') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kelola Laporan
         </a>
+
         <a href="{{ url_for('admin.kelola_kategori') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
-          Kategori &amp; Wilayah
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+          Kategori & Wilayah
         </a>
+
         <a href="{{ url_for('admin.pengaturan_sistem') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Pengaturan Sistem
-</a>
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Pengaturan Sistem
+        </a>
       </nav>
     </aside>
 
-    <main class="flex-1 space-y-6">
-      <div>
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <div class="mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
-          Kategori &amp; Wilayah
+          Kategori & Wilayah
         </h1>
         <p class="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
           Kelola daftar kategori laporan yang tersedia.
         </p>
       </div>
 
-      <div class="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-xl shadow space-y-4">
-        <h2 class="font-semibold text-gray-800 dark:text-gray-100">
-          {{ 'Edit Kategori' if kategori else 'Tambah Kategori' }}
+      <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-4 mb-8">
+        <h2 class="font-semibold text-lg text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 pb-2">
+          {{ 'Edit Kategori' if kategori else 'Tambah Kategori Baru' }}
         </h2>
-        <form method="post" class="space-y-3">
+        
+        <form method="post" class="space-y-4">
           {{ csrf_token() if csrf_token is defined }}
           <div>
             <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nama Kategori</label>
@@ -86,130 +89,120 @@
                       class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors">{{ kategori.deskripsi if kategori else '' }}</textarea>
           </div>
           
-          <div class="flex items-center pt-2">
+          <div class="flex items-center gap-3 pt-2">
             <button type="submit"
                     class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-              {{ 'Update' if kategori else 'Tambah' }}
+              {{ 'Simpan Perubahan' if kategori else 'Tambah Kategori' }}
             </button>
+            
             {% if kategori %}
             <a href="{{ url_for('admin.kelola_kategori') }}"
-               class="ml-3 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline transition-colors">
-              Batal edit
+               class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline transition-colors">
+              Batal
             </a>
             {% endif %}
           </div>
         </form>
       </div>
 
-      <div class="w-full min-w-0 bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden flex flex-col">
-  
-  <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-900">
-    <h2 class="font-semibold text-gray-800 dark:text-gray-100">Daftar Kategori</h2>
-    <div class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-        <p class="text-xs font-medium">
-        Total: <span class="font-bold">{{ kategoris|length }}</span>
-        </p>
-    </div>
-  </div>
+      <div class="w-full min-w-0 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-900">
+          <h2 class="font-semibold text-gray-800 dark:text-gray-100">Daftar Kategori</h2>
+          <div class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+              <p class="text-xs font-medium">
+              Total: <span class="font-bold">{{ kategoris|length }}</span>
+              </p>
+          </div>
+        </div>
 
-  <div class="w-full overflow-x-auto">
-    <table class="min-w-full text-sm text-left whitespace-nowrap">
-      <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium border-b border-gray-200 dark:border-gray-700">
-        <tr>
-          <th class="py-3 px-4 sm:px-6 w-12 whitespace-nowrap">No</th>
-          <th class="py-3 px-4 sm:px-6 whitespace-nowrap">Nama</th>
-          <th class="py-3 px-4 sm:px-6 min-w-[150px] whitespace-nowrap">Deskripsi</th>
-          <th class="py-3 px-4 sm:px-6 whitespace-nowrap text-center">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="categoryTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
-        {% for k in kategoris %}
-        <tr class="category-row hidden hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-          <td class="py-3 px-4 sm:px-6 text-gray-700 dark:text-gray-300 whitespace-nowrap">
-            {{ loop.index }}
-          </td>
-          <td class="py-3 px-4 sm:px-6 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
-            {{ k.nama }}
-          </td>
-          <td class="py-3 px-4 sm:px-6 text-gray-600 dark:text-gray-400 truncate max-w-xs">
-            {{ k.deskripsi or '-' }}
-          </td>
-          <td class="py-3 px-4 sm:px-6 whitespace-nowrap text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="{{ url_for('admin.kelola_kategori', id=k.id) }}"
-                 class="text-xs px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-colors font-medium">
-                Edit
-              </a>
+        <div class="w-full overflow-x-auto">
+          <table class="min-w-full text-sm text-left whitespace-nowrap">
+            <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium border-b border-gray-200 dark:border-gray-700">
+              <tr>
+                <th class="py-3 px-6 w-12">No</th>
+                <th class="py-3 px-6">Nama</th>
+                <th class="py-3 px-6 min-w-[200px]">Deskripsi</th>
+                <th class="py-3 px-6 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="categoryTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+              {% for k in kategoris %}
+              <tr class="category-row hidden hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <td class="py-3 px-6 text-gray-700 dark:text-gray-300">
+                  {{ loop.index }}
+                </td>
+                <td class="py-3 px-6 font-medium text-gray-900 dark:text-gray-100">
+                  {{ k.nama }}
+                </td>
+                <td class="py-3 px-6 text-gray-600 dark:text-gray-400 truncate max-w-xs">
+                  {{ k.deskripsi or '-' }}
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <a href="{{ url_for('admin.kelola_kategori', id=k.id) }}"
+                       class="text-xs px-3 py-1.5 rounded-md bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50 transition-colors font-medium border border-amber-200 dark:border-amber-800">
+                      Edit
+                    </a>
 
-              <form method="post"
-                    action="{{ url_for('admin.kategori_delete', kategori_id=k.id) }}"
-                    onsubmit="return confirm('Yakin ingin menghapus kategori ini?');"
-                    class="inline-block">
-                {{ csrf_token() if csrf_token is defined }}
-                <button type="submit"
-                        class="text-xs px-3 py-1.5 rounded-md bg-rose-600 text-white hover:bg-rose-700 transition-colors font-medium">
-                  Hapus
-                </button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="4" class="py-8 text-center text-gray-500 dark:text-gray-400 italic">
-            Belum ada kategori data.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+                    <form method="post"
+                          action="{{ url_for('admin.kategori_delete', kategori_id=k.id) }}"
+                          onsubmit="return confirm('Yakin ingin menghapus kategori ini?');"
+                          class="inline-block">
+                      {{ csrf_token() if csrf_token is defined }}
+                      <button type="submit"
+                              class="text-xs px-3 py-1.5 rounded-md bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50 transition-colors font-medium border border-rose-200 dark:border-rose-800">
+                        Hapus
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="py-8 text-center text-gray-500 dark:text-gray-400 italic bg-gray-50 dark:bg-gray-800/50">
+                  Belum ada kategori data.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
-  <div id="catPaginationControls" class="hidden px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
-    <button id="catPrevBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
-      ← <span class="hidden sm:inline ml-1">Prev</span>
-    </button>
+        <div id="catPaginationControls" class="hidden px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
+          <button id="catPrevBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all shadow-sm">
+            ← <span class="hidden sm:inline ml-1">Prev</span>
+          </button>
 
-    <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
-      Hal <span id="catCurrentPage" class="font-bold text-gray-900 dark:text-white">1</span> 
-      dari <span id="catTotalPages" class="font-bold">1</span>
-    </span>
+          <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">
+            Hal <span id="catCurrentPage" class="font-bold text-gray-900 dark:text-white">1</span> 
+            dari <span id="catTotalPages" class="font-bold">1</span>
+          </span>
 
-    <button id="catNextBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all">
-      <span class="hidden sm:inline mr-1">Next</span> →
-    </button>
-  </div>
-</div>
-
-
+          <button id="catNextBtn" class="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all shadow-sm">
+            <span class="hidden sm:inline mr-1">Next</span> →
+          </button>
+        </div>
+      </div>
 
     </main>
   </div>
 </div>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
+{% endblock %}
 
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
-  }
-</script>
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // --- Konfigurasi Pagination Kategori ---
-    const catItemsPerPage = 3; // Tampilkan per 3 data
+    const catItemsPerPage = 5; // Ubah jumlah item per halaman sesuai keinginan
     let catCurrentPage = 1;
 
-    // --- Selektor DOM (Prefix 'cat' agar tidak bentrok) ---
     const catRows = document.querySelectorAll('.category-row');
     const catControls = document.getElementById('catPaginationControls');
     const catPrevBtn = document.getElementById('catPrevBtn');
@@ -220,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const catTotalItems = catRows.length;
     const catTotalPages = Math.ceil(catTotalItems / catItemsPerPage);
 
-    // --- Fungsi Tampil Halaman ---
     function showCategoryPage(page) {
         if (page < 1) page = 1;
         if (page > catTotalPages) page = catTotalPages;
@@ -237,26 +229,21 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Update Text Info
         if(catCurrentPageSpan) catCurrentPageSpan.textContent = catCurrentPage;
         if(catTotalPagesSpan) catTotalPagesSpan.textContent = catTotalPages;
 
-        // Update Tombol
         if(catPrevBtn) catPrevBtn.disabled = (catCurrentPage === 1);
         if(catNextBtn) catNextBtn.disabled = (catCurrentPage === catTotalPages);
     }
 
-    // --- Inisialisasi ---
     if (catTotalItems > catItemsPerPage) {
         if(catControls) catControls.classList.remove('hidden');
         showCategoryPage(1);
     } else {
-        // Jika data <= 3, tampilkan semua & sembunyikan kontrol
         catRows.forEach(row => row.classList.remove('hidden'));
         if(catControls) catControls.classList.add('hidden');
     }
 
-    // --- Event Listeners ---
     if(catPrevBtn) {
         catPrevBtn.addEventListener('click', () => { 
             if (catCurrentPage > 1) showCategoryPage(catCurrentPage - 1); 

@@ -2,12 +2,15 @@
 {% block title %}Laporan Saya{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <div class="flex flex-col md:flex-row gap-6">
-    <!-- Sidebar -->
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+    
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -18,7 +21,7 @@
           </span>
         </div>
         <div>
-          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate max-w-[120px]">
             {{ current_user.username }}
           </p>
           <a href="{{ url_for('main.profile') }}"
@@ -30,221 +33,240 @@
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('main.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Dashboard
         </a>
 
         <a href="{{ url_for('reports.create') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           + Buat Laporan Baru
         </a>
+
         <a href="{{ url_for('reports.my_reports') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
           Laporan Saya
         </a>
-          <a href="{{ url_for('reports.riwayat_laporan') }}"
-            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+
+        <a href="{{ url_for('reports.riwayat_laporan') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Riwayat Laporan
         </a>
+
         <a href="{{ url_for('reports.track') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Lacak Laporan
         </a>
+
         <a href="{{ url_for('main.notifications') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pemberitahuan
         </a>
+
         <a href="{{ url_for('main.settings') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pengaturan
         </a>
+
         <a href="{{ url_for('main.about') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Tentang
         </a>
       </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <main class="flex-1">
-  <h1 class="text-3xl font-bold mb-2">Laporan Saya</h1>
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Laporan Saya</h1>
 
-  <div class="mb-4 flex items-start gap-3 p-3 rounded-xl bg-yellow-50 border border-yellow-300 text-xs sm:text-sm text-yellow-900">
-    <svg class="w-5 h-5 mt-0.5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
-    </svg>
-    <p>
-      <span class="font-semibold">Info penting:</span>
-      Anda bisa <span class="font-semibold">Edit</span> dan <span class="font-semibold">Hapus</span>
-      laporan Anda sebelum 5 menit setelah dibuat.
-    </p>
-  </div>
+      <div class="mb-4 flex items-start gap-3 p-3 rounded-xl bg-yellow-50 border border-yellow-300 text-xs sm:text-sm text-yellow-900">
+        <svg class="w-5 h-5 mt-0.5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
+        </svg>
+        <p>
+          <span class="font-semibold">Info penting:</span>
+          Anda bisa <span class="font-semibold">Edit</span> dan <span class="font-semibold">Hapus</span>
+          laporan Anda sebelum 5 menit setelah dibuat.
+        </p>
+      </div>
 
-  <div class="mb-4">
-    <input id="searchInput" type="text"
-           placeholder="Cari kode, judul, lokasi, atau status..."
-           class="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100">
-  </div>
+      <div class="mb-4">
+        <input id="searchInput" type="text"
+               placeholder="Cari kode, judul, lokasi, atau status..."
+               class="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none">
+      </div>
 
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col">
-    <div class="overflow-x-auto">
-      <table id="laporanTable" class="min-w-full text-sm">
-        <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
-          <tr>
-            <th class="px-4 py-3 text-left">Kode Pelaporan</th>
-            <th class="px-4 py-3 text-left">Judul</th>
-            <th class="px-4 py-3 text-left">Lokasi</th>
-            <th class="px-4 py-3 text-left">Dibuat</th>
-            <th class="px-4 py-3 text-left">Status</th>
-            <th class="px-4 py-3 text-left">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          
-          {# PERUBAHAN 1: Loop menggunakan pagination.items #}
-          {% for lp in pagination.items %}
-          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
-            <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-              {{ lp.kode_pelaporan }}
-            </td>
-            <td class="px-4 py-3 text-gray-800 dark:text-gray-100 font-medium">
-              {{ lp.judul }}
-            </td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ lp.lokasi }}
-            </td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-              {% set waktu = lp.updated_at or lp.created_at %}
-              {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
-            </td>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col border border-gray-100 dark:border-gray-700">
+        <div class="overflow-x-auto">
+          <table id="laporanTable" class="min-w-full text-sm">
+            <thead class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200">
+              <tr>
+                <th class="px-4 py-3 text-left">Kode Pelaporan</th>
+                <th class="px-4 py-3 text-left">Judul</th>
+                <th class="px-4 py-3 text-left">Lokasi</th>
+                <th class="px-4 py-3 text-left">Dibuat</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-left">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              
+              {% for lp in pagination.items %}
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors">
+                <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
+                  {{ lp.kode_pelaporan }}
+                </td>
+                <td class="px-4 py-3 text-gray-800 dark:text-gray-100 font-medium">
+                  {{ lp.judul }}
+                </td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                  {{ lp.lokasi }}
+                </td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                  {% set waktu = lp.updated_at or lp.created_at %}
+                  {{ waktu.strftime('%d %b %Y %H:%M') }} WIB
+                </td>
 
-            <td class="px-4 py-3">
-              {% set s = lp.status %}
-              {% if s == 'diajukan' %}
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Diajukan</span>
-              {% elif s == 'diproses' %}
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diproses</span>
-              {% elif s == 'selesai' %}
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>
-              {% elif s == 'ditolak' %}
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>
+                <td class="px-4 py-3">
+                  {% set s = lp.status %}
+                  {% if s == 'diajukan' %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Diajukan</span>
+                  {% elif s == 'diproses' %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diproses</span>
+                  {% elif s == 'selesai' %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>
+                  {% elif s == 'ditolak' %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>
+                  {% else %}
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">{{ s }}</span>
+                  {% endif %}
+                </td>
+                
+                <td class="px-4 py-3">
+                  {% if lp.bisa_edit %}
+                    <div class="flex flex-row items-center gap-2 text-xs">
+                      <a href="{{ url_for('reports.edit', laporan_id=lp.id) }}"
+                         class="aksi-btn inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm"
+                         data-allow="true" data-type="edit">
+                        Edit
+                      </a>
+                      <form method="POST"
+                            action="{{ url_for('reports.delete', laporan_id=lp.id) }}"
+                            class="inline">
+                        <button type="submit"
+                                class="aksi-btn inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition shadow-sm"
+                                data-allow="true" data-type="delete"
+                                onclick="return confirm('Yakin ingin menghapus laporan ini?');">
+                          Hapus
+                        </button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <div class="flex flex-row items-center gap-2 text-xs">
+                      <button type="button" disabled
+                              class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-200 dark:border-gray-600">
+                        Edit
+                      </button>
+                      <button type="button" disabled
+                              class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-200 dark:border-gray-600">
+                        Hapus
+                      </button>
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
               {% else %}
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">{{ s }}</span>
-              {% endif %}
-            </td>
+              <tr>
+                <td colspan="6" class="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+                  <div class="flex flex-col items-center justify-center">
+                     <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                     <p>Belum ada laporan yang kamu kirim.</p>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {# Kontrol Pagination #}
+        {% if pagination.pages > 1 %}
+        <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if pagination.has_prev %}
+                    <a href="{{ url_for(request.endpoint, page=pagination.prev_num) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                {% else %}
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">Previous</span>
+                {% endif %}
+
+                {% if pagination.has_next %}
+                    <a href="{{ url_for(request.endpoint, page=pagination.next_num) }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                {% else %}
+                    <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">Next</span>
+                {% endif %}
+            </div>
             
-            <td class="px-4 py-3">
-              {% if lp.bisa_edit %}
-                <div class="flex flex-row items-center gap-2 text-xs">
-                  <a href="{{ url_for('reports.edit', laporan_id=lp.id) }}"
-                     class="aksi-btn inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm"
-                     data-allow="true" data-type="edit">
-                    Edit
-                  </a>
-                  <form method="POST"
-                        action="{{ url_for('reports.delete', laporan_id=lp.id) }}"
-                        class="inline">
-                    <button type="submit"
-                            class="aksi-btn inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition shadow-sm"
-                            data-allow="true" data-type="delete"
-                            onclick="return confirm('Yakin ingin menghapus laporan ini?');">
-                      Hapus
-                    </button>
-                  </form>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Menampilkan <span class="font-medium">{{ (pagination.page - 1) * pagination.per_page + 1 }}</span> sampai <span class="font-medium">{{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }}</span> dari <span class="font-medium">{{ pagination.total }}</span> hasil
+                    </p>
                 </div>
-              {% else %}
-                <div class="flex flex-row items-center gap-2 text-xs">
-                  <button type="button" disabled
-                          class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-200 dark:border-gray-600">
-                    Edit
-                  </button>
-                  <button type="button" disabled
-                          class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-200 dark:border-gray-600">
-                    Hapus
-                  </button>
-                </div>
-              {% endif %}
-            </td>
-          </tr>
-          {% else %}
-          <tr>
-            <td colspan="6" class="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
-              <div class="flex flex-col items-center justify-center">
-                 <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                 <p>Belum ada laporan yang kamu kirim.</p>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    {# PERUBAHAN 2: Menambahkan Kontrol Pagination #}
-    {% if pagination.pages > 1 %}
-    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl">
-        <div class="flex-1 flex justify-between sm:hidden">
-            {% if pagination.has_prev %}
-                <a href="{{ url_for(request.endpoint, page=pagination.prev_num) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
-            {% else %}
-                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">Previous</span>
-            {% endif %}
-
-            {% if pagination.has_next %}
-                <a href="{{ url_for(request.endpoint, page=pagination.next_num) }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
-            {% else %}
-                <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">Next</span>
-            {% endif %}
-        </div>
-        
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm text-gray-700 dark:text-gray-300">
-                    Menampilkan <span class="font-medium">{{ (pagination.page - 1) * pagination.per_page + 1 }}</span> sampai <span class="font-medium">{{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }}</span> dari <span class="font-medium">{{ pagination.total }}</span> hasil
-                </p>
-            </div>
-            <div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    {# Tombol Previous Desktop #}
-                    {% if pagination.has_prev %}
-                        <a href="{{ url_for(request.endpoint, page=pagination.prev_num) }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <span class="sr-only">Previous</span>
-                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </a>
-                    {% endif %}
-
-                    {# Loop Halaman #}
-                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-                        {% if page_num %}
-                            {% if pagination.page == page_num %}
-                                <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 dark:bg-blue-900 text-sm font-medium text-blue-600 dark:text-blue-200 z-10">{{ page_num }}</span>
-                            {% else %}
-                                <a href="{{ url_for(request.endpoint, page=page_num) }}" class="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ page_num }}</a>
-                            {% endif %}
-                        {% else %}
-                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700">...</span>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {# Tombol Previous Desktop #}
+                        {% if pagination.has_prev %}
+                            <a href="{{ url_for(request.endpoint, page=pagination.prev_num) }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <span class="sr-only">Previous</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </a>
                         {% endif %}
-                    {% endfor %}
 
-                    {# Tombol Next Desktop #}
-                    {% if pagination.has_next %}
-                        <a href="{{ url_for(request.endpoint, page=pagination.next_num) }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <span class="sr-only">Next</span>
-                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                        </a>
-                    {% endif %}
-                </nav>
+                        {# Loop Halaman #}
+                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if pagination.page == page_num %}
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 dark:bg-blue-900 text-sm font-medium text-blue-600 dark:text-blue-200 z-10">{{ page_num }}</span>
+                                {% else %}
+                                    <a href="{{ url_for(request.endpoint, page=page_num) }}" class="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ page_num }}</a>
+                                {% endif %}
+                            {% else %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700">...</span>
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Tombol Next Desktop #}
+                        {% if pagination.has_next %}
+                            <a href="{{ url_for(request.endpoint, page=pagination.next_num) }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <span class="sr-only">Next</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
             </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-  </div>
-</main>
+      </div>
+    </main>
   </div>
 </div>
+<style>
+  /* Untuk Chrome, Edge, Safari */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+</style>
+
 {% endblock %}
 
 {% block scripts %}
@@ -281,6 +303,30 @@
     });
   });
 </script> 
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('laporanTable');
+    
+    if(searchInput && table) {
+      searchInput.addEventListener('keyup', function() {
+        const filter = searchInput.value.toLowerCase();
+        const rows = table.getElementsByTagName('tr');
+
+        // Mulai dari i=1 karena row 0 adalah header
+        for (let i = 1; i < rows.length; i++) {
+          let textContent = rows[i].textContent || rows[i].innerText;
+          if (textContent.toLowerCase().indexOf(filter) > -1) {
+            rows[i].style.display = "";
+          } else {
+            rows[i].style.display = "none";
+          }
+        }
+      });
+    }
+  });
+</script>
 <div class="mb-4 relative inline-block text-left" x-data="{ open: false }">
     <div>
         <button 

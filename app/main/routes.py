@@ -104,9 +104,45 @@ def about():
 @bp.route('/notifications')
 @login_required
 def notifications():
-    return render_template('pages/main/notifications.html')
+    notifikasi_list = Laporan.query.filter(
+        Laporan.user_id == current_user.id,
+        Laporan.status.in_(['diproses', 'selesai', 'ditolak'])
+    ).order_by(Laporan.updated_at.desc()).all()
+
+    return render_template('pages/main/notifications.html', notifications=notifikasi_list)
+
 
 @bp.route('/settings')
 @login_required
 def settings():
     return render_template('pages/main/settings.html')
+
+@bp.route('/settings/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    # 1. Ambil data dari form
+    nama_lengkap = request.form.get('nama_lengkap')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+
+    # 2. Validasi sederhana
+    if not nama_lengkap or not email:
+        flash('Nama lengkap dan Email wajib diisi.', 'danger')
+        return redirect(url_for('main.settings'))
+
+    # 3. Update data user
+    try:
+        current_user.nama_lengkap = nama_lengkap
+        current_user.email = email
+        current_user.phone = phone
+        
+        db.session.commit()
+        flash('Profil berhasil diperbarui!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        # Cek apakah error karena email duplikat
+        flash('Gagal memperbarui profil. Email mungkin sudah digunakan.', 'danger')
+        print(f"Error Update Profile: {e}")
+
+    return redirect(url_for('main.settings'))

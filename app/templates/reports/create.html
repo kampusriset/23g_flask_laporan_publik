@@ -2,13 +2,15 @@
 {% block title %}Buat Laporan Baru{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
 
-  <div class="flex flex-col md:flex-row gap-6">
-    <!-- Sidebar -->
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+    
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -19,7 +21,7 @@
           </span>
         </div>
         <div>
-          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate max-w-[120px]">
             {{ current_user.username }}
           </p>
           <a href="{{ url_for('main.profile') }}"
@@ -31,47 +33,44 @@
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('main.dashboard') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                  hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Dashboard
         </a>
 
         <a href="{{ url_for('reports.create') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
           + Buat Laporan Baru
         </a>
 
         <a href="{{ url_for('reports.my_reports') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Laporan Saya
         </a>
           <a href="{{ url_for('reports.riwayat_laporan') }}"
-            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+             class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Riwayat Laporan
           </a>
         <a href="{{ url_for('reports.track') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Lacak Laporan
         </a>
         <a href="{{ url_for('main.notifications') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pemberitahuan
         </a>
         <a href="{{ url_for('main.settings') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pengaturan
         </a>
         <a href="{{ url_for('main.about') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Tentang
         </a>
       </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <main class="flex-1">
-      <h1 class="text-3xl font-bold mb-2">
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
         {{ 'Edit Laporan' if edit_mode else 'Buat Laporan Baru' }}
       </h1>
       {% if edit_mode %}
@@ -87,7 +86,7 @@
           <label class="block text-sm font-medium mb-2">Judul Laporan</label>
           <input name="judul"
                  value="{{ laporan.judul if laporan else '' }}"
-                 class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                 class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
                  required>
         </div>
 
@@ -95,7 +94,7 @@
           <div>
             <label class="block text-sm font-medium mb-2">Kategori</label>
             <select name="kategori_id"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     required>
               {% for kategori in kategoris %}
                 <option value="{{ kategori.id }}"
@@ -108,7 +107,7 @@
           <div>
             <label class="block text-sm font-medium mb-2">Prioritas</label>
             <select name="prioritas"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="normal"
                       {% if laporan and laporan.prioritas == 'normal' %}selected{% endif %}>Normal</option>
               <option value="tinggi"
@@ -118,39 +117,36 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
-         <div>
-        <label class="block text-sm font-medium mb-2">Lokasi</label>
-        <input id="lokasi_input" name="lokasi"
-              value="{{ laporan.lokasi if laporan else '' }}"
-              class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-              required>
+          <div>
+            <label class="block text-sm font-medium mb-2">Lokasi</label>
+            <input id="lokasi_input" name="lokasi"
+                   value="{{ laporan.lokasi if laporan else '' }}"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                   required>
 
-        <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">
-          Harap koreksi lokasi kembali, pastikan sudah sesuai.
-        </p>
-      </div>
+            <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+              Harap koreksi lokasi kembali, pastikan sudah sesuai.
+            </p>
+          </div>
 
-         <div>
-  <label class="block text-sm font-medium mb-2">Wilayah/Kota</label>
-
-  <div class="grid md:grid-cols-4 gap-2">
-    <select id="provinsi_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
-    <select id="kabupaten_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
-    <select id="kecamatan_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
-    <select id="kelurahan_select" class="w-full px-3 py-2 rounded-xl border ..."></select>
-  </div>
-
-  <input id="wilayah_input" name="wilayah"
-         value="{{ laporan.wilayah if laporan else '' }}"
-         class="mt-2 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800"
-         readonly>
-</div>
-
+          <div>
+            <label class="block text-sm font-medium mb-2">Wilayah/Kota</label>
+            <div class="grid md:grid-cols-4 gap-2">
+              <select id="provinsi_select" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"></select>
+              <select id="kabupaten_select" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"></select>
+              <select id="kecamatan_select" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"></select>
+              <select id="kelurahan_select" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"></select>
+            </div>
+            <input id="wilayah_input" name="wilayah"
+                   value="{{ laporan.wilayah if laporan else '' }}"
+                   class="mt-2 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 cursor-not-allowed"
+                   readonly>
+          </div>
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-2">Tandai Lokasi di Peta</label>
-          <div id="map" class="w-full h-64 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700"></div>
+          <div id="map" class="w-full h-64 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700 shadow-sm"></div>
           <input type="hidden" name="lat" id="lat" value="{{ laporan.latitude if laporan else '' }}">
           <input type="hidden" name="lng" id="lng" value="{{ laporan.longitude if laporan else '' }}">
           <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -161,158 +157,137 @@
         <div>
           <label class="block text-sm font-medium mb-2">Deskripsi</label>
           <textarea name="deskripsi" rows="4"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     required>{{ laporan.deskripsi if laporan else '' }}</textarea>
         </div>
 
-     <div>
-  <label class="block text-sm font-medium mb-2">
-    Foto/Video Bukti <span class="text-red-500">*</span>
-  </label>
+        <div>
+          <label class="block text-sm font-medium mb-2">
+            Foto/Video Bukti <span class="text-red-500">*</span>
+          </label>
 
-  <p class="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
-    Maksimal 3 foto dan 1 video, total ukuran semua file 5 MB.
-    Anda bisa unggah dari galeri atau ambil langsung dari kamera.
-  </p>
+          <p class="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
+            Maksimal 3 foto dan 1 video, total ukuran semua file 100 MB.
+            Anda bisa unggah dari galeri atau ambil langsung dari kamera.
+          </p>
 
-  <!-- Dari file -->
-<label for="bukti_file"
-       class="flex items-center gap-2 text-xs font-medium
-              text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v12"/>
-  </svg>
-  <span>Upload dari file (galeri/penyimpanan)</span>
-</label>
+          <label for="bukti_file"
+                 class="flex items-center gap-2 text-xs font-medium
+                        text-slate-600 dark:text-slate-300 mb-1 cursor-pointer hover:text-blue-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v12"/>
+            </svg>
+            <span>Upload dari file (galeri/penyimpanan)</span>
+          </label>
 
-<input
-  id="bukti_file"
-  type="file"
-  name="bukti_file"
-  accept="image/*,video/*"
-  multiple
-  class="block w-full text-sm text-slate-800 dark:text-slate-100 mb-1"
-/>
+          <input
+            id="bukti_file"
+            type="file"
+            name="bukti_file"
+            accept="image/*,video/*"
+            multiple
+            class="block w-full text-sm text-slate-800 dark:text-slate-100 mb-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
 
-<ul id="buktiFileList"
-    class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-</ul>
+          <ul id="buktiFileList"
+              class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+          </ul>
 
 
-  <!-- Daftar file yang diambil dari kamera (setelah upload AJAX) -->
-  <ul id="cameraFilesList"
-      class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-    <!-- Diisi lewat JS -->
-  </ul>
+          <ul id="cameraFilesList"
+              class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+            </ul>
 
-  <!-- Path file kamera yang sudah tersimpan di server -->
-  <input type="hidden" id="bukti_camera_path" name="bukti_camera_path">
+          <input type="hidden" id="bukti_camera_path" name="bukti_camera_path">
 
-  <!-- Dari kamera -->
-  <label for="btnOpenCamera"
-         class="flex items-center gap-2 text-xs font-medium
-                text-slate-600 dark:text-slate-300 mb-1 cursor-pointer">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-            d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
-    </svg>
-    <span>Ambil langsung dari kamera</span>
-  </label>
+          <label for="btnOpenCamera"
+                 class="flex items-center gap-2 text-xs font-medium
+                        text-slate-600 dark:text-slate-300 mb-1 cursor-pointer hover:text-blue-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M3 7h4l2-2h6l2 2h4v10H3V7zm9 2a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
+            <span>Ambil langsung dari kamera</span>
+          </label>
 
-  <button type="button" id="btnOpenCamera"
-          class="mb-2 px-3 py-1 text-xs rounded
-                 bg-blue-600 text-white hover:bg-blue-700
-                 dark:bg-blue-500 dark:hover:bg-blue-400">
-    Buka Kamera
-  </button>
+          <button type="button" id="btnOpenCamera"
+                  class="mb-2 px-3 py-1.5 text-xs rounded-lg
+                         bg-blue-600 text-white hover:bg-blue-700
+                         dark:bg-blue-500 dark:hover:bg-blue-400 transition-colors shadow-sm">
+            Buka Kamera
+          </button>
 
- <!-- Live kamera -->
-<div id="cameraArea"
-     class="hidden mt-2 space-y-2 p-2 rounded
-            bg-slate-50 border border-slate-300
-            dark:bg-slate-800 dark:border-slate-600">
+          <div id="cameraArea"
+               class="hidden mt-2 space-y-2 p-2 rounded-lg
+                      bg-slate-50 border border-slate-300
+                      dark:bg-slate-800 dark:border-slate-600">
 
-  <video id="camPreview"
-         autoplay playsinline
-         class="w-full rounded border border-slate-400 dark:border-slate-500"></video>
+            <video id="camPreview"
+                   autoplay playsinline
+                   class="w-full rounded-lg border border-slate-400 dark:border-slate-500"></video>
 
-  <div class="flex flex-wrap items-center gap-2">
-    <button type="button" id="btnCapture"
-            class="px-3 py-1 text-xs rounded
-                   bg-emerald-600 text-white hover:bg-emerald-700
-                   dark:bg-emerald-500 dark:hover:bg-emerald-400">
-      Ambil Foto
-    </button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" id="btnCapture"
+                      class="px-3 py-1 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+                Ambil Foto
+              </button>
 
-    <button type="button" id="btnStartRec"
-            class="px-3 py-1 text-xs rounded
-                   bg-red-600 text-white hover:bg-red-700
-                   dark:bg-red-500 dark:hover:bg-red-400">
-      Mulai Rekam Video
-    </button>
+              <button type="button" id="btnStartRec"
+                      class="px-3 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition-colors">
+                Mulai Rekam Video
+              </button>
 
-    <button type="button" id="btnStopRec"
-            class="px-3 py-1 text-xs rounded
-                   bg-slate-600 text-white hover:bg-slate-700
-                   dark:bg-slate-500 dark:hover:bg-slate-400"
-            disabled>
-      Stop Rekaman
-    </button>
+              <button type="button" id="btnStopRec"
+                      class="px-3 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 transition-colors disabled:opacity-50"
+                      disabled>
+                Stop Rekaman
+              </button>
 
-    <!-- Timer durasi video -->
-    <span id="videoTimer"
-          class="text-xs text-slate-500 dark:text-slate-300 ml-2">
-      00:00
-    </span>
-  </div>
+              <span id="videoTimer"
+                    class="text-xs text-slate-500 dark:text-slate-300 ml-2 font-mono">
+                00:00
+              </span>
+            </div>
+          </div>
 
-  <!-- Daftar file hasil kamera (foto+video) -->
-  <ul id="cameraFilesList"
-      class="mt-1 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-  </ul>
-</div>
+          <div id="cameraPreviewArea" class="hidden mt-2 space-y-2">
+            <img id="photoPreview"
+                 class="w-full rounded-lg border border-slate-400 dark:border-slate-500" />
+            <div class="flex gap-2">
+              <button type="button" id="btnRetake"
+                      class="px-3 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700">
+                Ulangi
+              </button>
+              <button type="button" id="btnKeep"
+                      class="px-3 py-1 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700">
+                Simpan Foto Ini
+              </button>
+            </div>
+          </div>
 
-  <!-- Preview hasil foto dari kamera -->
-  <div id="cameraPreviewArea" class="hidden mt-2 space-y-2">
-    <img id="photoPreview"
-         class="w-full rounded border border-slate-400 dark:border-slate-500" />
-    <div class="flex gap-2">
-      <button type="button" id="btnRetake"
-              class="px-3 py-1 text-xs rounded bg-slate-600 text-white">
-        Ulangi
-      </button>
-      <button type="button" id="btnKeep"
-              class="px-3 py-1 text-xs rounded bg-emerald-600 text-white">
-        Simpan Foto Ini
-      </button>
-    </div>
-  </div>
+          <input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
+          <input type="hidden" name="bukti_video_data"  id="bukti_video_data">
+        </div>
 
-  <!-- Hidden untuk data kamera mentah (base64 / video) -->
-  <input type="hidden" name="bukti_camera_data" id="bukti_camera_data">
-  <input type="hidden" name="bukti_video_data"  id="bukti_video_data">
-</div>
-
-<div>
-  <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
-  <input
-    type="text"
-    name="kode_pelaporan"
-    id="kode_pelaporan"
-    class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700
-           bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300
-           cursor-not-allowed"
-    value="{% if laporan %}{{ laporan.kode_pelaporan }}{% else %}{{ preview_kode or '' }}{% endif %}"
-    readonly>
-  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-    Kode akan dibuat otomatis setelah laporan berhasil dikirim.
-  </p>
-</div>
-
+        <div>
+          <label class="block text-sm font-medium mb-2">Kode Pelaporan</label>
+          <input
+            type="text"
+            name="kode_pelaporan"
+            id="kode_pelaporan"
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700
+                   bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300
+                   cursor-not-allowed"
+            value="{% if laporan %}{{ laporan.kode_pelaporan }}{% else %}{{ preview_kode or '' }}{% endif %}"
+            readonly>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Kode akan dibuat otomatis setelah laporan berhasil dikirim.
+          </p>
+        </div>
 
         <button type="submit"
-                class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
+                class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-md transition-colors">
           {{ 'Perbarui Laporan' if edit_mode else 'Kirim Laporan' }}
         </button>
       </form>
@@ -320,6 +295,23 @@
   </div>
 </div>
 {% endblock %}
+
+<style>
+  /* Untuk Chrome, Edge, Safari */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+</style>
 
 {% block scripts %}
 <!-- Leaflet CSS & JS (pastikan juga sudah dimuat di base_dashboard.html atau di sini) -->
@@ -716,10 +708,13 @@ if (fileInput && buktiFileList) {
       const hasCamPhoto = camDataInput && camDataInput.value.trim() !== '';
       const hasCamVideo = camVideoInput && camVideoInput.value.trim() !== '';
 
-      if (!hasFile && !hasCamPhoto && !hasCamVideo) {
-        e.preventDefault();
-        alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
-      }
+      const adaBukti = hasFile || hasCamPhotoPath || hasCamVideo;
+
+      // Jika TIDAK ADA bukti sama sekali, baru alert
+      if (!adaBukti) {
+        e.preventDefault();
+        alert('Harap unggah minimal 1 foto atau 1 video sebagai bukti.');
+      }
     });
   }
 

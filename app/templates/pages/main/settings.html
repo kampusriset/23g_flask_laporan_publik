@@ -1,98 +1,180 @@
 {% extends "base_dashboard.html" %}
-{% block title %}Pengaturan{% endblock %}
-{% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex flex-col md:flex-row gap-6">
+{% block title %}Pengaturan Akun{% endblock %}
 
-    <!-- Sidebar -->
-    <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4">
-     <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
-  <div class="relative">
-    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-      {{ current_user.username[0]|upper }}
-    </div>
-    <span
-      class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
-             {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
-    </span>
-  </div>
-  <div>
-    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-      {{ current_user.username }}
-    </p>
-    <a href="{{ url_for('main.profile') }}"
-       class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-       Ubah profil
-    </a>
-  </div>
-</div>
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
+                   {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate max-w-[120px]">
+            {{ current_user.username }}
+          </p>
+          <a href="{{ url_for('main.profile') }}"
+             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            Ubah profil
+          </a>
+        </div>
+      </div>
 
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('main.dashboard') }}"
-        class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                hover:bg-gray-100 dark:hover:bg-gray-700">
-        Dashboard
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Dashboard
         </a>
 
         <a href="{{ url_for('reports.create') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           + Buat Laporan Baru
         </a>
+
         <a href="{{ url_for('reports.my_reports') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Laporan Saya
         </a>
+
         <a href="{{ url_for('reports.riwayat_laporan') }}"
-        class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-                hover:bg-gray-100 dark:hover:bg-gray-700">
-        Riwayat Laporan
-      </a>
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Riwayat Laporan
+        </a>
+
         <a href="{{ url_for('reports.track') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Lacak Laporan
         </a>
+
         <a href="{{ url_for('main.notifications') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Pemberitahuan
         </a>
+
         <a href="{{ url_for('main.settings') }}"
-           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-                  dark:bg-blue-900/40 dark:text-blue-300">
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
           Pengaturan
         </a>
+
         <a href="{{ url_for('main.about') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Tentang
         </a>
       </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <section class="flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-      <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-        Pengaturan Akun
-      </h1>
-      <p class="text-gray-600 dark:text-gray-300">
-        Pengaturan akan ditambahkan di sini.
-      </p>
-    </section>
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <div class="max-w-4xl w-full space-y-8">
+        
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pengaturan Akun</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kelola informasi profil, keamanan, dan preferensi akun Anda.</p>
+        </div>
 
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Profil Saya</h2>
+            </div>
+            <div class="p-6">
+                <form action="{{ url_for('main.update_profile') }}" method="POST" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
+                            <input type="text" name="nama_lengkap" value="{{ current_user.nama_lengkap }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                            <input type="text" name="username" value="{{ current_user.username }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 px-3 py-2 text-sm cursor-not-allowed" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input type="email" name="email" value="{{ current_user.email }}" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Telepon</label>
+                            <input type="text" name="phone" value="{{ current_user.phone or '' }}" placeholder="08..." class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="pt-2 text-right">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Keamanan</h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Ganti password secara berkala untuk keamanan akun.</p>
+            </div>
+            <div class="p-6">
+                <form action="{{ url_for('auth.change_password') }}" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Saat Ini</label>
+                        <input type="password" name="current_password" class="w-full md:w-1/2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
+                            <input type="password" name="new_password" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konfirmasi Password Baru</label>
+                            <input type="password" name="confirm_password" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="pt-2 text-right">
+                        <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-600 dark:hover:bg-slate-500 text-white text-sm font-semibold rounded-lg transition-colors">
+                            Ubah Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+               <div class="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10">
+            <div class="px-6 py-4">
+                <h2 class="text-lg font-semibold text-red-700 dark:text-red-400">Zona Berbahaya</h2>
+            </div>
+            <div class="p-6 border-t border-red-200 dark:border-red-900/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Hapus Akun</h3>
+                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">
+                        Tindakan ini permanen. Semua data laporan Anda akan dihapus atau dianonimkan.
+                    </p>
+                </div>
+                <button type="button" onclick="alert('Fitur ini dinonaktifkan demi keamanan demo.');" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
+                    Hapus Akun Saya
+                </button>
+            </div>
+        </div>
+
+      </div>
+    </main>
   </div>
 </div>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
+{% endblock %}
 
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>
 
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
-  }
-</script>
 {% endblock %}

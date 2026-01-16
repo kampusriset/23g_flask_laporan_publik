@@ -1,11 +1,11 @@
-import os  # <--- SUDAH DITAMBAHKAN
+import os
 from flask import Flask, session, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_mail import Mail
 from config import DevelopmentConfig 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Inisialisasi Extension (Global)
 db = SQLAlchemy()
@@ -35,18 +35,17 @@ def create_app(config_class=DevelopmentConfig):
     # Konfigurasi Login Manager
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "Sesi Anda telah berakhir. Silakan login kembali."
+    login_manager.login_message = "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
     login_manager.login_message_category = "warning"
 
     # --- ERROR HANDLER: FILE TERLALU BESAR (413) ---
     # Menangani error jika file > MAX_CONTENT_LENGTH agar tidak crash
     @app.errorhandler(413)
     def request_entity_too_large(error):
-        flash('Ukuran file terlalu besar! Harap kurangi ukuran atau durasi video.', 'danger')
+        flash('Ukuran file terlalu besar! Harap kurangi ukuran atau durasi video (Max 200MB).', 'danger')
         return redirect(request.referrer or url_for('main.index'))
 
     # 4. Filter Waktu Custom untuk Jinja Template
-    # Pastikan file app/utils.py ada dan memiliki fungsi to_wib & format_wib
     from app.utils import to_wib, format_wib
     
     app.jinja_env.filters["to_wib"] = to_wib
@@ -87,17 +86,21 @@ def create_app(config_class=DevelopmentConfig):
 
     @app.before_request
     def before_request_callback():
-        # A. Update Last Seen di Database
-        if current_user.is_authenticated:
-            current_user.last_seen = datetime.utcnow()
-            db.session.commit()
-        
-        # B. LOGIKA AUTO LOGOUT (Sliding Session)
-        # Baris ini mereset timer 10 menit setiap kali ada request baru
+        # A. LOGIKA AUTO LOGOUT (Sliding Session)
+        # Memaksa sesi menggunakan durasi dari config (10 menit)
         session.permanent = True
         
-        # Memaksa browser memperbarui cookie expiration time
+        # Memaksa browser memperbarui cookie expiration time setiap request
+        # Ini penting agar timer 10 menit di-reset saat user aktif klik menu
         session.modified = True 
+
+        # B. Update Last Seen di Database
+        if current_user.is_authenticated:
+            current_user.last_seen = datetime.utcnow()
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
 
     @app.after_request
     def add_header(response):

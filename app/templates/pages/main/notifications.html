@@ -1,110 +1,216 @@
 {% extends "base_dashboard.html" %}
 {% block title %}Pemberitahuan{% endblock %}
-{% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex flex-col md:flex-row gap-6">
 
-    <!-- Sidebar -->
-    <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
-  <div class="relative">
-    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-      {{ current_user.username[0]|upper }}
-    </div>
-    <span
-      class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
-             {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
-    </span>
-  </div>
-  <div>
-    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-      {{ current_user.username }}
-    </p>
-    <a href="{{ url_for('main.profile') }}"
-       class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-       Ubah profil
-    </a>
-  </div>
-</div>
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
+  
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+
+    <aside id="sidebar"
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-50 dark:border-gray-900
+                   {% if current_user.is_online() %} bg-emerald-400 {% else %} bg-gray-400 {% endif %}">
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {{ current_user.username }}
+          </p>
+          <a href="{{ url_for('main.profile') }}"
+             class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            Ubah profil
+          </a>
+        </div>
+      </div>
 
       <nav class="space-y-2 text-sm">
-  <a href="{{ url_for('main.dashboard') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Dashboard
-  </a>
+        <a href="{{ url_for('main.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Dashboard
+        </a>
 
-  <a href="{{ url_for('reports.create') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    + Buat Laporan Baru
-  </a>
+        <a href="{{ url_for('reports.create') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          + Buat Laporan Baru
+        </a>
 
-  <a href="{{ url_for('reports.my_reports') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Laporan Saya
-  </a>
+        <a href="{{ url_for('reports.my_reports') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Laporan Saya
+        </a>
 
-   <a href="{{ url_for('reports.riwayat_laporan') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Riwayat Laporan
- </a>
+        <a href="{{ url_for('reports.riwayat_laporan') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Riwayat Laporan
+        </a>
 
-  <a href="{{ url_for('reports.track') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Lacak Laporan
-  </a>
+        <a href="{{ url_for('reports.track') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Lacak Laporan
+        </a>
 
-  <a href="{{ url_for('main.notifications') }}"
-     class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-            dark:bg-blue-900/40 dark:text-blue-300">
-    Pemberitahuan
-  </a>
+        <a href="{{ url_for('main.notifications') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+          Pemberitahuan
+        </a>
 
-  <a href="{{ url_for('main.settings') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Pengaturan
-  </a>
+        <a href="{{ url_for('main.settings') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Pengaturan
+        </a>
 
-  <a href="{{ url_for('main.about') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Tentang
-  </a>
-</nav>
-
+        <a href="{{ url_for('main.about') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Tentang
+        </a>
+      </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <section class="flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-      <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-        Pemberitahuan
-      </h1>
-      <p class="text-gray-600 dark:text-gray-300">
-        Belum ada pemberitahuan.
-      </p>
-    </section>
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
+      
+      <div class="max-w-4xl w-full">
+        
+        <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100 dark:border-gray-800">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pemberitahuan</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Update terbaru mengenai laporan Anda.</p>
+            </div>
+            {% if notifications|length > 0 %}
+            <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 text-xs font-bold border border-red-200 dark:border-red-800">
+                {{ notifications|length }} Baru
+            </span>
+            {% endif %}
+        </div>
 
+        <div class="flex flex-col space-y-4">
+            {% if notifications %}
+                {% for notif in notifications %}
+                
+                    {# --- STATUS: SELESAI --- #}
+                    {% if notif.status == 'selesai' %}
+                    <a href="{{ url_for('reports.detail', laporan_id=notif.id) }}" 
+                       class="block group w-full bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-green-200 dark:hover:border-green-800 transition-all duration-200">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-emerald-200 dark:from-green-900 dark:to-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-300 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
+                                        Laporan Selesai
+                                    </h3>
+                                    <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
+                                        {{ notif.updated_at.strftime('%d %b %H:%M') }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                    Laporan <span class="font-mono font-medium text-gray-800 dark:text-gray-200">#{{ notif.kode_pelaporan }}</span> ({{ notif.judul }}) telah berhasil ditangani dan dinyatakan selesai.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
+                    {# --- STATUS: DIPROSES --- #}
+                    {% elif notif.status == 'diproses' %}
+                    <a href="{{ url_for('reports.detail', laporan_id=notif.id) }}" 
+                       class="block group w-full bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-200">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-800 flex items-center justify-center text-blue-600 dark:text-blue-300 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                                        Sedang Diproses
+                                    </h3>
+                                    <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
+                                        {{ notif.updated_at.strftime('%d %b %H:%M') }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                    Petugas sedang menindaklanjuti laporan <span class="font-mono font-medium text-gray-800 dark:text-gray-200">#{{ notif.kode_pelaporan }}</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
+                    {# --- STATUS: DITOLAK --- #}
+                    {% elif notif.status == 'ditolak' %}
+                    <a href="{{ url_for('reports.detail', laporan_id=notif.id) }}" 
+                       class="block group w-full bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all duration-200 opacity-90 hover:opacity-100">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-rose-200 dark:from-red-900 dark:to-rose-800 flex items-center justify-center text-red-600 dark:text-red-300 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-red-600 transition-colors">
+                                        Laporan Ditolak
+                                    </h3>
+                                    <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
+                                        {{ notif.updated_at.strftime('%d %b') }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                    Alasan: <span class="italic">{{ notif.alasan_ditolak or 'Data tidak lengkap/valid' }}</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+
+                {% endfor %}
+            
+            {% else %}
+                <div class="flex flex-col items-center justify-center py-16 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4 text-gray-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Belum ada pemberitahuan</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+                        Saat ini belum ada update terbaru mengenai laporan Anda. Notifikasi akan muncul di sini.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+      </div>
+    </main>
   </div>
 </div>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
+{% endblock %}
 
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
+{% block scripts %}
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
   }
-</script>
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+</style>
 {% endblock %}

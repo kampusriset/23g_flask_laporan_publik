@@ -2,13 +2,15 @@
 {% block title %}Lacak Laporan{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-7xl mx-auto px-4 py-10">
+<div class="max-w-7xl mx-auto px-4 py-6 md:h-[calc(100vh-3rem)] overflow-hidden">
 
-  <div class="flex flex-col md:flex-row gap-6">
-    <!-- Sidebar -->
+  <div class="flex flex-col md:flex-row gap-6 h-full">
+    
     <aside id="sidebar"
-           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0">
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
+           class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-4 mb-4 md:mb-0 
+                  flex-shrink-0 md:h-full md:overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
         <div class="relative">
           <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
             {{ current_user.username[0]|upper }}
@@ -29,63 +31,60 @@
         </div>
       </div>
 
-     <nav class="space-y-2 text-sm">
-  <a href="{{ url_for('main.dashboard') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Dashboard
-  </a>
+      <nav class="space-y-2 text-sm">
+        <a href="{{ url_for('main.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Dashboard
+        </a>
 
-  <a href="{{ url_for('reports.create') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    + Buat Laporan Baru
-  </a>
+        <a href="{{ url_for('reports.create') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          + Buat Laporan Baru
+        </a>
 
-  <a href="{{ url_for('reports.my_reports') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Laporan Saya
-  </a>
+        <a href="{{ url_for('reports.my_reports') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Laporan Saya
+        </a>
 
-  <a href="{{ url_for('reports.riwayat_laporan') }}"
-   class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-          hover:bg-gray-100 dark:hover:bg-gray-700">
-  Riwayat Laporan
-</a>
+        <a href="{{ url_for('reports.riwayat_laporan') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Riwayat Laporan
+        </a>
 
-<a href="{{ url_for('reports.track') }}"
-   class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
-          dark:bg-blue-900/40 dark:text-blue-300">
-  Lacak Laporan
-</a>
+        <a href="{{ url_for('reports.track') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700
+                  dark:bg-blue-900/40 dark:text-blue-300">
+          Lacak Laporan
+        </a>
 
-  <a href="{{ url_for('main.notifications') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Pemberitahuan
-  </a>
+        <a href="{{ url_for('main.notifications') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pemberitahuan
+        </a>
 
-  <a href="{{ url_for('main.settings') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Pengaturan
-  </a>
+        <a href="{{ url_for('main.settings') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Pengaturan
+        </a>
 
-  <a href="{{ url_for('main.about') }}"
-     class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-gray-700">
-    Tentang
-  </a>
-</nav>
-
+        <a href="{{ url_for('main.about') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200
+                  hover:bg-gray-100 dark:hover:bg-gray-700">
+          Tentang
+        </a>
+      </nav>
     </aside>
 
-    <!-- Konten utama -->
-    <main class="flex-1">
+    <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
       <div class="max-w-3xl space-y-6">
 
-        <!-- Header + form kode pelaporan -->
         <section class="space-y-3">
           <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">
             Lacak Laporan
@@ -130,191 +129,183 @@
           </form>
         </section>
 
-        <!-- Hasil tracking (hanya tampil jika ada objek laporan) -->
         {% if laporan %}
         <section class="space-y-4">
-     <!-- Info ringkas laporan -->
-<div class="rounded-xl border border-slate-200 dark:border-slate-700
-            bg-white dark:bg-slate-900 px-4 py-3 space-y-2">
-  <div class="flex justify-between gap-4">
-    <div>
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-        Kode Pelaporan
-      </p>
-      <p class="text-sm font-bold text-slate-900 dark:text-slate-100">
-        {{ laporan.kode_pelaporan }}
-      </p>
-      <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-        Dibuat pada {{ laporan.created_at.strftime('%d %B %Y, %H:%M') }}
-      </p>
-    </div>
-    <div class="text-right">
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-        Status saat ini
-      </p>
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                   {% if laporan.status == 'diajukan' %}
-                     bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300
-                   {% elif laporan.status == 'diproses' %}
-                     bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
-                   {% elif laporan.status == 'selesai' %}
-                     bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
-                   {% else %}
-                     bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
-                   {% endif %}">
-        {{ laporan.status|capitalize }}
-      </span>
-    </div>
-  </div>
+          <div class="rounded-xl border border-slate-200 dark:border-slate-700
+                      bg-white dark:bg-slate-900 px-4 py-3 space-y-2">
+            <div class="flex justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  Kode Pelaporan
+                </p>
+                <p class="text-sm font-bold text-slate-900 dark:text-slate-100">
+                  {{ laporan.kode_pelaporan }}
+                </p>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Dibuat pada {{ laporan.created_at.strftime('%d %B %Y, %H:%M') }}
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  Status saat ini
+                </p>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                             {% if laporan.status == 'diajukan' %}
+                               bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300
+                             {% elif laporan.status == 'diproses' %}
+                               bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                             {% elif laporan.status == 'selesai' %}
+                               bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+                             {% else %}
+                               bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300
+                             {% endif %}">
+                  {{ laporan.status|capitalize }}
+                </span>
+              </div>
+            </div>
 
-  <div class="flex items-start gap-3 pt-2 border-t border-dashed border-slate-200 dark:border-slate-700">
-    <div class="mt-1">
-      {% if laporan.status == 'selesai' %}
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
-                     bg-emerald-500 text-white text-xs">
-          ✓
-        </span>
-      {% elif laporan.status == 'ditolak' %}
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
-                     bg-rose-500 text-white text-xs">
-          ✕
-        </span>
-      {% else %}
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
-                     bg-blue-600 text-white text-xs">
-          i
-        </span>
-      {% endif %}
-    </div>
+            <div class="flex items-start gap-3 pt-2 border-t border-dashed border-slate-200 dark:border-slate-700">
+              <div class="mt-1">
+                {% if laporan.status == 'selesai' %}
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                               bg-emerald-500 text-white text-xs">
+                    ✓
+                  </span>
+                {% elif laporan.status == 'ditolak' %}
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                               bg-rose-500 text-white text-xs">
+                    ✕
+                  </span>
+                {% else %}
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                               bg-blue-600 text-white text-xs">
+                    i
+                  </span>
+                {% endif %}
+              </div>
 
-    <div class="text-xs text-slate-600 dark:text-slate-300">
-      {% if laporan.status == 'diajukan' %}
-        <p class="font-semibold">Laporan diterima sistem</p>
-        <p>Laporanmu sudah tersimpan dan menunggu untuk diverifikasi petugas.</p>
+              <div class="text-xs text-slate-600 dark:text-slate-300">
+                {% if laporan.status == 'diajukan' %}
+                  <p class="font-semibold">Laporan diterima sistem</p>
+                  <p>Laporanmu sudah tersimpan dan menunggu untuk diverifikasi petugas.</p>
 
-      {% elif laporan.status == 'diproses' %}
-        <p class="font-semibold">Sedang ditindaklanjuti</p>
-        <p>Petugas yang bertanggung jawab sudah menerima laporan dan sedang melakukan pengecekan lapangan atau verifikasi data.</p>
-        {% if laporan.petugas_nama %}
-          <p class="mt-1">
-            Petugas: <span class="font-semibold">{{ laporan.petugas_nama }}</span>
-          </p>
-        {% endif %}
+                {% elif laporan.status == 'diproses' %}
+                  <p class="font-semibold">Sedang ditindaklanjuti</p>
+                  <p>Petugas yang bertanggung jawab sudah menerima laporan dan sedang melakukan pengecekan lapangan atau verifikasi data.</p>
+                  {% if laporan.petugas_nama %}
+                    <p class="mt-1">
+                      Petugas: <span class="font-semibold">{{ laporan.petugas_nama }}</span>
+                    </p>
+                  {% endif %}
 
-      {% elif laporan.status == 'selesai' %}
-  <p class="font-semibold">Penanganan selesai</p>
-  <p>
-    Laporan sudah diselesaikan. Ringkasan hasil penanganan:
-    <span class="font-semibold">{{ laporan.ringkasan_hasil or 'belum diisi' }}</span>
-  </p>
+                {% elif laporan.status == 'selesai' %}
+                  <p class="font-semibold">Penanganan selesai</p>
+                  <p>
+                    Laporan sudah diselesaikan. Ringkasan hasil penanganan:
+                    <span class="font-semibold">{{ laporan.ringkasan_hasil or 'belum diisi' }}</span>
+                  </p>
 
-{% elif laporan.status == 'ditolak' %}
-  <p class="font-semibold">Laporan ditolak</p>
-  <p>
-    Laporan tidak dapat diproses dengan alasan:
-    <span class="font-semibold">{{ laporan.alasan_ditolak or 'tidak disebutkan' }}</span>
-  </p>
+                {% elif laporan.status == 'ditolak' %}
+                  <p class="font-semibold">Laporan ditolak</p>
+                  <p>
+                    Laporan tidak dapat diproses dengan alasan:
+                    <span class="font-semibold">{{ laporan.alasan_ditolak or 'tidak disebutkan' }}</span>
+                  </p>
 
-      {% else %}
-        <p class="font-semibold">Status tidak dikenal</p>
-        <p>Silakan hubungi admin jika status ini muncul terus.</p>
-      {% endif %}
-    </div>
-  </div>
-</div>
+                {% else %}
+                  <p class="font-semibold">Status tidak dikenal</p>
+                  <p>Silakan hubungi admin jika status ini muncul terus.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
 
+          <div class="rounded-xl border border-slate-200 dark:border-slate-700
+                      bg-white dark:bg-slate-900 px-4 py-5">
+            <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-4">
+              Riwayat Status
+            </h2>
 
-<!-- Timeline / progress -->
-<div class="rounded-xl border border-slate-200 dark:border-slate-700
-            bg-white dark:bg-slate-900 px-4 py-5">
-  <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-4">
-    Riwayat Status
-  </h2>
+            {% set step =
+                1 if laporan.status == 'diajukan'
+                else 2 if laporan.status == 'diproses'
+                else 3
+            %}
+            {% set is_rejected = laporan.status == 'ditolak' %}
 
-  {% set step =
-      1 if laporan.status == 'diajukan'
-      else 2 if laporan.status == 'diproses'
-      else 3
-  %}
-  {% set is_rejected = laporan.status == 'ditolak' %}
+            <ol class="relative border-l border-slate-200 dark:border-slate-700 space-y-6 ml-3">
+              <li class="ml-4">
+                <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
+                            {{ 'bg-emerald-500 text-white' if step == 1 else 'bg-slate-300 text-slate-600' }}">
+                  1
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    <span class="font-bold">Laporan diajukan &amp; diterima petugas</span>
+                  </p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Diajukan:
+                    {{ laporan.created_at|format_wib }} WIB
+                  </p>
+                </div>
+              </li>
 
-  <ol class="relative border-l border-slate-200 dark:border-slate-700 space-y-6 ml-3">
-    <!-- 1. Diajukan -->
-    <li class="ml-4">
-      <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-                  {{ 'bg-emerald-500 text-white' if step == 1 else 'bg-slate-300 text-slate-600' }}">
-        1
-      </div>
-      <div>
-        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          <span class="font-bold">Laporan diajukan &amp; diterima petugas</span>
-        </p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-        Diajukan:
-        {{ laporan.created_at|format_wib }} WIB
-      </p>
-      </div>
-    </li>
+              <li class="ml-4">
+                <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
+                            {{ 'bg-emerald-500 text-white' if step == 2 else 'bg-slate-300 text-slate-600' }}">
+                  2
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    Sedang diproses
+                  </p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    {% if laporan.tgl_diproses %}
+                      {{ laporan.tgl_diproses|format_wib }} WIB
+                    {% else %}
+                      Petugas sedang memproses laporan.
+                    {% endif %}
+                  </p>
+                </div>
+              </li>
 
-    <!-- 2. Diproses -->
-    <li class="ml-4">
-      <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-                  {{ 'bg-emerald-500 text-white' if step == 2 else 'bg-slate-300 text-slate-600' }}">
-        2
-      </div>
-      <div>
-        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          Sedang diproses
-        </p>
-        <p class="text-xs text-slate-500 dark:text-slate-400">
-  {% if laporan.tgl_diproses %}
-    {{ laporan.tgl_diproses|format_wib }} WIB
-  {% else %}
-    Petugas sedang memproses laporan.
-  {% endif %}
-</p>
-    </li>
-
-    <!-- 3. Selesai / Ditolak -->
-    <li class="ml-4">
-      <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
-                  {% if step == 3 and is_rejected %}
-                    bg-red-500 text-white
-                  {% elif step == 3 %}
-                    bg-emerald-500 text-white
-                  {% else %}
-                    bg-slate-300 text-slate-600
-                  {% endif %}">
-        3
-      </div>
-      <div>
-        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          {% if laporan.status == 'ditolak' %}
-            Ditolak
-          {% elif laporan.status == 'selesai' %}
-            Selesai
-          {% else %}
-            Tahap akhir
-          {% endif %}
-        </p>
-        <p class="text-xs text-slate-500 dark:text-slate-400">
-          {% if laporan.status == 'ditolak' and laporan.tgl_ditolak %}
-            {{ laporan.tgl_ditolak|format_wib }} WIB – laporan ditolak.
-          {% elif laporan.status == 'selesai' and laporan.tgl_selesai %}
-            {{ laporan.tgl_selesai|format_wib }} WIB – laporan dinyatakan selesai.
-          {% else %}
-            Konfirmasi petugas untuk laporan Anda.
-          {% endif %}
-        </p>
-      </div>
-    </li>
-  </ol>
-</div>
-
-
+              <li class="ml-4">
+                <div class="absolute -left-3 mt-1.5 w-5 h-5 rounded-full flex items-center justify-center
+                            {% if step == 3 and is_rejected %}
+                              bg-red-500 text-white
+                            {% elif step == 3 %}
+                              bg-emerald-500 text-white
+                            {% else %}
+                              bg-slate-300 text-slate-600
+                            {% endif %}">
+                  3
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    {% if laporan.status == 'ditolak' %}
+                      Ditolak
+                    {% elif laporan.status == 'selesai' %}
+                      Selesai
+                    {% else %}
+                      Tahap akhir
+                    {% endif %}
+                  </p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    {% if laporan.status == 'ditolak' and laporan.tgl_ditolak %}
+                      {{ laporan.tgl_ditolak|format_wib }} WIB – laporan ditolak.
+                    {% elif laporan.status == 'selesai' and laporan.tgl_selesai %}
+                      {{ laporan.tgl_selesai|format_wib }} WIB – laporan dinyatakan selesai.
+                    {% else %}
+                      Konfirmasi petugas untuk laporan Anda.
+                    {% endif %}
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
         </section>
+        
         {% elif request.args.get('kode') %}
-        <!-- Jika kode diisi tapi laporan tidak ditemukan -->
         <section class="mt-6">
           <div class="rounded-xl border border-rose-200 dark:border-rose-800
                       bg-rose-50 dark:bg-rose-900/30 px-4 py-3 text-sm">
@@ -333,6 +324,23 @@
   </div>
 </div>
 {% endblock %}
+
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+</style>
 
 {% block scripts %}
 <script>

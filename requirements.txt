@@ -1,21 +1,36 @@
+# --- Core Flask Framework ---
 Flask>=2.2
-Flask-SQLAlchemy>=2.5
-Flask-Login>=0.6
-Flask-Migrate>=4.0
-Flask-WTF==1.2.1
-flask-bcrypt>=1.0
-
-SQLAlchemy>=1.4
 Werkzeug>=2.2
+Jinja2>=3.1
 itsdangerous>=2.1
+click>=8.0
+blinker>=1.6
 
+# --- Database & ORM ---
+Flask-SQLAlchemy>=2.5
+SQLAlchemy>=1.4
+Flask-Migrate>=4.0
+alembic>=1.7
+
+# --- Database Drivers (MySQL) ---
+# Disarankan pilih salah satu di config, tapi install keduanya aman
 mysql-connector-python>=8.0
 pymysql>=1.1.2
+cryptography>=3.4  # Wajib untuk autentikasi MySQL 8.0+
 
-python-dotenv>=0.21
+# --- Authentication & Security ---
+Flask-Login>=0.6
+Flask-WTF==1.2.1
+WTForms>=3.0
+flask-bcrypt>=1.0
 email-validator>=2.0
-Flask-Mail>=0.10
+dnspython>=2.0     # Dependency email-validator untuk cek domain
 
-pytz>=2025.2
-Pillow>=10.0
-pdfkit>=1.0.0
+# --- Utilities ---
+python-dotenv>=0.21
+Flask-Mail>=0.10
+pytz>=2025.2       # Untuk konversi waktu WIB
+
+# --- Media & Files ---
+Pillow>=10.0       # Untuk manipulasi/upload foto
+pdfkit>=1.0.0      # Untuk generate PDF laporan

@@ -13,6 +13,17 @@ from app.forms import UserForm
 import os
 from werkzeug.utils import secure_filename
 from flask import current_app
+from flask import render_template
+from app import db
+from app.admin import bp
+from app.models.laporan import Laporan
+from app.auth.decorators import admin_required 
+from datetime import datetime
+import pdfkit
+import pdfkit
+from datetime import datetime, timedelta
+from flask import render_template, make_response
+from app.models import Laporan
 
 
 # ---------- GUARD ADMIN ----------
@@ -26,6 +37,53 @@ def admin_required(view):
         return view(*args, **kwargs)
     return wrapped
 
+@bp.route('/laporan/cetak/<periode>')
+@login_required
+def cetak_laporan(periode):
+    now = datetime.now()
+    query = Laporan.query
+
+    # 1. Filter Berdasarkan Periode
+    if periode == 'minggu':
+        start_date = now - timedelta(days=7)
+        reports = query.filter(Laporan.created_at >= start_date).order_by(Laporan.created_at.desc()).all()
+        judul_periode = "Minggu Ini"
+    elif periode == 'bulan':
+        start_date = now - timedelta(days=30)
+        reports = query.filter(Laporan.created_at >= start_date).order_by(Laporan.created_at.desc()).all()
+        judul_periode = "Bulan Ini"
+    else:
+        # Default: Semua / All
+        reports = query.order_by(Laporan.created_at.desc()).all()
+        judul_periode = "Semua Data"
+
+    # 2. Render Template HTML khusus untuk PDF
+    # Kita buat file baru 'admin/laporan_pdf.html' yang bersih tanpa sidebar
+    html = render_template('admin/laporan_pdf.html', 
+                           reports=reports, 
+                           periode=judul_periode,
+                           now=now)
+
+    # 3. Konfigurasi PDFKit (Sesuaikan path wkhtmltopdf Anda!)
+    # Jika di Windows, biasanya:
+    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    
+    # Jika di Linux/Server biasanya tidak perlu config path jika sudah di environment variable
+    # pdf = pdfkit.from_string(html, False) 
+
+    # Generate PDF
+    pdf = pdfkit.from_string(html, False, configuration=config)
+
+    # 4. Buat Response agar langsung download
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    
+    # 'attachment' berarti download, 'inline' berarti preview di browser
+    filename = f"Laporan_{periode}_{now.strftime('%Y%m%d')}.pdf"
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+
+    return response
 
 # ---------- DASHBOARD ----------
 
@@ -338,8 +396,55 @@ def kelola_kategori():
 @bp.route("/pengaturan")
 @admin_required
 def pengaturan_sistem():
-    return render_template("admin/pengaturan_sistem.html")
+    # --- LOGIKA UNTUK GRAFIK (LINE CHART) ---
+    
+    # 1. Ambil data tanggal pembuatan (created_at) dari semua laporan
+    all_laporan = db.session.query(Laporan.created_at).all()
+    
+    # Dictionary untuk menampung jumlah: {'2024-01': 5, '2024-02': 12, ...}
+    data_mentah = {}
+    
+    # 2. Loop data dan hitung jumlah per bulan
+    for lap in all_laporan:
+        if lap.created_at:
+            # Format key menjadi "YYYY-MM" (Tahun-Bulan) agar mudah diurutkan
+            key_bulan = lap.created_at.strftime('%Y-%m')
+            
+            if key_bulan in data_mentah:
+                data_mentah[key_bulan] += 1
+            else:
+                data_mentah[key_bulan] = 1
+            
+    # 3. Urutkan data berdasarkan bulan (dari terlama ke terbaru)
+    sorted_keys = sorted(data_mentah.keys())
+    
+    # 4. Siapkan List untuk dikirim ke Chart.js (Frontend)
+    chart_labels = [] # Sumbu X (Jan 2024, Feb 2024)
+    chart_values = [] # Sumbu Y (Jumlah Laporan)
+    
+    # Helper untuk nama bulan Indonesia
+    nama_bulan_indo = {
+        '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+        '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Agt',
+        '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Des'
+    }
 
+    # 5. Konversi data ke format Chart
+    for key in sorted_keys:
+        year, month = key.split('-') # Pisahkan '2024' dan '05'
+        
+        # Buat label: "Mei 2024"
+        label_indo = f"{nama_bulan_indo.get(month, month)} {year}"
+        
+        chart_labels.append(label_indo)
+        chart_values.append(data_mentah[key])
+
+    # --- RENDER TEMPLATE ---
+    return render_template(
+        "admin/pengaturan_sistem.html",  # <-- Sesuai request kamu
+        chart_labels=chart_labels, 
+        chart_values=chart_values
+    )
 @bp.route("/kategori/<int:kategori_id>/delete", methods=["POST"])
 @admin_required
 def kategori_delete(kategori_id):

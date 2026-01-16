@@ -49,19 +49,16 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and user.is_active and user.check_password(form.password.data):
-            remember = getattr(form, "remember", None)
-            if remember is not None:
-                remember = bool(remember.data)
-            else:
-                remember = request.form.get("remember") in ("y", "on", "true")
 
-            login_user(user, remember=remember)
+            
+            login_user(user, remember=False) 
 
             user.last_login_at = datetime.utcnow()
             db.session.commit()
 
             flash("Berhasil login.", "success")
             session.pop("can_access_dashboard", None)
+            session.permanent = True 
 
             next_page = request.args.get("next")
             return redirect(next_page or url_for("main.index"))
@@ -154,6 +151,35 @@ def register():
         return redirect(url_for('auth.login'))
     
     return render_template('pages/auth/register.html', form=form)
+
+@bp.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    # 1. Ambil data
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+
+    # 2. Validasi Password Lama
+    if not current_user.check_password(current_password):
+        flash('Password saat ini salah.', 'danger')
+        return redirect(url_for('main.settings'))
+
+    # 3. Validasi Password Baru
+    if new_password != confirm_password:
+        flash('Konfirmasi password baru tidak cocok.', 'danger')
+        return redirect(url_for('main.settings'))
+    
+    if len(new_password) < 6:
+        flash('Password baru minimal 6 karakter.', 'danger')
+        return redirect(url_for('main.settings'))
+
+    # 4. Simpan Password Baru
+    current_user.set_password(new_password)
+    db.session.commit()
+    
+    flash('Password berhasil diubah.', 'success')
+    return redirect(url_for('main.settings'))
 
 
 @bp.route('/logout')
