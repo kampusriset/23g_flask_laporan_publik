@@ -6,34 +6,34 @@ from flask_login import LoginManager, current_user, logout_user
 from flask_migrate import Migrate
 from flask_mail import Mail
 from config import DevelopmentConfig
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Inisialisasi Extension (Global)
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
 
-def create_app(config_class=DevelopmentConfig):
-    # 1. Membuat instance Flask
-    app = Flask(__name__)
 
-    # 2. Load Konfigurasi
+def create_app(config_class=DevelopmentConfig):
+    app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Debug upload size
+    # Pakai batas idle 10 menit (boleh override nilai dari config kalau mau)
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
+    app.config["SESSION_REFRESH_EACH_REQUEST"] = False
+
     max_size = app.config.get("MAX_CONTENT_LENGTH")
     print(f"Status Config: Batas Upload Saat Ini adalah {max_size} bytes")
 
-    # 3. Inisialisasi Extension
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
 
-    # Login Manager
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+    login_manager.login_message = (
+        "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+    )
     login_manager.login_message_category = "warning"
 
     # ===============================
@@ -95,6 +95,7 @@ def create_app(config_class=DevelopmentConfig):
     # ===============================
     @app.before_request
     def before_request_callback():
+        # Abaikan file static
         if request.endpoint and request.endpoint.startswith("static"):
             return
 
@@ -102,20 +103,27 @@ def create_app(config_class=DevelopmentConfig):
             now = time.time()
             last_activity = session.get("last_activity")
 
-            if last_activity:
-                idle_time = now - last_activity
-                if idle_time > app.permanent_session_lifetime.total_seconds():
-                    logout_user()
-                    session.clear()
-                    flash(
-                        "Sesi Anda telah berakhir karena tidak aktif selama 10 menit.",
-                        "warning",
-                    )
-                    return redirect(url_for("auth.login"))
+            # kalau session baru (last_activity hilang), set dari sekarang
+            if last_activity is None:
+                session["last_activity"] = now
+                last_activity = now
 
+            idle_time = now - last_activity
+            # print("IDLE:", idle_time)  # aktifkan lagi kalau perlu debug
+
+            if idle_time > app.permanent_session_lifetime.total_seconds():
+                logout_user()
+                session.clear()
+                flash(
+                    "Sesi Anda telah berakhir karena tidak aktif selama 10 menit.",
+                    "warning",
+                )
+                return redirect(url_for("auth.login"))
+
+            # reset timer setelah lolos pengecekan
             session["last_activity"] = now
 
-            # update last_seen
+            # opsional: catat last_seen user
             current_user.last_seen = datetime.utcnow()
             try:
                 db.session.commit()
@@ -127,7 +135,9 @@ def create_app(config_class=DevelopmentConfig):
     # ===============================
     @app.after_request
     def add_header(response):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, max-age=0, private"
+        )
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response

@@ -6,7 +6,7 @@ from app.models.user import User
 from app.auth.forms import LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
 from datetime import datetime
 from flask_mail import Message
-import time  # <--- PENTING UNTUK AUTO LOGOUT
+import time  # untuk idle timeout
 
 
 # --- FUNGSI HELPER PENGIRIM EMAIL ---
@@ -14,14 +14,14 @@ def send_reset_email(user):
     token = user.get_reset_token()
 
     msg = Message(
-        'Permintaan Reset Password - LaporIN',
-        sender=current_app.config['MAIL_DEFAULT_SENDER'],
-        recipients=[user.email]
+        "Permintaan Reset Password - LaporIN",
+        sender=current_app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[user.email],
     )
 
-    url = url_for('auth.reset_password', token=token, _external=True)
+    url = url_for("auth.reset_password", token=token, _external=True)
 
-    msg.body = f'''Halo {user.nama_lengkap},
+    msg.body = f"""Halo {user.nama_lengkap},
 
 Untuk mereset password akun LaporIN Anda, silakan klik tautan berikut:
 {url}
@@ -31,11 +31,12 @@ Jika Anda tidak merasa melakukan permintaan ini, abaikan saja email ini.
 
 Salam,
 Tim LaporIN
-'''
+"""
     mail.send(msg)
 
 
 # --- ROUTES ---
+
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -54,13 +55,15 @@ def login():
             # ===============================
             # LOGIN USER
             # ===============================
+            # Tidak pakai remember-me, dan session TIDAK permanent
             login_user(user, remember=False)
+            session.permanent = False  # penting: supaya logout saat browser/device ditutup
 
             # ===============================
-            # SET SESSION UNTUK AUTO LOGOUT
+            # SET SESSION UNTUK IDLE TIMEOUT
             # ===============================
-            session.permanent = True
-            session["last_activity"] = time.time()  # <--- FIX UTAMA
+            session["last_activity"] = time.time()
+            print("SET last_activity ON LOGIN:", session["last_activity"])
 
             # ===============================
             # UPDATE LOGIN TIME (AUDIT LOG)
@@ -101,14 +104,14 @@ def forgot_password():
             send_reset_email(user)
             flash(
                 "Instruksi reset password telah dikirim ke email Anda. Silakan cek Inbox atau Spam.",
-                "info"
+                "info",
             )
             return redirect(url_for("auth.login"))
         except Exception as e:
             print(f"Error sending email: {e}")
             flash(
                 "Terjadi kesalahan saat mengirim email. Pastikan koneksi internet lancar.",
-                "danger"
+                "danger",
             )
 
     return render_template("pages/auth/forgot_password.html", form=form)
@@ -137,7 +140,7 @@ def reset_password(token):
     return render_template("pages/auth/reset_password.html", form=form)
 
 
-@bp.route('/register', methods=['GET', 'POST'])
+@bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -146,66 +149,66 @@ def register():
 
     if form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():
-            flash('Username sudah dipakai, silakan gunakan yang lain.', 'danger')
-            return render_template('pages/auth/register.html', form=form)
+            flash("Username sudah dipakai, silakan gunakan yang lain.", "danger")
+            return render_template("pages/auth/register.html", form=form)
 
         if User.query.filter_by(email=form.email.data).first():
-            flash('Email sudah terdaftar, silakan gunakan email lain.', 'danger')
-            return render_template('pages/auth/register.html', form=form)
+            flash("Email sudah terdaftar, silakan gunakan email lain.", "danger")
+            return render_template("pages/auth/register.html", form=form)
 
         user = User(
             nama_lengkap=form.nama_lengkap.data,
             username=form.username.data,
             email=form.email.data,
-            role='pengunjung',
-            phone='-'
+            role="pengunjung",
+            phone="-",
         )
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
 
-        flash('Registrasi sukses! Silakan login.', 'success')
-        return redirect(url_for('auth.login'))
+        flash("Registrasi sukses! Silakan login.", "success")
+        return redirect(url_for("auth.login"))
 
-    return render_template('pages/auth/register.html', form=form)
+    return render_template("pages/auth/register.html", form=form)
 
 
-@bp.route('/change_password', methods=['POST'])
+@bp.route("/change_password", methods=["POST"])
 @login_required
 def change_password():
-    current_password = request.form.get('current_password')
-    new_password = request.form.get('new_password')
-    confirm_password = request.form.get('confirm_password')
+    current_password = request.form.get("current_password")
+    new_password = request.form.get("new_password")
+    confirm_password = request.form.get("confirm_password")
 
     if not current_user.check_password(current_password):
-        flash('Password saat ini salah.', 'danger')
-        return redirect(url_for('main.settings'))
+        flash("Password saat ini salah.", "danger")
+        return redirect(url_for("main.settings"))
 
     if new_password != confirm_password:
-        flash('Konfirmasi password baru tidak cocok.', 'danger')
-        return redirect(url_for('main.settings'))
+        flash("Konfirmasi password baru tidak cocok.", "danger")
+        return redirect(url_for("main.settings"))
 
     if len(new_password) < 6:
-        flash('Password baru minimal 6 karakter.', 'danger')
-        return redirect(url_for('main.settings'))
+        flash("Password baru minimal 6 karakter.", "danger")
+        return redirect(url_for("main.settings"))
 
     current_user.set_password(new_password)
     db.session.commit()
 
-    flash('Password berhasil diubah.', 'success')
-    return redirect(url_for('main.settings'))
+    flash("Password berhasil diubah.", "success")
+    return redirect(url_for("main.settings"))
 
 
-@bp.route('/logout')
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()
     session.clear()
 
-    flash('Logout berhasil.', 'success')
+    flash("Logout berhasil.", "success")
 
-    response = make_response(redirect(url_for('main.index')))
-    response.set_cookie('session', '', expires=0, path='/')
-    response.set_cookie('remember_token', '', expires=0, path='/')
+    response = make_response(redirect(url_for("main.index")))
+    response.set_cookie("session", "", expires=0, path="/")
+    response.set_cookie("remember_token", "", expires=0, path="/")
 
     return response

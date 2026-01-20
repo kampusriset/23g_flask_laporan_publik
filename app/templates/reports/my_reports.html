@@ -104,7 +104,40 @@
                 <th class="px-4 py-3 text-left">Lokasi</th>
                 <th class="px-4 py-3 text-left">Dibuat</th>
                 <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-4 py-3 text-left">Aksi</th>
+                
+                <th class="px-4 py-3 text-left">
+                  <div class="flex items-center justify-between gap-2">
+                    <span>Aksi</span>
+                    
+                    <div class="relative inline-block text-left" x-data="{ open: false }">
+                      <button @click="open = !open" @click.away="open = false" type="button" 
+                              class="p-1.5 rounded-lg bg-gray-600 text-white hover:bg-gray-700 focus:outline-none transition-colors shadow-sm"
+                              title="Cetak Rekap PDF">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                      </button>
+                
+                      <div x-show="open" 
+                           x-transition:enter="transition ease-out duration-100"
+                           x-transition:enter-start="transform opacity-0 scale-95"
+                           x-transition:enter-end="transform opacity-100 scale-100"
+                           x-transition:leave="transition ease-in duration-75"
+                           class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
+                           style="display: none;">
+                        <div class="py-1">
+                          <p class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">Opsi Cetak PDF</p>
+                          <a href="{{ url_for('reports.download_rekap_pdf', status='all') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition-colors">Semua Laporan</a>
+                          <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                          <a href="{{ url_for('reports.download_rekap_pdf', status='selesai') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/30">Status Selesai</a>
+                          <a href="{{ url_for('reports.download_rekap_pdf', status='diproses') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30">Status Diproses</a>
+                          <a href="{{ url_for('reports.download_rekap_pdf', status='diajukan') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-yellow-50 dark:hover:bg-yellow-900/30">Status Diajukan</a>
+                          <a href="{{ url_for('reports.download_rekap_pdf', status='ditolak') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/30">Status Ditolak</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -177,8 +210,8 @@
               <tr>
                 <td colspan="6" class="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
                   <div class="flex flex-col items-center justify-center">
-                     <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                     <p>Belum ada laporan yang kamu kirim.</p>
+                      <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                      <p>Belum ada laporan yang kamu kirim.</p>
                   </div>
                 </td>
               </tr>
@@ -278,19 +311,22 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Search Functionality
     const input = document.getElementById('searchInput');
     const rows  = document.querySelectorAll('#laporanTable tbody tr');
 
     if (input) {
-      input.addEventListener('input', () => {
+      input.addEventListener('keyup', () => { // Changed to keyup for better response
         const q = input.value.toLowerCase();
         rows.forEach(row => {
+          // Cek teks pada setiap baris
           const text = row.textContent.toLowerCase();
           row.style.display = text.includes(q) ? '' : 'none';
         });
       });
     }
 
+    // Aksi Buttons Protection
     const aksiButtons = document.querySelectorAll('.aksi-btn');
     aksiButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -303,92 +339,4 @@
     });
   });
 </script> 
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const table = document.getElementById('laporanTable');
-    
-    if(searchInput && table) {
-      searchInput.addEventListener('keyup', function() {
-        const filter = searchInput.value.toLowerCase();
-        const rows = table.getElementsByTagName('tr');
-
-        // Mulai dari i=1 karena row 0 adalah header
-        for (let i = 1; i < rows.length; i++) {
-          let textContent = rows[i].textContent || rows[i].innerText;
-          if (textContent.toLowerCase().indexOf(filter) > -1) {
-            rows[i].style.display = "";
-          } else {
-            rows[i].style.display = "none";
-          }
-        }
-      });
-    }
-  });
-</script>
-<div class="mb-4 relative inline-block text-left" x-data="{ open: false }">
-    <div>
-        <button 
-            @click="open = !open" 
-            @click.away="open = false"
-            type="button" 
-            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm"
-        >
-            <i class="bi bi-printer mr-2"></i> Cetak Rekap PDF
-            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-
-    <div 
-        x-show="open"
-        x-transition:enter="transition ease-out duration-100"
-        x-transition:enter-start="transform opacity-0 scale-95"
-        x-transition:enter-end="transform opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-75"
-        x-transition:leave-start="transform opacity-100 scale-100"
-        x-transition:leave-end="transform opacity-0 scale-95"
-        class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
-        style="display: none;" 
-    >
-        <div class="py-1">
-            <a href="{{ url_for('reports.download_rekap_pdf', status='all') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                Semua Laporan
-            </a>
-            
-            <div class="border-t border-gray-100 my-1"></div> <a href="{{ url_for('reports.download_rekap_pdf', status='selesai') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                Hanya Status Selesai
-            </a>
-            <a href="{{ url_for('reports.download_rekap_pdf', status='diproses') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                Hanya Status Diproses
-            </a>
-            <a href="{{ url_for('reports.download_rekap_pdf', status='ditolak') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                Hanya Status Ditolak
-            </a>
-            <a href="{{ url_for('reports.download_rekap_pdf', status='diajukan') }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                Hanya Status Diajukan
-            </a>
-        </div>
-    </div>
-</div>
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
-
-    // Toggle Sidebar
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
-    }
-
-    // Toggle Backdrop (Layar gelap)
-    if (backdrop) {
-        backdrop.classList.toggle('hidden');
-    }
-  }
-</script>
 {% endblock %}
-
-
