@@ -10,7 +10,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "laporin-super-secret-key-2025-change-this!"
 
     # Dipakai sebagai batas idle 10 menit di before_request
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=1)
     SESSION_REFRESH_EACH_REQUEST = False  # biar Flask tidak auto-refresh expiry
 
     # Remember-me (kalau suatu saat mau dipakai di login, sekarang remember=False)
@@ -58,8 +58,21 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-
+    _db_user = os.environ.get("DB_USER")
+    _db_pass = os.environ.get("DB_PASS", "")
+    _db_host = os.environ.get("DB_URI", "localhost")
+    _db_port = os.environ.get("DB_PORT", "3306")
+    _db_name = os.environ.get("DB_NAME")
+    if os.environ.get("DATABASE_URL"):
+        SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    elif _db_user and _db_name:
+        SQLALCHEMY_DATABASE_URI = (
+            f"mysql+pymysql://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
+        )
+    else:
+        # Fallback terakhir biar gak crash (opsional)
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "prod_fallback.sqlite")
+    
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True

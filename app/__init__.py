@@ -5,8 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, logout_user
 from flask_migrate import Migrate
 from flask_mail import Mail
-from config import DevelopmentConfig
-from datetime import datetime, timedelta
+from config import config
+from datetime import datetime, timedelta, timezone
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -14,9 +14,16 @@ login_manager = LoginManager()
 mail = Mail()
 
 
-def create_app(config_class=DevelopmentConfig):
+def create_app(config_name=None):
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    if config_name is None:
+        config_name = os.environ.get("FLASK_CONFIG", "default")
+
+    # Load class config yang sesuai (DevelopmentConfig / ProductionConfig)
+    app.config.from_object(config[config_name])
+    
+    # Opsional: Print biar lu tau lagi jalan di mode apa pas terminal nyala
+    print(f"🚀 App Running in Mode: {config_name.upper()}")
 
     # Pakai batas idle 10 menit (boleh override nilai dari config kalau mau)
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
@@ -124,7 +131,7 @@ def create_app(config_class=DevelopmentConfig):
             session["last_activity"] = now
 
             # opsional: catat last_seen user
-            current_user.last_seen = datetime.utcnow()
+            current_user.last_seen = datetime.now(timezone.utc)
             try:
                 db.session.commit()
             except Exception:

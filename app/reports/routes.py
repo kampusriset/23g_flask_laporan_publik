@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 import base64
 import io
@@ -167,7 +167,7 @@ def my_reports():
     pagination = q.order_by(Laporan.created_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
     )
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     batas = timedelta(minutes=5)
     
     for lp in pagination.items:
@@ -242,7 +242,7 @@ def edit(laporan_id):
     if laporan.user_id != current_user.id:
         abort(403)
 
-    if datetime.now() - laporan.created_at > timedelta(minutes=5):
+    if datetime.now(timezone.utc) - laporan.created_at > timedelta(minutes=5):
         flash(
             "Batas waktu edit laporan sudah lewat (lebih dari 5 menit).",
             "warning",
@@ -310,7 +310,7 @@ def delete(laporan_id):
     if laporan.user_id != current_user.id:
         abort(403)
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     if now - laporan.created_at > timedelta(minutes=5):
         flash(
             "Batas waktu hapus laporan sudah lewat (lebih dari 5 menit).",
@@ -531,7 +531,7 @@ def download_rekap_pdf():
         laporan_list=laporan_list,
         filter_status=title_suffix,
         user=current_user,
-        tanggal_cetak=datetime.now()
+        tanggal_cetak=datetime.now(timezone.utc)
     )
 
     # 6. Konfigurasi PDFKit (Sesuaikan path jika dipindah ke server lain)
@@ -567,7 +567,7 @@ def download_rekap_pdf():
 
     # 7. Return Response
     response = make_response(pdf)
-    filename = f"Rekap_Laporan_{status_filter}_{datetime.now().strftime('%Y%m%d')}.pdf"
+    filename = f"Rekap_Laporan_{status_filter}_{datetime.now(timezone.utc).strftime('%Y%m%d')}.pdf"
     response.headers["Content-Type"] = "application/pdf"
     # Gunakan 'attachment' agar otomatis download, atau 'inline' untuk preview browser
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
@@ -596,17 +596,17 @@ def admin_update_status(laporan_id):
     # === STATUS LOGIC ===
     if status_baru == "diproses":
         laporan.status = "diproses"
-        laporan.tgl_diproses = datetime.now()
+        laporan.tgl_diproses = datetime.now(timezone.utc)
 
     elif status_baru == "selesai":
         laporan.status = "selesai"
         laporan.ringkasan_hasil = ringkasan
-        laporan.tgl_selesai = datetime.now()
+        laporan.tgl_selesai = datetime.now(timezone.utc)
 
     elif status_baru == "ditolak":
         laporan.status = "ditolak"
         laporan.alasan_ditolak = alasan
-        laporan.tgl_ditolak = datetime.now()
+        laporan.tgl_ditolak = datetime.now(timezone.utc)
 
     db.session.commit()
     flash("Status laporan berhasil diperbarui", "success")

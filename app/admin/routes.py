@@ -21,7 +21,7 @@ from app.auth.decorators import admin_required
 from datetime import datetime
 import pdfkit
 import pdfkit
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import render_template, make_response
 from app.models import Laporan
 
@@ -40,7 +40,7 @@ def admin_required(view):
 @bp.route('/laporan/cetak/<periode>')
 @login_required
 def cetak_laporan(periode):
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     query = Laporan.query
 
     # 1. Filter Berdasarkan Periode
@@ -287,8 +287,8 @@ def update_report_status(laporan_id):
         flash("Alasan penolakan wajib diisi untuk status ditolak.", "danger")
         return redirect(url_for("admin.manage_reports"))
 
-    from datetime import datetime
-    now = datetime.utcnow()
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
 
     # simpan updated_at lama
     last_updated = laporan.updated_at

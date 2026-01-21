@@ -34,3 +34,6 @@ pytz>=2025.2       # Untuk konversi waktu WIB
 # --- Media & Files ---
 Pillow>=10.0       # Untuk manipulasi/upload foto
 pdfkit>=1.0.0      # Untuk generate PDF laporan
+
+#-- server deployment
+gunicorn>=23.0.0

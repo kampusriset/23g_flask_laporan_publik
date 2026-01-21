@@ -4,7 +4,7 @@ from app.auth import bp
 from app import db, mail
 from app.models.user import User
 from app.auth.forms import LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_mail import Message
 import time  # untuk idle timeout
 
@@ -68,7 +68,7 @@ def login():
             # ===============================
             # UPDATE LOGIN TIME (AUDIT LOG)
             # ===============================
-            user.last_login_at = datetime.utcnow()
+            user.last_login_at = datetime.now(timezone.utc)
             db.session.commit()
 
             # ===============================

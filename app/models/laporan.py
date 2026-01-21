@@ -1,6 +1,6 @@
 from app import db
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Laporan(db.Model):
@@ -38,13 +38,13 @@ class Laporan(db.Model):
     foto_admin = db.Column(db.String(255), nullable=True)
 
 
-    created_at = db.Column(db.DateTime, default=func.now())
-    updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now())
+    created_at = db.Column(db.DateTime, default=func.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=func.now(timezone.utc), onupdate=func.now(timezone.utc))
 
     def __repr__(self):
         return f"<Laporan {self.kode_pelaporan}>"
 
     @staticmethod
     def generate_kode(user_id: int) -> str:
-        timestamp = int(datetime.now().timestamp())
+        timestamp = int(datetime.now(timezone.utc).timestamp())
         return f"LPR-{user_id}-{timestamp}"
