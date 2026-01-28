@@ -38,8 +38,8 @@ class Laporan(db.Model):
     foto_admin = db.Column(db.String(255), nullable=True)
 
 
-    created_at = db.Column(db.DateTime, default=func.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=func.now(timezone.utc), onupdate=func.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f"<Laporan {self.kode_pelaporan}>"

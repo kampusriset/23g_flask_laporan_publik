@@ -6,7 +6,8 @@ app = create_app()
 from flask.cli import with_appcontext
 from app import db # Sesuaikan dengan lokasi db lo
 from app.models import User, Kategori # Import modelnya
-
+from werkzeug.security import generate_password_hash
+from datetime import datetime, timezone
 @app.cli.command("seed-db")
 @with_appcontext
 def seed_db():
@@ -35,12 +36,13 @@ def seed_db():
         admin = User(
             nama_lengkap="Administrator Utama",
             username="admin",
-            email="admin@vibes.com",
+            email="admin@bilikku.my.id",
             phone="08123456789",
+            password_hash=generate_password_hash("laporinaja531"),
             role="admin",
+	    created_at=datetime.now(timezone.utc),
             is_active=True
         )
-        admin.set_password("admin123")
         db.session.add(admin)
     else:
         print("⚠️ Admin udah ada, skip!")

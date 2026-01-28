@@ -167,7 +167,7 @@ def my_reports():
     pagination = q.order_by(Laporan.created_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     batas = timedelta(minutes=5)
     
     for lp in pagination.items:
@@ -441,10 +441,10 @@ def cetak_pdf(laporan_id):
 
     # 4. Konfigurasi wkhtmltopdf
     # Pastikan path ini BENAR sesuai lokasi instalasi di komputer Anda
-    path_wkhtmltopdf = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    path_wkhtmltopdf = r"/usr/bin/wkhtmltopdf"
     
     # Jika di komputer Anda di D:, gunakan yang ini:
-    # path_wkhtmltopdf = r"D:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    # path_wkhtmltopdf = r""
 
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
@@ -536,7 +536,7 @@ def download_rekap_pdf():
 
     # 6. Konfigurasi PDFKit (Sesuaikan path jika dipindah ke server lain)
     # Pastikan path ini benar ada di komputer Anda
-    path_wkhtmltopdf = r"D:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    path_wkhtmltopdf = r"/usr/bin/wkhtmltopdf"
     
     # Cek apakah file exe ada (untuk menghindari error server 500)
     if not os.path.exists(path_wkhtmltopdf):

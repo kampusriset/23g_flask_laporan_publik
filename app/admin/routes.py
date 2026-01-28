@@ -66,7 +66,7 @@ def cetak_laporan(periode):
 
     # 3. Konfigurasi PDFKit (Sesuaikan path wkhtmltopdf Anda!)
     # Jika di Windows, biasanya:
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    path_wkhtmltopdf = r'/usr/bin/wkhtmltopdf'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
     
     # Jika di Linux/Server biasanya tidak perlu config path jika sudah di environment variable

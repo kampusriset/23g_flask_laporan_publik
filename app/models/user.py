@@ -23,10 +23,10 @@ class User(UserMixin, db.Model):
     # --- BAGIAN WAKTU YANG DI-UPDATE ---
     
     # created_at: Pake func.now(timezone.utc) biar database (MySQL) yang nentuin jamnya (Lebih Akurat)
-    created_at = db.Column(db.DateTime, default=func.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # last_seen: Pake lambda biar Python yang generate UTC Aware tiap kali data masuk
-    last_seen = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     
     last_login_at = db.Column(db.DateTime)
 

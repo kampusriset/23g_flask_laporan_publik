@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, session, request, redirect, url_for, flash
+from flask import Flask, session, request, redirect, url_for, flash, Request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, logout_user
 from flask_migrate import Migrate
@@ -12,7 +12,8 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
-
+class BigFormRequest(Request):
+    max_form_memory_size = 200 * 1024 * 1024
 
 def create_app(config_name=None):
     app = Flask(__name__)
@@ -24,7 +25,7 @@ def create_app(config_name=None):
     
     # Opsional: Print biar lu tau lagi jalan di mode apa pas terminal nyala
     print(f"🚀 App Running in Mode: {config_name.upper()}")
-
+    app.request_class = BigFormRequest
     # Pakai batas idle 10 menit (boleh override nilai dari config kalau mau)
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
     app.config["SESSION_REFRESH_EACH_REQUEST"] = False
@@ -152,7 +153,7 @@ def create_app(config_name=None):
     # ===============================
     # CREATE TABLE
     # ===============================
-    with app.app_context():
-        db.create_all()
+    #with app.app_context():
+       # db.create_all()
 
     return app
