@@ -1,0 +1,146 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Edit User {%endblock%}
+{% block content %}
+<div class="w-full px-6 py-6 mx-auto">
+    
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ title }}</h1>
+    <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="{{ url_for('main.index') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+                <span class="mx-2">/</span>
+            </li>
+            <li class="flex items-center">
+                <a href="{{ url_for('admin.user_list') }}" class="text-blue-600 hover:text-blue-800">Data User</a>
+                <span class="mx-2">/</span>
+            </li>
+            <li class="text-gray-400 font-medium">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center">
+            <i class="fas fa-user-edit mr-2 text-gray-600"></i>
+            <span class="font-semibold text-gray-700">Formulir Edit User</span>
+        </div>
+
+        <div class="p-6">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div>
+                        <div class="mb-4">
+                            {{ form.nama_lengkap.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.nama_lengkap.errors %}
+                                {{ form.nama_lengkap(class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.nama_lengkap.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.nama_lengkap(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5") }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.username.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.username.errors %}
+                                {{ form.username(class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.username.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.username(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5") }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.role.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.role.errors %}
+                                {{ form.role(class="bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.role.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.role(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5") }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="mb-4">
+                            {{ form.email.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.email.errors %}
+                                {{ form.email(class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.email.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.email(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5") }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.phone.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.phone.errors %}
+                                {{ form.phone(class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.phone.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.phone(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5") }}
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            {% if form.password.errors %}
+                                {{ form.password(class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5") }}
+                                <div class="mt-2 text-sm text-red-600">
+                                    {% for error in form.password.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5", placeholder="Biarkan kosong jika tidak ingin mengubah password") }}
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Isi hanya jika ingin mereset/mengganti password user ini.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center mb-6">
+                    {{ form.is_active(class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2") }}
+                    {{ form.is_active.label(class="ml-2 text-sm font-medium text-gray-900") }}
+                </div>
+
+                <hr class="h-px my-6 bg-gray-200 border-0">
+
+                <div class="flex justify-between items-center">
+                    <a href="{{ url_for('admin.user_list') }}" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none flex items-center shadow-md transition duration-150">
+                        <i class="fas fa-arrow-left mr-2"></i> Kembali
+                    </a>
+                    
+                    <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none flex items-center shadow-md transition duration-150">
+                        <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

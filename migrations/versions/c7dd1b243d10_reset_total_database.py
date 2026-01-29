@@ -1,8 +1,8 @@
-"""create user laporan kategori
+"""Reset total database
 
-Revision ID: 01d136967ac2
+Revision ID: c7dd1b243d10
 Revises: 
-Create Date: 2025-12-26 14:33:05.548055
+Create Date: 2026-01-29 12:02:03.457113
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '01d136967ac2'
+revision = 'c7dd1b243d10'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,10 +30,13 @@ def upgrade():
     sa.Column('nama_lengkap', sa.String(length=100), nullable=False),
     sa.Column('username', sa.String(length=30), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('password_hash', sa.String(length=128), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('phone', sa.String(length=20), nullable=True),
     sa.Column('role', sa.String(length=20), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('last_seen', sa.DateTime(), nullable=True),
+    sa.Column('last_login_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('user', schema=None) as batch_op:
@@ -52,8 +55,14 @@ def upgrade():
     sa.Column('latitude', sa.Float(), nullable=True),
     sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('prioritas', sa.Enum('normal', 'tinggi'), nullable=True),
-    sa.Column('status', sa.Enum('diajukan', 'diproses', 'selesai'), nullable=True),
+    sa.Column('status', sa.Enum('diajukan', 'diproses', 'selesai', 'ditolak', name='status_laporan'), nullable=False),
+    sa.Column('ringkasan_hasil', sa.Text(), nullable=True),
+    sa.Column('alasan_ditolak', sa.Text(), nullable=True),
+    sa.Column('tgl_diproses', sa.DateTime(), nullable=True),
+    sa.Column('tgl_selesai', sa.DateTime(), nullable=True),
+    sa.Column('tgl_ditolak', sa.DateTime(), nullable=True),
     sa.Column('foto_path', sa.String(length=255), nullable=True),
+    sa.Column('foto_admin', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['kategori_id'], ['kategori.id'], ),
