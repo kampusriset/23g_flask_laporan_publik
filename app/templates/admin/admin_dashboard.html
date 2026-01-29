@@ -45,15 +45,15 @@
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kelola Laporan
         </a>
+ 
+        <a href="{{ url_for('admin.admin_track') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Lacak Laporan
+        </a>
 
         <a href="{{ url_for('admin.kelola_kategori') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           Kategori & Wilayah
-        </a>
-
-        <a href="{{ url_for('admin.pengaturan_sistem') }}"
-           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-          Pengaturan Sistem
         </a>
       </nav>
     </aside>
@@ -181,6 +181,20 @@
           </button>
         </div>
       </div>
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-100 mt-10 dark:border-gray-700">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
+                Statistik Tren Pengaduan
+            </h2>
+            <span class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full dark:text-blue-300 dark:bg-blue-900">
+                Per Bulan
+            </span>
+        </div>
+
+        <div class="relative w-full h-80">
+            <canvas id="laporanChart"></canvas>
+        </div>
+      </div>
 
     </main>
   </div>
@@ -251,6 +265,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Init halaman pertama
     showPage(1);
+    
 });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('laporanChart').getContext('2d');
+    
+    // Mengambil data yang dikirim dari Flask (routes.py)
+    const labels = {{ chart_labels | tojson | safe }};
+    const dataValues = {{ chart_values | tojson | safe }};
+
+    // Konfigurasi Chart
+    const myChart = new Chart(ctx, {
+        type: 'line', // Tipe grafik garis (naik turun)
+        data: {
+            labels: labels, 
+            datasets: [{
+                label: 'Jumlah Pengaduan Masuk',
+                data: dataValues,
+                backgroundColor: 'rgba(59, 130, 246, 0.2)', // Area bawah (Biru transparan)
+                borderColor: 'rgba(37, 99, 235, 1)',       // Garis (Biru solid)
+                borderWidth: 3,
+                tension: 0.4, // Garis melengkung halus
+                pointBackgroundColor: '#fff',
+                pointBorderColor: 'rgba(37, 99, 235, 1)',
+                pointRadius: 5,
+                fill: true 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: document.documentElement.classList.contains('dark') ? '#334155' : '#e2e8f0'
+                    },
+                    ticks: {
+                        stepSize: 1, // Agar angka sumbu Y bulat
+                        color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#64748b'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#64748b'
+                    }
+                }
+            }
+        }
+    });
+  });
 </script>
 {% endblock %}

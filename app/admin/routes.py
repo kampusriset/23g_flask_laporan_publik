@@ -90,6 +90,49 @@ def cetak_laporan(periode):
 @bp.route("/dashboard")
 @admin_required
 def dashboard():
+    all_laporan = db.session.query(Laporan.created_at).all()
+    
+    # Dictionary untuk menampung jumlah: {'2024-01': 5, '2024-02': 12, ...}
+    data_mentah = {
+        
+    }
+
+    # 2. Loop data dan hitung jumlah per bulan
+    for lap in all_laporan:
+        if lap.created_at:
+            # Format key menjadi "YYYY-MM" (Tahun-Bulan) agar mudah diurutkan
+            key_bulan = lap.created_at.strftime('%Y-%m')
+            
+            if key_bulan in data_mentah:
+                data_mentah[key_bulan] += 1
+            else:
+                data_mentah[key_bulan] = 1
+            
+    # 3. Urutkan data berdasarkan bulan (dari terlama ke terbaru)
+    sorted_keys = sorted(data_mentah.keys())
+    
+    # 4. Siapkan List untuk dikirim ke Chart.js (Frontend)
+    chart_labels = [] # Sumbu X (Jan 2024, Feb 2024)
+    chart_values = [] # Sumbu Y (Jumlah Laporan)
+    
+    # Helper untuk nama bulan Indonesia
+    nama_bulan_indo = {
+        '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+        '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Agt',
+        '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Des'
+    }
+
+    # 5. Konversi data ke format Chart
+    for key in sorted_keys:
+         year, month = key.split('-') # Pisahkan '2024' dan '05'
+        
+        # Buat label: "Mei 2024"
+         label_indo = f"{nama_bulan_indo.get(month, month)} {year}"
+        
+         chart_labels.append(label_indo)
+         chart_values.append(data_mentah[key])
+
+    # --- RENDER TEMPLATE ---
     base_reports = (
         Laporan.query
         .join(User)
@@ -113,6 +156,8 @@ def dashboard():
         reports_in_progress=reports_in_progress,
         reports_done=reports_done,
         latest_reports=latest_reports,
+        chart_labels=chart_labels, 
+        chart_values=chart_values
     )
 
 
@@ -457,3 +502,19 @@ def kategori_delete(kategori_id):
         flash("Kategori berhasil dihapus.", "success")
 
     return redirect(url_for("admin.kelola_kategori"))
+@bp.route("/admin/track")
+@admin_required
+def admin_track():
+    kode = (request.args.get("kode") or "").strip()
+
+    laporan = None
+    if kode:
+        laporan = (
+            Laporan.query
+            .filter_by(kode_pelaporan=kode)
+            .first()
+        )       
+        if not laporan:
+            flash("Laporan dengan kode tersebut tidak ditemukan.", "warning")
+
+    return render_template("admin/admin_track.html", laporan=laporan, kode=kode)

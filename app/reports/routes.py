@@ -24,7 +24,7 @@ from flask import render_template, make_response, request, current_app, flash, r
 from flask_login import login_required, current_user
 from app.reports import bp
 from app.models.laporan import Laporan
-
+from app.auth.decorators import admin_required 
 import os
 import uuid
 from pathlib import Path
@@ -223,6 +223,7 @@ def track():
             flash("Laporan dengan kode tersebut tidak ditemukan.", "warning")
 
     return render_template("reports/track.html", laporan=laporan, kode=kode)
+
 
 
 @bp.route("/laporan/<int:laporan_id>")

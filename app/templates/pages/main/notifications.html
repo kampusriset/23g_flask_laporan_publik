@@ -30,7 +30,7 @@
           </a>
         </div>
       </div>
-
+     {% if(current_user.role == 'pengunjung'):%}
       <nav class="space-y-2 text-sm">
         <a href="{{ url_for('main.dashboard') }}"
            class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -72,6 +72,35 @@
           Tentang
         </a>
       </nav>
+    {% else : %}
+     <nav class="space-y-2 text-sm">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Dashboard Admin
+        </a>
+
+        <a href="{{ url_for('admin.user_list') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kelola Pengguna
+        </a>
+
+        <a href="{{ url_for('admin.manage_reports') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kelola Laporan
+        </a>
+
+        <a href="{{ url_for('admin.admin_track') }}"
+           class="block px-3 py-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+          Lacak Laporan
+        </a>
+
+        <a href="{{ url_for('admin.kelola_kategori') }}"
+           class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          Kategori & Wilayah
+
+        </a>
+      </nav>
+    {% endif %}
     </aside>
 
     <main class="flex-1 w-full h-full overflow-y-auto custom-scrollbar pb-20 px-1">
