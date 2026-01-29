@@ -53,7 +53,30 @@ def seed_db():
     except Exception as e:
         db.session.rollback()
         print(f"❌ Error pas seeding: {e}") 
+import click
+from sqlalchemy import text
 
+@app.cli.command("clean-data")
+def clean_data():
+    """Menghapus semua data tanpa menghapus tabel."""
+    try:
+        # Matikan FK Check
+        db.session.execute(text('SET FOREIGN_KEY_CHECKS = 0'))
+        
+        # Loop semua tabel
+        meta = db.metadata
+        for table in meta.sorted_tables:
+            db.session.execute(text(f"TRUNCATE TABLE {table.name}"))
+            click.echo(f"Berhasil mengosongkan: {table.name}")
+            
+        # Nyalakan FK Check
+        db.session.execute(text('SET FOREIGN_KEY_CHECKS = 1'))
+        db.session.commit()
+        click.echo("✅ Database bersih! Struktur aman.")
+        
+    except Exception as e:
+        db.session.rollback()
+        click.echo(f"❌ Gagal: {e}")
 if __name__ == '__main__':
     
     app.run(debug=True,host='0.0.0.0', port=5000)
