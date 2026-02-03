@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@config "../../../tailwind.config.js"; /* Opsi A: Paksa Tailwind v4 baca file JS tadi */
+
+/* Opsi B (Paling Rekomendasi buat v4): Set manual di CSS */
+@theme {
+  --color-primary: #3B82F6;
+}
+
+/* Aktifkan Dark Mode Class di v4 */
+@variant dark (&:where(.dark, .dark *));
