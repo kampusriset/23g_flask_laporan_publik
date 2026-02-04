@@ -5,7 +5,7 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from sqlalchemy import select, or_
-
+from app.pdf_helper import get_pdf_config
 from app import db
 from app.admin import bp           # <-- ini satu-satunya blueprint
 from app.models import User, Laporan, Kategori
@@ -39,6 +39,7 @@ def admin_required(view):
 
 @bp.route('/laporan/cetak/<periode>')
 @login_required
+@admin_required # Pastiin cuma admin yang bisa narik rekap global
 def cetak_laporan(periode):
     now = datetime.now(timezone.utc)
     query = Laporan.query
@@ -53,37 +54,51 @@ def cetak_laporan(periode):
         reports = query.filter(Laporan.created_at >= start_date).order_by(Laporan.created_at.desc()).all()
         judul_periode = "Bulan Ini"
     else:
-        # Default: Semua / All
         reports = query.order_by(Laporan.created_at.desc()).all()
         judul_periode = "Semua Data"
 
-    # 2. Render Template HTML khusus untuk PDF
-    # Kita buat file baru 'admin/laporan_pdf.html' yang bersih tanpa sidebar
-    html = render_template('admin/laporan_pdf.html', 
-                           reports=reports, 
-                           periode=judul_periode,
-                           now=now)
+    # 2. Render Template
+    # Pastiin template 'admin/laporan_pdf.html' pake CSS inline atau CDN
+    html_rendered = render_template('admin/laporan_pdf.html', 
+                                   reports=reports, 
+                                   periode=judul_periode,
+                                   now=now)
 
-    # 3. Konfigurasi PDFKit (Sesuaikan path wkhtmltopdf Anda!)
-    # Jika di Windows, biasanya:
-    path_wkhtmltopdf = r'/usr/bin/wkhtmltopdf'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-    
-    # Jika di Linux/Server biasanya tidak perlu config path jika sudah di environment variable
-    # pdf = pdfkit.from_string(html, False) 
+    # 3. Ambil Config Portable (Ingat: Helper lo udah return OBJEK CONFIG)
+    config_pdf = get_pdf_config() 
 
-    # Generate PDF
-    pdf = pdfkit.from_string(html, False, configuration=config)
+    # 4. Opsi PDF (Gue tambahin biar aman di server Linux)
+    options = {
+        'page-size': 'A4',
+        'orientation': 'Landscape', # Biasanya rekap admin butuh tabel lebar
+        'encoding': "UTF-8",
+        'enable-local-file-access': None,
+        'quiet': ''
+    }
 
-    # 4. Buat Response agar langsung download
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    
-    # 'attachment' berarti download, 'inline' berarti preview di browser
-    filename = f"Laporan_{periode}_{now.strftime('%Y%m%d')}.pdf"
-    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    try:
+        # 5. Generate PDF (Urutan argumen harus pas!)
+        pdf = pdfkit.from_string(
+            html_rendered, 
+            False, 
+            configuration=config_pdf, 
+            options=options
+        )
 
-    return response
+        # 6. Buat Response
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        
+        filename = f"Rekap_Admin_{periode}_{now.strftime('%Y%m%d')}.pdf"
+        # Gue set 'inline' aja biar admin bisa liat dulu di browser sebelum save
+        response.headers['Content-Disposition'] = f'inline; filename={filename}'
+
+        return response
+
+    except Exception as e:
+        print(f"❌ PDF Admin Error: {str(e)}")
+        flash("Gagal mencetak laporan rekap admin.", "danger")
+        return redirect(url_for('admin.dashboard'))
 
 # ---------- DASHBOARD ----------
 
@@ -349,6 +364,18 @@ def update_report_status(laporan_id):
         if laporan.tgl_diproses is None:
             laporan.tgl_diproses = now
 
+        file = request.files.get("foto_admin")
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            folder = "uploads/admin"
+            upload_dir = os.path.join(current_app.static_folder, folder)
+
+            os.makedirs(upload_dir, exist_ok=True)
+            file.save(os.path.join(upload_dir, filename))
+
+            # SIMPAN RELATIVE PATH (INI KUNCI)
+            laporan.foto_admin = f"{folder}/{filename}"
+            
     elif new_status == "selesai":
         laporan.tgl_selesai = now
         laporan.ringkasan_hasil = ringkasan_hasil

@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, logout_user
 from flask_migrate import Migrate
 from flask_mail import Mail
+import sys
+from pathlib import Path
 from config import config
 from datetime import datetime, timedelta, timezone
 
@@ -27,6 +29,21 @@ def create_app(config_name=None):
     print(f"🚀 App Running in Mode: {config_name.upper()}")
     app.request_class = BigFormRequest
     # Pakai batas idle 10 menit (boleh override nilai dari config kalau mau)
+    def check_requirements():
+        """Validasi environment sebelum aplikasi running."""
+        # 1. Cek Versi Python (Minimal 3.9 buat Pillow 10+)
+        # Kita pake (3, 9) biar aman sesuai spek requirements lo
+        if sys.version_info < (3, 10):
+            print("❌ Error: Aplikasi ini butuh Python 3.9 atau lebih baru!")
+            sys.exit(1)
+        
+        # 2. Cek Folder Static & Uploads
+        UPLOAD_PATH = Path(app.root_path) / "static" / "uploads" / "laporan_foto"
+        if not UPLOAD_PATH.exists():
+            print(f"⚠️ Warning: Folder uploads tidak ditemukan. Membuat: {UPLOAD_PATH}")
+            UPLOAD_PATH.mkdir(parents=True, exist_ok=True)
+        
+        print(f"✅ Environment Check: Python {sys.version.split()[0]} Detected. Gaspol!")
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
     app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
@@ -153,7 +170,7 @@ def create_app(config_name=None):
     # ===============================
     # CREATE TABLE
     # ===============================
-    #with app.app_context():
-       # db.create_all()
+    with app.app_context():
+       check_requirements()
 
     return app

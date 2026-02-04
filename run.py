@@ -8,6 +8,7 @@ from app import db # Sesuaikan dengan lokasi db lo
 from app.models import User, Kategori # Import modelnya
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timezone
+
 @app.cli.command("seed-db")
 @with_appcontext
 def seed_db():

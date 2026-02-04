@@ -4,7 +4,7 @@ import base64
 import io
 from pathlib import Path
 from pydoc import html
-
+import json
 from flask import (
     Blueprint, render_template, request, redirect,
     url_for, flash, abort, jsonify, make_response,current_app
@@ -14,7 +14,7 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from PIL import Image
 import pdfkit
-
+from app.pdf_helper import get_pdf_config
 from app import db
 from app.models import Laporan, Kategori
 from app.reports import bp
@@ -326,81 +326,70 @@ def delete(laporan_id):
     return redirect(url_for("reports.my_reports"))
 
 
+
 @bp.route("/create", methods=["GET", "POST"])
 @login_required
 def create():
-    limit = current_app.config.get('MAX_CONTENT_LENGTH')
-    print(f"DEBUG: Limit Upload Server saat ini: {limit} bytes")
-    if limit:
-        print(f"DEBUG: Dalam MB: {limit / (1024 * 1024)} MB")
     if request.method == "POST":
-        judul = request.form["judul"]
-        kategori_id = request.form["kategori_id"]
-        lokasi = request.form["lokasi"]
-        wilayah = request.form.get("wilayah") or None
-        deskripsi = request.form["deskripsi"]
-        lat = request.form.get("lat") or None
-        lng = request.form.get("lng") or None
-        prioritas = request.form.get("prioritas", "normal")
-
+        # ... (ambil data form judul, lokasi, dll)
+        
         paths = []
 
-        # a) file dari galeri (multiple)
+        # --- A. FILE DARI GALERI ---
         files = request.files.getlist("bukti_file")
         for f in files:
             rel = save_uploaded_file(f)
             if rel:
                 paths.append(rel)
 
-        # b) foto kamera via AJAX
-        kamera_paths_str = request.form.get("bukti_camera_path", "").strip()
-        if kamera_paths_str:
-            for p in kamera_paths_str.split(","):
-                clean_path = p.strip()
-                if clean_path:
-                    paths.append(clean_path)
+        # --- B. FOTO DARI KAMERA (JSON BONGKAR) ---
+        camera_json = request.form.get("bukti_camera_json")
+        if camera_json:
+            try:
+                # Ubah string JSON kembali jadi list Python
+                foto_list = json.loads(camera_json)
+                for i, b64_data in enumerate(foto_list):
+                    if b64_data:
+                        # Panggil fungsi save_camera_photo lo yang sudah ada
+                        rel = save_camera_photo(b64_data)
+                        if rel:
+                            paths.append(rel)
+            except Exception as e:
+                print(f"❌ Error parsing camera JSON: {e}")
 
-        # c) Video kamera dari form (Base64 di Input Hidden: bukti_video_data)
+        # --- C. VIDEO DARI KAMERA ---
         video_data = request.form.get("bukti_video_data", "").strip()
         if video_data:
             rel = save_camera_video(video_data)
             if rel:
                 paths.append(rel)   
 
+        # GABUNGKAN SEMUA PATH (DB TETEP STRING)
         foto_path_str = ",".join(paths) if paths else None
 
+        # SAVE KE DATABASE
         laporan = Laporan(
             kode_pelaporan=Laporan.generate_kode(current_user.id),
             user_id=current_user.id,
-            judul=judul,
-            kategori_id=kategori_id,
-            lokasi=lokasi,
-            wilayah=wilayah,
-            deskripsi=deskripsi,
-            latitude=float(lat) if lat else None,
-            longitude=float(lng) if lng else None,
-            prioritas=prioritas,
+            judul=request.form["judul"],
+            kategori_id=request.form["kategori_id"],
+            lokasi=request.form["lokasi"],
+            wilayah=request.form.get("wilayah"),
+            deskripsi=request.form["deskripsi"],
+            latitude=float(request.form.get("lat")) if request.form.get("lat") else None,
+            longitude=float(request.form.get("lng")) if request.form.get("lng") else None,
+            prioritas=request.form.get("prioritas", "normal"),
             foto_path=foto_path_str,
         )
 
         db.session.add(laporan)
         db.session.commit()
 
-        flash(
-            f"Laporan berhasil dikirim. Kode pelaporan: {laporan.kode_pelaporan}",
-            "success",
-        )
-        # arahkan ke halaman konfirmasi cetak
+        flash(f"Laporan berhasil dikirim!", "success")
         return redirect(url_for("reports.confirm_cetak", laporan_id=laporan.id))
 
     kategoris = Kategori.query.all()
-    return render_template(
-        "reports/create.html",
-        kategoris=kategoris,
-        laporan=None,
-        edit_mode=False,
-        preview_kode=None,
-    )
+    return render_template("reports/create.html", kategoris=kategoris, edit_mode=False)
 
 
 @bp.route("/laporan/<int:laporan_id>/konfirmasi-cetak")
@@ -415,64 +404,63 @@ def confirm_cetak(laporan_id):
 @bp.route("/laporan/<int:laporan_id>/cetak-pdf")
 @login_required
 def cetak_pdf(laporan_id):
-    # 1. Ambil data laporan (Pastikan milik user yang login)
-    laporan = Laporan.query.filter_by(
-        id=laporan_id, user_id=current_user.id
-    ).first_or_404()
+    # 1. Ambil data laporan (Pastikan milik user yang login atau admin)
+    laporan = Laporan.query.get_or_404(laporan_id)
+    if laporan.user_id != current_user.id and current_user.role != "admin":
+        abort(403)
 
-    # 2. Helper Function: Ubah URL static jadi Path Windows Absolut
-    # Ini solusi utama untuk mengatasi error "ProtocolUnknownError" / Gambar tidak muncul
+    # 2. Helper untuk Path Gambar (Agar gambar muncul di PDF)
     def get_absolute_path(filename):
-        # Gabungkan: Folder Root App + static + uploads + nama file
-        # Hasilnya misal: E:\Project\app\static\uploads\foto.jpg
-        filepath = os.path.join(current_app.root_path, 'static', 'uploads', filename)
-        
-        # Cek apakah file benar-benar ada, jika tidak kembalikan string kosong
-        if os.path.exists(filepath):
-            return filepath
-        return ""
+        if not filename: return ""
+        # Bersihkan path jika ada prefix 'static/'
+        clean_name = filename.replace('static/', '')
+        filepath = os.path.join(current_app.root_path, 'static', clean_name)
+        return filepath if os.path.exists(filepath) else ""
 
-    # 3. Render Template
-    # Kita kirim fungsi 'get_absolute_path' ke dalam template
-    html = render_template(
-        "reports/laporan_pdf.html", # Pastikan nama file template benar
+    # 3. Render Template HTML ke String
+    html_rendered = render_template(
+        "reports/laporan_pdf.html",
         laporan=laporan,
         get_absolute_path=get_absolute_path 
     )
 
-    # 4. Konfigurasi wkhtmltopdf
-    # Pastikan path ini BENAR sesuai lokasi instalasi di komputer Anda
-    path_wkhtmltopdf = r"/usr/bin/wkhtmltopdf"
-    
-    # Jika di komputer Anda di D:, gunakan yang ini:
-    # path_wkhtmltopdf = r""
+    # 4. Ambil Config Portable dari Helper lo
+    config = get_pdf_config() 
 
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-
-    # 5. Opsi Tambahan (Penting!)
+    # 5. Opsi PDF
     options = {
-        'enable-local-file-access': None, # Wajib agar bisa baca gambar lokal
+        'enable-local-file-access': None,
         'page-size': 'A4',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
         'encoding': "UTF-8",
-        'no-outline': None
+        'margin-top': '0.5in',
+        'margin-right': '0.5in',
+        'margin-bottom': '0.5in',
+        'margin-left': '0.5in',
+        'no-outline': None,
+        'quiet': ''
     }
 
-    # 6. Generate PDF
-    pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+    try:
+        # 6. Generate PDF (Cukup panggil SEKALI Nas)
+        pdf = pdfkit.from_string(
+            html_rendered, 
+            False, 
+            configuration=config, 
+            options=options
+        )
 
-    # 7. Buat Response
-    response = make_response(pdf)
-    filename = f"laporan_{laporan.kode_pelaporan or laporan.id}.pdf"
-    response.headers["Content-Type"] = "application/pdf"
-    # 'inline' = buka di browser, 'attachment' = langsung download
-    response.headers["Content-Disposition"] = f"inline; filename={filename}"
+        # 7. Buat Response
+        response = make_response(pdf)
+        filename = f"Laporan_{laporan.kode_pelaporan or laporan.id}.pdf"
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = f"inline; filename={filename}"
+        return response
+
+    except Exception as e:
+        print(f"❌ PDFKit Error: {e}")
+        flash("Gagal membuat PDF. Cek konfigurasi server.", "danger")
+        return redirect(url_for("reports.detail", laporan_id=laporan.id))
     
-    return response
-
 @bp.route("/upload-camera-photo", methods=["POST"])
 @login_required
 def upload_camera_photo():
@@ -503,30 +491,27 @@ def upload_camera_photo():
 @bp.route("/download-rekap-pdf")
 @login_required
 def download_rekap_pdf():
-    # 1. Ambil filter status dari URL (contoh: /download-rekap-pdf?status=selesai)
+    # 1. Ambil filter status
     status_filter = request.args.get("status", "all")
     
-    # 2. Query dasar (milik user yang login)
+    # 2. Query dasar
     query = Laporan.query.filter_by(user_id=current_user.id)
     
-    # 3. Terapkan filter jika bukan 'all'
+    # 3. Terapkan filter
     title_suffix = "Semua Status"
     if status_filter != "all":
-        # Validasi status agar sesuai Enum di database
         valid_statuses = ["diajukan", "diproses", "selesai", "ditolak"]
         if status_filter in valid_statuses:
             query = query.filter_by(status=status_filter)
             title_suffix = status_filter.capitalize()
     
-    # Urutkan dari yang terbaru
     laporan_list = query.order_by(Laporan.created_at.desc()).all()
     
-    # 4. Jika data kosong, beri notifikasi
     if not laporan_list:
         flash(f"Tidak ada laporan dengan status '{status_filter}' untuk dicetak.", "warning")
         return redirect(url_for("reports.my_reports"))
 
-    # 5. Render template HTML khusus rekap
+    # 4. Render template
     html_content = render_template(
         "reports/rekap_pdf.html",
         laporan_list=laporan_list,
@@ -535,45 +520,44 @@ def download_rekap_pdf():
         tanggal_cetak=datetime.now(timezone.utc)
     )
 
-    # 6. Konfigurasi PDFKit (Sesuaikan path jika dipindah ke server lain)
-    # Pastikan path ini benar ada di komputer Anda
-    path_wkhtmltopdf = r"/usr/bin/wkhtmltopdf"
-    
-    # Cek apakah file exe ada (untuk menghindari error server 500)
-    if not os.path.exists(path_wkhtmltopdf):
-        # Fallback untuk Linux/Production biasanya tidak butuh path spesifik
-        config = None 
-    else:
-        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    # 5. Konfigurasi PDFKit (Pake Helper Portable lo)
+    # Gak usah pake os.path.exists lagi di sini, biarin helper yang urus
+    config = get_pdf_config() 
 
-    # Opsi agar tabel rapi di PDF
+    # 6. Opsi PDF (Landscape buat tabel rekap)
     options = {
         'page-size': 'A4',
-        'orientation': 'Landscape', # Landscape agar tabel lebar muat
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
+        'orientation': 'Landscape',
+        'margin-top': '0.5in',
+        'margin-right': '0.5in',
+        'margin-bottom': '0.5in',
+        'margin-left': '0.5in',
         'encoding': "UTF-8",
-        'no-outline': None
+        'no-outline': None,
+        'quiet': ''
     }
 
     try:
-        pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
-    except OSError as e:
-        # Error biasanya karena wkhtmltopdf tidak ditemukan atau path salah
-        print(f"Error PDFKit: {e}")
-        flash("Gagal memproses PDF. Pastikan wkhtmltopdf terinstall.", "danger")
-        return redirect(url_for("reports.my_reports"))
+        # 7. Generate PDF
+        pdf = pdfkit.from_string(
+            html_content, 
+            False, 
+            configuration=config, 
+            options=options
+        )
+        
+        # 8. Return Response
+        response = make_response(pdf)
+        filename = f"Rekap_Laporan_{status_filter}_{datetime.now(timezone.utc).strftime('%Y%m%d')}.pdf"
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        
+        return response
 
-    # 7. Return Response
-    response = make_response(pdf)
-    filename = f"Rekap_Laporan_{status_filter}_{datetime.now(timezone.utc).strftime('%Y%m%d')}.pdf"
-    response.headers["Content-Type"] = "application/pdf"
-    # Gunakan 'attachment' agar otomatis download, atau 'inline' untuk preview browser
-    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-    
-    return response
+    except Exception as e:
+        print(f"❌ Error Rekap PDF: {e}")
+        flash("Gagal membuat file PDF Rekap. Pastikan sistem siap.", "danger")
+        return redirect(url_for("reports.my_reports"))
 
 @bp.route("/admin/laporan/<int:laporan_id>/update-status", methods=["POST"])
 @login_required
